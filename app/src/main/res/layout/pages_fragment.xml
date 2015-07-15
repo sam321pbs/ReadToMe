@@ -10,8 +10,8 @@
         android:id="@+id/page_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/curious_geroge_page_1"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/curious_geroge_page_1"/>
 
 
     <TableLayout
@@ -73,6 +73,7 @@
         android:id="@+id/fragment_page_tableLayout7"
         style="@style/TableLayoutView"
         android:layout_below="@+id/fragment_page_tableLayout6">
+
         <include
             layout="@layout/words_row"/>
     </TableLayout>
@@ -81,6 +82,7 @@
         android:id="@+id/fragment_page_tableLayout8"
         style="@style/TableLayoutView"
         android:layout_below="@+id/fragment_page_tableLayout7">
+
         <include
             layout="@layout/words_row"/>
     </TableLayout>
@@ -88,33 +90,38 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentBottom="true">
+        android:layout_marginBottom="20dp">
 
         <ImageView
             android:id="@+id/go_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_weight=".25"
             android:src="@drawable/turn_back"/>
 
         <ImageView
             android:id="@+id/play_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="90dp"
-            android:layout_marginRight="90dp"
+            android:layout_weight=".25"
             android:src="@drawable/blue_play_button"/>
+
+        <Button
+            android:id="@+id/clear_highlights_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="Clear"/>
 
         <ImageView
             android:id="@+id/turn_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_weight=".25"
             android:src="@drawable/turn_page"/>
 
-        <ImageView/>
     </TableRow>
 
 
