@@ -2,11 +2,7 @@ package com.example.sammengistu.readtome;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.os.Handler;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
@@ -15,45 +11,6 @@ import java.util.ArrayList;
 public class WordPlayer {
 
     private MediaPlayer mWordPlayer;
-
-    public static MediaPlayer getMediaPlayer(Context context) {
-
-        MediaPlayer mediaplayer = new MediaPlayer();
-
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) {
-            return mediaplayer;
-        }
-
-        try {
-            Class<?> cMediaTimeProvider = Class.forName("android.media.MediaTimeProvider");
-            Class<?> cSubtitleController = Class.forName("android.media.SubtitleController");
-            Class<?> iSubtitleControllerAnchor = Class.forName("android.media.SubtitleController$Anchor");
-            Class<?> iSubtitleControllerListener = Class.forName("android.media.SubtitleController$Listener");
-
-            Constructor constructor = cSubtitleController.getConstructor(new Class[]{Context.class, cMediaTimeProvider, iSubtitleControllerListener});
-
-            Object subtitleInstance = constructor.newInstance(context, null, null);
-
-            Field f = cSubtitleController.getDeclaredField("mHandler");
-
-            f.setAccessible(true);
-            try {
-                f.set(subtitleInstance, new Handler());
-            } catch (IllegalAccessException e) {
-                return mediaplayer;
-            } finally {
-                f.setAccessible(false);
-            }
-
-            Method setsubtitleanchor = mediaplayer.getClass().getMethod("setSubtitleAnchor", cSubtitleController, iSubtitleControllerAnchor);
-
-            setsubtitleanchor.invoke(mediaplayer, subtitleInstance, null);
-            //Log.e("", "subtitle is setted :p");
-        } catch (Exception e) {
-        }
-
-        return mediaplayer;
-    }
 
     public void stop() {
         if (mWordPlayer != null) {
@@ -96,11 +53,37 @@ public class WordPlayer {
     public int getSongResourceId(String word) {
         int wordAudio = 0;
         if (word.equalsIgnoreCase("george.")) {
-            wordAudio = R.raw.word_george1;
+            wordAudio = R.raw.word_george;
         } else if (word.equalsIgnoreCase("is")) {
             wordAudio = R.raw.word_is;
         } else if (word.equalsIgnoreCase("this")) {
             wordAudio = R.raw.word_this;
+        } else if (word.equalsIgnoreCase("africa.")) {
+            wordAudio = R.raw.word_africa;
+        }else if (word.equalsIgnoreCase("but")) {
+            wordAudio = R.raw.word_but;
+        }else if (word.equalsIgnoreCase("curious.")) {
+            wordAudio = R.raw.word_curious;
+        }else if (word.equalsIgnoreCase("fault.")) {
+            wordAudio = R.raw.word_fault;
+        }else if (word.equalsIgnoreCase("had")) {
+            wordAudio = R.raw.word_had;
+        }else if (word.equalsIgnoreCase("happy.")) {
+            wordAudio = R.raw.word_happy;
+        }else if (word.equalsIgnoreCase("he")) {
+            wordAudio = R.raw.word_he;
+        }else if (word.equalsIgnoreCase("in")) {
+            wordAudio = R.raw.word_in;
+        }else if (word.equalsIgnoreCase("lived")) {
+            wordAudio = R.raw.word_lived;
+        }else if (word.equalsIgnoreCase("one")) {
+            wordAudio = R.raw.word_one;
+        }else if (word.equalsIgnoreCase("too")) {
+            wordAudio = R.raw.word_too;
+        }else if (word.equalsIgnoreCase("very")) {
+            wordAudio = R.raw.word_very;
+        }else if (word.equalsIgnoreCase("was")) {
+            wordAudio = R.raw.word_was;
         }
 
         return wordAudio;

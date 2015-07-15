@@ -8,6 +8,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,13 +25,17 @@ import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.WordPlayer;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PageFragment extends Fragment/* implements
-        TextToSpeech.OnInitListener*/ {
+public class PageFragment extends Fragment implements
+        TextToSpeech.OnInitListener  {
+
+    private float x1, x2;
+    static final int MIN_DISTANCE = 150;
 
     private static final String TAG = "PageFragment";
     private ArrayList<PageOfBook> mPagesOfBook;
@@ -62,7 +67,7 @@ public class PageFragment extends Fragment/* implements
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
-        //tts = new TextToSpeech(getActivity(), this);
+        tts = new TextToSpeech(getActivity(), this);
 
     }
 
@@ -92,6 +97,7 @@ public class PageFragment extends Fragment/* implements
                 pageNumber++;
                 setUpPageText();
                 mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
+                mWordsToSpeechBank.clear();
             }
         });
         mGoBackPage = (ImageView) blankPage.findViewById(R.id.go_back);
@@ -110,17 +116,37 @@ public class PageFragment extends Fragment/* implements
             @Override
             public void onClick(View v) {
                 findHighlightedWords();
-                mWordPlayer.play(getActivity(), mWordsToSpeechBank);
+                try {
+                    mWordPlayer.play(getActivity(), mWordsToSpeechBank);
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                    speakOut();
+                }
+
                 mWordsToSpeechBank.clear();
-               // speakOut();
+
             }
         });
-
+/*
         mClearHighlights = (Button)blankPage.findViewById(R.id.clear_highlights_button);
         mClearHighlights.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setUpPageText();
+                mWordsToSpeechBank.clear();
+            }
+        }); */
+
+        blankPage.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    setUpPageText();
+                    mWordsToSpeechBank.clear();
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -158,7 +184,7 @@ public class PageFragment extends Fragment/* implements
             public void onClick(View v) {
                 TextView textView = (TextView) v;
                 textView.setBackgroundColor(Color.YELLOW);
-               // Log.i(TAG, textView.getText() + "");
+                // Log.i(TAG, textView.getText() + "");
             }
         };
     }
@@ -189,7 +215,7 @@ public class PageFragment extends Fragment/* implements
         }
     }
 
-   /* @Override
+    @Override
     public void onInit(int status) {
 
         if (status == TextToSpeech.SUCCESS) {
@@ -201,7 +227,7 @@ public class PageFragment extends Fragment/* implements
                 Log.e("TTS", "This Language is not supported");
             } else {
                 mPlayButton.setEnabled(true);
-               // speakOut();
+                // speakOut();
             }
 
         } else {
@@ -214,23 +240,22 @@ public class PageFragment extends Fragment/* implements
 
         String wordsToSpeech = "";
 
-        for (String word: mWordsToSpeechBank){
+        for (String word : mWordsToSpeechBank) {
             wordsToSpeech += word + " ";
         }
         mWordsToSpeechBank.clear();
 
         tts.setSpeechRate(0.75f);
         tts.speak(wordsToSpeech, TextToSpeech.QUEUE_FLUSH, null);
-    }*/
+    }
 
     @Override
     public void onDestroy() {
         // Don't forget to shutdown tts!
-        /*
         if (tts != null) {
             tts.stop();
             tts.shutdown();
-        } */
+        }
 
         mWordPlayer.stop();
         super.onDestroy();

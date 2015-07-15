@@ -113,7 +113,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".25"
-            android:text="Clear"/>
+            android:text="Clear"
+            android:background="@drawable/select_word_normal_button"/>
 
         <ImageView
             android:id="@+id/turn_page"
