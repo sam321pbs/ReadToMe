@@ -5,16 +5,16 @@ import java.util.ArrayList;
 /**
  * Created by SamMengistu on 7/11/15.
  */
-public class CuriousGeorgePages {
+public class CuriousGeorgePages implements MakeAPage{
 
     public static ArrayList<PageOfBook> mPagesOfTheBook = new ArrayList<PageOfBook>();
 
-    public static ArrayList<PageOfBook> getPagesOfTheBook() {
+    public  ArrayList<PageOfBook> getPagesOfTheBook() {
         addPages();
         return mPagesOfTheBook;
     }
 
-    private static void addPages() {
+     private void addPages() {
 
         PageOfBook pageOne = new PageOfBook(R.drawable.curious_geroge_page_1,
                 "This is George. He lived in Africa. He was very happy." +

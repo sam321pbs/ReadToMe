@@ -8,7 +8,6 @@ import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sammengistu.readtome.Book;
 import com.example.sammengistu.readtome.Library;
@@ -26,6 +24,7 @@ import com.example.sammengistu.readtome.WordPlayer;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.UUID;
 
 
 /**
@@ -49,6 +48,7 @@ public class PageFragment extends Fragment implements
     private ImageView mPlayButton;
     private ArrayList<String> mWordsToSpeechBank;
     private Button mClearHighlights;
+    private Book currentBook;
 
     private WordPlayer mWordPlayer = new WordPlayer();
 
@@ -59,44 +59,43 @@ public class PageFragment extends Fragment implements
         mTableLayouts = new ArrayList<TableLayout>();
         mWordsToSpeechBank = new ArrayList<String>();
 
-        ArrayList<Book> library = Library.get(getActivity()).getMyLibrary();
+        UUID bookId = (UUID)getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
 
-        mPagesOfBook = library.get(0).getPageOfBook();
+        currentBook = Library.get(getActivity()).getBook(bookId);
+
+        mPagesOfBook = currentBook.getPagesOfBook();
 
         pageNumber = 0;
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
         tts = new TextToSpeech(getActivity(), this);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View blankPage;
+        if (currentBook.getTitle().equalsIgnoreCase("Curious George")){
+             blankPage = inflater.inflate(R.layout.pages_fragment, container, false);
+            mPagePicture = (ImageView) blankPage.findViewById(R.id.page_picture);
+        }else {
+             blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
+        }
 
-        View blankPage = inflater.inflate(R.layout.pages_fragment, container, false);
-
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout1));
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout2));
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout3));
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout4));
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout5));
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout6));
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout7));
-        mTableLayouts.add((TableLayout) blankPage.findViewById(R.id.fragment_page_tableLayout8));
-
-        mPagePicture = (ImageView) blankPage.findViewById(R.id.page_picture);
-        mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
+        setTableLayouts(blankPage);
+        setImage();
 
         mTurnPage = (ImageView) blankPage.findViewById(R.id.turn_page);
         mTurnPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Turn Page", Toast.LENGTH_SHORT).show();
                 pageNumber++;
+                if (pageNumber > mPagesOfBook.size() -1 ){
+                    pageNumber = mPagesOfBook.size() -1;
+                }
                 setUpPageText();
-                mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
+                setImage();
                 mWordsToSpeechBank.clear();
             }
         });
@@ -104,11 +103,13 @@ public class PageFragment extends Fragment implements
         mGoBackPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Go Back Page", Toast.LENGTH_SHORT).show();
                 pageNumber--;
+                if (pageNumber < 0){
+                    pageNumber = 0;
+                }
                 setUpPageText();
-                mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
-            }
+                setImage();
+                }
         });
 
         mPlayButton = (ImageView) blankPage.findViewById(R.id.play_button);
@@ -116,18 +117,15 @@ public class PageFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 findHighlightedWords();
-                try {
-                    mWordPlayer.play(getActivity(), mWordsToSpeechBank);
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+                if (pageNumber == 1) {
                     speakOut();
+                } else {
+                    mWordPlayer.play(getActivity(), mWordsToSpeechBank);
                 }
-
                 mWordsToSpeechBank.clear();
-
             }
         });
-/*
+
         mClearHighlights = (Button)blankPage.findViewById(R.id.clear_highlights_button);
         mClearHighlights.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,23 +133,37 @@ public class PageFragment extends Fragment implements
                 setUpPageText();
                 mWordsToSpeechBank.clear();
             }
-        }); */
-
-        blankPage.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    setUpPageText();
-                    mWordsToSpeechBank.clear();
-                    return true;
-                }
-                return false;
-            }
         });
 
         setUpPageText();
         return blankPage;
+    }
+
+    private void setImage (){
+        if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
+            mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
+        }
+    }
+
+    private void setTableLayouts(View view){
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout1));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout2));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout3));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout4));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout5));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout6));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout7));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout8));
+        if (currentBook.getTitle().equalsIgnoreCase("Charlottes Web")) {
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout9));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout10));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout11));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout12));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout13));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout14));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout15));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout16));
+        }
     }
 
 
@@ -227,13 +239,11 @@ public class PageFragment extends Fragment implements
                 Log.e("TTS", "This Language is not supported");
             } else {
                 mPlayButton.setEnabled(true);
-                // speakOut();
             }
 
         } else {
             Log.e("TTS", "Initilization Failed!");
         }
-
     }
 
     private void speakOut() {
@@ -245,7 +255,7 @@ public class PageFragment extends Fragment implements
         }
         mWordsToSpeechBank.clear();
 
-        tts.setSpeechRate(0.75f);
+        tts.setSpeechRate(0.65f);
         tts.speak(wordsToSpeech, TextToSpeech.QUEUE_FLUSH, null);
     }
 

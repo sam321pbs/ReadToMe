@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@drawable/blank_page">
+
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout1"
+        style="@style/TableLayoutView"
+        android:layout_marginTop="20dp">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout2"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout1">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout3"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout2">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout4"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout3">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout5"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout4">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout6"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout5">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout7"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout6">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout8"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout7">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout9"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout8">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout10"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout9">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout11"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout10">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout12"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout11">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout13"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout12">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout14"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout13">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout15"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout14">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout16"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout15">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout17"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout16">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout18"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout17">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout19"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout18">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout20"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout19">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout21"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout20">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/fragment_page_tableLayout22"
+        style="@style/TableLayoutView"
+        android:layout_below="@+id/fragment_page_tableLayout21">
+
+        <include
+            layout="@layout/words_row"/>
+    </TableLayout>
+
+    <include
+        layout="@layout/action_commands_for_page"/>
+
+</RelativeLayout>

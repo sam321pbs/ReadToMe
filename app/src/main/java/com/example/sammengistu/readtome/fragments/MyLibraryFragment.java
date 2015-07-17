@@ -24,7 +24,9 @@ public class MyLibraryFragment extends Fragment {
 
     public static final String BOOK_ID = "Book Id";
     private ImageView mBookOneImage;
+    private ImageView mBookTwoImage;
     private Book curiousGeorge;
+    private Book charlottesWeb;
 
 
     @Override
@@ -33,6 +35,7 @@ public class MyLibraryFragment extends Fragment {
 
         ArrayList<Book> myLibrary = Library.get(getActivity()).getMyLibrary();
         curiousGeorge =  myLibrary.get(0);
+        charlottesWeb = myLibrary.get(1);
     }
 
     @Override
@@ -52,6 +55,19 @@ public class MyLibraryFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        mBookTwoImage = (ImageView)v.findViewById(R.id.charlottes_web_book_cover_book_cover);
+        mBookTwoImage.setImageResource(charlottesWeb.getBookCover());
+
+        mBookTwoImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, charlottesWeb.getBookId());
+                startActivity(intent);
+            }
+        });
+
 
 
         return v;

@@ -19,11 +19,17 @@ public class Library {
         mAppContext = appContext;
         mMyLibrary = new ArrayList<Book>();
 
-        Book curiousGeorge = new Book("CuriousGeorge", "H.A.Rey",
-                R.drawable.curious_george_book_cover, CuriousGeorgePages.getPagesOfTheBook());
+
+
+        Book curiousGeorge = new Book("Curious George", "H.A.Rey",
+                R.drawable.curious_george_book_cover, new CuriousGeorgePages().getPagesOfTheBook());
+
+        Book charlottesWeb = new Book("Charlottes Web", "E. B. White",
+                R.drawable.charlottes_web_book_cover, new CharlottesWebPages().getPagesOfTheBook());
+
 
         mMyLibrary.add(curiousGeorge);
-
+        mMyLibrary.add(charlottesWeb);
     }
 
     public static Library get(Context c) {
@@ -35,7 +41,7 @@ public class Library {
 
     public Book getBook(UUID bookId){
         for (Book book : mMyLibrary){
-            if (book.getBookId() == bookId){
+            if (book.getBookId().equals(bookId)){
                 return book;
             }
         }

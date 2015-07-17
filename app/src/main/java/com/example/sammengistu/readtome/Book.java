@@ -23,7 +23,7 @@ public class Book {
     }
 
 
-    public ArrayList<PageOfBook> getPageOfBook() {
+    public ArrayList<PageOfBook> getPagesOfBook() {
         return mPagesOfBook;
     }
 
