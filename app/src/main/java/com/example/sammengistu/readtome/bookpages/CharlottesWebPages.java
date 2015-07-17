@@ -1,11 +1,15 @@
-package com.example.sammengistu.readtome;
+package com.example.sammengistu.readtome.bookpages;
+
+import com.example.sammengistu.readtome.MakeAPage;
+import com.example.sammengistu.readtome.PageOfBook;
+import com.example.sammengistu.readtome.R;
 
 import java.util.ArrayList;
 
 /**
  * Created by SamMengistu on 7/16/15.
  */
-public class CharlottesWebPages implements MakeAPage{
+public class CharlottesWebPages implements MakeAPage {
     public static ArrayList<PageOfBook> mPagesOfTheBook = new ArrayList<PageOfBook>();
 
     public  ArrayList<PageOfBook> getPagesOfTheBook() {

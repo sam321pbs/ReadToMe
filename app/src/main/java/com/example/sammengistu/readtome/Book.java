@@ -13,15 +13,24 @@ public class Book {
     private UUID mBookId;
     private int mBookCover;
     private ArrayList<PageOfBook> mPagesOfBook;
+    private String mChapter;
 
     public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook){
-        mPagesOfBook = pagesOfBook;
-        mBookId = UUID.randomUUID();
+        mBookCover = bookCover;
         mTitle = title;
         mAuthor = author;
-        mBookCover = bookCover;
+        mPagesOfBook = pagesOfBook;
+        mBookId = UUID.randomUUID();
     }
 
+    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook, String chapter){
+        this(title, author,bookCover, pagesOfBook);
+        mChapter = chapter;
+    }
+
+    public String getChapter() {
+        return mChapter;
+    }
 
     public ArrayList<PageOfBook> getPagesOfBook() {
         return mPagesOfBook;

@@ -49,6 +49,7 @@ public class PageFragment extends Fragment implements
     private ArrayList<String> mWordsToSpeechBank;
     private Button mClearHighlights;
     private Book currentBook;
+    private TextView mChapterTextView;
 
     private WordPlayer mWordPlayer = new WordPlayer();
 
@@ -81,6 +82,8 @@ public class PageFragment extends Fragment implements
             mPagePicture = (ImageView) blankPage.findViewById(R.id.page_picture);
         }else {
              blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
+            mChapterTextView = (TextView)blankPage.findViewById(R.id.book_chapter_textview);
+            setUpChapterLabel();
         }
 
         setTableLayouts(blankPage);
@@ -91,11 +94,10 @@ public class PageFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 pageNumber++;
-                if (pageNumber > mPagesOfBook.size() -1 ){
-                    pageNumber = mPagesOfBook.size() -1;
+                if (pageNumber > mPagesOfBook.size() - 1) {
+                    pageNumber = mPagesOfBook.size() - 1;
                 }
-                setUpPageText();
-                setImage();
+                handlePageTurn();
                 mWordsToSpeechBank.clear();
             }
         });
@@ -107,8 +109,7 @@ public class PageFragment extends Fragment implements
                 if (pageNumber < 0){
                     pageNumber = 0;
                 }
-                setUpPageText();
-                setImage();
+                handlePageTurn();
                 }
         });
 
@@ -139,6 +140,25 @@ public class PageFragment extends Fragment implements
         return blankPage;
     }
 
+    private void handlePageTurn(){
+        setUpChapterLabel();
+        setUpPageText();
+        setImage();
+    }
+
+    private boolean doesBookHaveChapters(){
+        return currentBook.getTitle().equalsIgnoreCase("Charlottes web");
+    }
+
+    private void setUpChapterLabel(){
+        if (doesBookHaveChapters() && pageNumber == 0){
+            mChapterTextView.setVisibility(View.VISIBLE);
+            mChapterTextView.setText(currentBook.getChapter());
+        } else if (doesBookHaveChapters()){
+            mChapterTextView.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private void setImage (){
         if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
             mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
@@ -165,7 +185,6 @@ public class PageFragment extends Fragment implements
             mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout16));
         }
     }
-
 
     private void setUpPageText() {
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");

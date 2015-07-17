@@ -2,6 +2,9 @@ package com.example.sammengistu.readtome;
 
 import android.content.Context;
 
+import com.example.sammengistu.readtome.bookpages.CharlottesWebPages;
+import com.example.sammengistu.readtome.bookpages.CuriousGeorgePages;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -25,7 +28,7 @@ public class Library {
                 R.drawable.curious_george_book_cover, new CuriousGeorgePages().getPagesOfTheBook());
 
         Book charlottesWeb = new Book("Charlottes Web", "E. B. White",
-                R.drawable.charlottes_web_book_cover, new CharlottesWebPages().getPagesOfTheBook());
+                R.drawable.charlottes_web_book_cover, new CharlottesWebPages().getPagesOfTheBook(), "Chapter 1");
 
 
         mMyLibrary.add(curiousGeorge);
