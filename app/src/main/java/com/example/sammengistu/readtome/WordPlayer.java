@@ -50,6 +50,4 @@ public class WordPlayer {
             });
         }
     }
-
-    Added
 }
