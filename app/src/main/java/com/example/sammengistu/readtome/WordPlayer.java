@@ -12,6 +12,7 @@ public class WordPlayer {
 
     private MediaPlayer mWordPlayer;
 
+
     public void stop() {
         if (mWordPlayer != null) {
             mWordPlayer.release();
@@ -22,12 +23,12 @@ public class WordPlayer {
     public void play(final Context c, ArrayList<String> words) {
         stop();
         if (words != null && words.size() > 0) {
-            final ArrayList<String> wordList = new ArrayList<String>(words);
+            final ArrayList<String> wordsToPlay = new ArrayList<String>(words);
 
-            String wordAudio = wordList.get(0);
-            wordList.remove(0);
+            String word = wordsToPlay.get(0);
+            wordsToPlay.remove(0);
 
-            mWordPlayer = MediaPlayer.create(c, getSongResourceId(wordAudio));
+            mWordPlayer = MediaPlayer.create(c, WordAudioFiles.get(c).getWordAudio(word));
 
             mWordPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -44,48 +45,11 @@ public class WordPlayer {
                     stop();
                     // Recursively call the play() method with one less
                     // track in the list.
-                    play(c, wordList);
+                    play(c, wordsToPlay);
                 }
             });
         }
     }
 
-    public int getSongResourceId(String word) {
-        int wordAudio = 0;
-        if (word.equalsIgnoreCase("george.")) {
-            wordAudio = R.raw.word_george;
-        } else if (word.equalsIgnoreCase("is")) {
-            wordAudio = R.raw.word_is;
-        } else if (word.equalsIgnoreCase("this")) {
-            wordAudio = R.raw.word_this;
-        } else if (word.equalsIgnoreCase("africa.")) {
-            wordAudio = R.raw.word_africa;
-        }else if (word.equalsIgnoreCase("but")) {
-            wordAudio = R.raw.word_but;
-        }else if (word.equalsIgnoreCase("curious.")) {
-            wordAudio = R.raw.word_curious;
-        }else if (word.equalsIgnoreCase("fault.")) {
-            wordAudio = R.raw.word_fault;
-        }else if (word.equalsIgnoreCase("had")) {
-            wordAudio = R.raw.word_had;
-        }else if (word.equalsIgnoreCase("happy.")) {
-            wordAudio = R.raw.word_happy;
-        }else if (word.equalsIgnoreCase("he")) {
-            wordAudio = R.raw.word_he;
-        }else if (word.equalsIgnoreCase("in")) {
-            wordAudio = R.raw.word_in;
-        }else if (word.equalsIgnoreCase("lived")) {
-            wordAudio = R.raw.word_lived;
-        }else if (word.equalsIgnoreCase("one")) {
-            wordAudio = R.raw.word_one;
-        }else if (word.equalsIgnoreCase("too")) {
-            wordAudio = R.raw.word_too;
-        }else if (word.equalsIgnoreCase("very")) {
-            wordAudio = R.raw.word_very;
-        }else if (word.equalsIgnoreCase("was")) {
-            wordAudio = R.raw.word_was;
-        }
-
-        return wordAudio;
-    }
+    Added
 }

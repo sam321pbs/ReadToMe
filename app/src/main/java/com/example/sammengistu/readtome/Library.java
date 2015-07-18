@@ -23,7 +23,6 @@ public class Library {
         mMyLibrary = new ArrayList<Book>();
 
 
-
         Book curiousGeorge = new Book("Curious George", "H.A.Rey",
                 R.drawable.curious_george_book_cover, new CuriousGeorgePages().getPagesOfTheBook());
 
