@@ -14,7 +14,6 @@ public class WordAndAudio {
     }
 
     public String getWord() {
-
         return mWord;
     }
 

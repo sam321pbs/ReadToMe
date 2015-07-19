@@ -33,9 +33,6 @@ import java.util.UUID;
 public class PageFragment extends Fragment implements
         TextToSpeech.OnInitListener  {
 
-    private float x1, x2;
-    static final int MIN_DISTANCE = 150;
-
     private static final String TAG = "PageFragment";
     private ArrayList<PageOfBook> mPagesOfBook;
     private ImageView mTurnPage;
@@ -51,7 +48,7 @@ public class PageFragment extends Fragment implements
     private Book currentBook;
     private TextView mChapterTextView;
 
-    private WordPlayer mWordPlayer = new WordPlayer();
+    private WordPlayer mWordPlayer ;
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
@@ -67,6 +64,8 @@ public class PageFragment extends Fragment implements
         mPagesOfBook = currentBook.getPagesOfBook();
 
         pageNumber = 0;
+
+       mWordPlayer = new WordPlayer(getActivity(), PageFragment.this);
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
@@ -118,11 +117,8 @@ public class PageFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 findHighlightedWords();
-                if (pageNumber == 1) {
-                    speakOut();
-                } else {
-                    mWordPlayer.play(getActivity(), mWordsToSpeechBank);
-                }
+
+                mWordPlayer.play(mWordsToSpeechBank);
                 mWordsToSpeechBank.clear();
             }
         });
@@ -286,7 +282,7 @@ public class PageFragment extends Fragment implements
             tts.shutdown();
         }
 
-        mWordPlayer.stop();
+        mWordPlayer.stopAudioFile();
         super.onDestroy();
     }
 }

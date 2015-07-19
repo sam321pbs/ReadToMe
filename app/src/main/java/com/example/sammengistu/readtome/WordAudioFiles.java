@@ -56,4 +56,13 @@ public class WordAudioFiles {
         return 0;
     }
 
+    public boolean isWordInFiles(String word){
+        for (WordAndAudio wordInFile: mWordAudioFiles){
+            if (wordInFile.getWord().equalsIgnoreCase(word)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
