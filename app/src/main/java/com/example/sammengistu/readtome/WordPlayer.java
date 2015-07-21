@@ -9,14 +9,13 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- * Created by SamMengistu on 7/13/15.
+ * Plays words from either an audio file or uses TextToSpeech library
  */
 public class WordPlayer implements TextToSpeech.OnInitListener {
 
     private static final String TAG = "WordPlayer";
     private MediaPlayer mWordPlayer;
     private TextToSpeech tts;
-    private TextToSpeech.OnInitListener mOnInitListener;
     private Context mAppContext;
 
     public WordPlayer (Context c, TextToSpeech.OnInitListener listener){
@@ -25,6 +24,9 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
     }
 
+    /**
+     * Stops the media player if it is turned on
+     */
     public void stopAudioFile() {
         if (mWordPlayer != null) {
             mWordPlayer.release();
@@ -33,13 +35,17 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
     }
 
+    /**
+     * Takes in an ArrayList of words
+     * Copies the list of words
+     * Either finds its audio file or uses text to speech to play the word
+     * @param words
+     */
     public void play(ArrayList<String> words) {
         stopAudioFile();
 
-
         if (words != null && words.size() > 0) {
             final ArrayList<String> wordsToPlay = new ArrayList<String>(words);
-            ArrayList<String> wordsForRobot = new ArrayList<>();
 
             String word = wordsToPlay.get(0);
             wordsToPlay.remove(0);
@@ -73,7 +79,8 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 int foundNextWordInFile = 0;
                 for (int i = 0; i < wordsToPlay.size(); i++){
                     Log.i(TAG, "Word at " + i + " is: " + wordsToPlay.get(i));
-                    Log.i(TAG, "Is in file: " + WordAudioFiles.get(mAppContext).isWordInFiles(wordsToPlay.get(i)));
+                    Log.i(TAG, "Is in file: " + WordAudioFiles.get(mAppContext)
+                            .isWordInFiles(wordsToPlay.get(i)));
                     if (WordAudioFiles.get(mAppContext).isWordInFiles(wordsToPlay.get(i))){
                         foundNextWordInFile = i;
                         break;
@@ -105,6 +112,11 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         }
     }
 
+    /**
+     * Checks to make sure the Text to speech engine is working properly
+     * Then sets up its language
+     * @param status
+     */
     @Override
     public void onInit(int status) {
 
@@ -115,8 +127,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
-            } else {
-              //  mPlayButton.setEnabled(true);
             }
 
         } else {
@@ -124,12 +134,15 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         }
     }
 
+    /**
+     * Uses the text to speech engine to actually play the word that is being
+     * passed in
+     * @param words
+     */
     @SuppressWarnings("deprecation")
     private void speakOut(String words) {
-
-
         Log.e("TTS", "Speak");
-        tts.setSpeechRate(0.65f);
+        tts.setSpeechRate(0.60f);
         tts.speak(words, TextToSpeech.QUEUE_FLUSH, null);
     }
 }

@@ -5,7 +5,8 @@ import android.content.Context;
 import java.util.ArrayList;
 
 /**
- * Created by SamMengistu on 7/18/15.
+ * Stores all the audio files into one location
+ * and makes it easy to access the files
  */
 public class WordAudioFiles {
     private ArrayList<WordAndAudio> mWordAudioFiles = new ArrayList<>();
@@ -13,6 +14,10 @@ public class WordAudioFiles {
     private static WordAudioFiles sWordAudioFiles;
 
 
+    /**
+     * Adds the files to the list when it is created
+     * @param c
+     */
     public WordAudioFiles(Context c){
         mWordAudioFiles = new ArrayList<>();
         addWordsToAudioList();
@@ -26,6 +31,9 @@ public class WordAudioFiles {
         return sWordAudioFiles;
     }
 
+    /**
+     * Adds the words and audio to the ArrayList
+     */
     private void addWordsToAudioList(){
 
         mWordAudioFiles.add(new WordAndAudio("george.", R.raw.word_george));
@@ -47,6 +55,11 @@ public class WordAudioFiles {
 
     }
 
+    /**
+     * Gets the audio for a string word
+     * @param word
+     * @return
+     */
     public int getWordAudio(String word){
         for (WordAndAudio audio: mWordAudioFiles){
             if (word.equalsIgnoreCase(audio.getWord())){

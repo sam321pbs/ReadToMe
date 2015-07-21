@@ -28,10 +28,11 @@ import java.util.UUID;
 
 
 /**
+ * Sets up the page view of the book
  * A simple {@link Fragment} subclass.
  */
 public class PageFragment extends Fragment implements
-        TextToSpeech.OnInitListener  {
+        TextToSpeech.OnInitListener {
 
     private static final String TAG = "PageFragment";
     private ArrayList<PageOfBook> mPagesOfBook;
@@ -48,7 +49,7 @@ public class PageFragment extends Fragment implements
     private Book currentBook;
     private TextView mChapterTextView;
 
-    private WordPlayer mWordPlayer ;
+    private WordPlayer mWordPlayer;
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
@@ -57,7 +58,7 @@ public class PageFragment extends Fragment implements
         mTableLayouts = new ArrayList<TableLayout>();
         mWordsToSpeechBank = new ArrayList<String>();
 
-        UUID bookId = (UUID)getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
+        UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
 
         currentBook = Library.get(getActivity()).getBook(bookId);
 
@@ -65,23 +66,32 @@ public class PageFragment extends Fragment implements
 
         pageNumber = 0;
 
-       mWordPlayer = new WordPlayer(getActivity(), PageFragment.this);
+        mWordPlayer = new WordPlayer(getActivity(), PageFragment.this);
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
         tts = new TextToSpeech(getActivity(), this);
     }
 
+    /**
+     * Decides whether the page has a picture or not
+     * then adds the words to the page in individual text text views
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View blankPage;
-        if (currentBook.getTitle().equalsIgnoreCase("Curious George")){
-             blankPage = inflater.inflate(R.layout.pages_fragment, container, false);
+        if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
+            blankPage = inflater.inflate(R.layout.pages_fragment, container, false);
             mPagePicture = (ImageView) blankPage.findViewById(R.id.page_picture);
-        }else {
-             blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
-            mChapterTextView = (TextView)blankPage.findViewById(R.id.book_chapter_textview);
+        } else {
+            blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
+            mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textview);
             setUpChapterLabel();
         }
 
@@ -105,11 +115,11 @@ public class PageFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 pageNumber--;
-                if (pageNumber < 0){
+                if (pageNumber < 0) {
                     pageNumber = 0;
                 }
                 handlePageTurn();
-                }
+            }
         });
 
         mPlayButton = (ImageView) blankPage.findViewById(R.id.play_button);
@@ -123,7 +133,7 @@ public class PageFragment extends Fragment implements
             }
         });
 
-        mClearHighlights = (Button)blankPage.findViewById(R.id.clear_highlights_button);
+        mClearHighlights = (Button) blankPage.findViewById(R.id.clear_highlights_button);
         mClearHighlights.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,32 +146,53 @@ public class PageFragment extends Fragment implements
         return blankPage;
     }
 
-    private void handlePageTurn(){
+    /**
+     * Handles the page turning
+     * Sets up the views according to the content
+     */
+    private void handlePageTurn() {
         setUpChapterLabel();
         setUpPageText();
         setImage();
     }
 
-    private boolean doesBookHaveChapters(){
+    /**
+     * Checks if the book has a chapter in it
+     * @return
+     */
+    private boolean doesBookHaveChapters() {
         return currentBook.getTitle().equalsIgnoreCase("Charlottes web");
     }
 
-    private void setUpChapterLabel(){
-        if (doesBookHaveChapters() && pageNumber == 0){
+    /**
+     * Sets up the chapter view based on whether the book has
+     * chapters
+     */
+    private void setUpChapterLabel() {
+        if (doesBookHaveChapters() && pageNumber == 0) {
             mChapterTextView.setVisibility(View.VISIBLE);
             mChapterTextView.setText(currentBook.getChapter());
-        } else if (doesBookHaveChapters()){
+        } else if (doesBookHaveChapters()) {
             mChapterTextView.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void setImage (){
+    /**
+     * Checks which book the current book is and sets up the images for curious
+     * george
+     */
+    private void setImage() {
         if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
             mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
         }
     }
 
-    private void setTableLayouts(View view){
+    /**
+     * Sets up the table layouts in side the view
+     * Adds the extra layouts to the table views for the Charolottes web book
+     * @param view
+     */
+    private void setTableLayouts(View view) {
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout1));
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout2));
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout3));
@@ -170,8 +201,8 @@ public class PageFragment extends Fragment implements
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout6));
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout7));
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout8));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout9));
         if (currentBook.getTitle().equalsIgnoreCase("Charlottes Web")) {
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout9));
             mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout10));
             mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout11));
             mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout12));
@@ -179,9 +210,15 @@ public class PageFragment extends Fragment implements
             mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout14));
             mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout15));
             mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout16));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout17));
+            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout18));
         }
     }
 
+    /**
+     * Sets up the page text by first breaking the texts into individual strings
+     * Then goes through the tableLayouts and fills them with the text of the book
+     */
     private void setUpPageText() {
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
@@ -205,17 +242,30 @@ public class PageFragment extends Fragment implements
         }
     }
 
+    /**
+     * Sets the onClickListener for the texts
+     * Changes the color of the background onClick
+     * @return
+     */
     private View.OnClickListener onClick() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TextView textView = (TextView) v;
-                textView.setBackgroundColor(Color.YELLOW);
-                // Log.i(TAG, textView.getText() + "");
+                ColorDrawable textBackGroundColor = (ColorDrawable) v.getBackground();
+                int backgroundColor = textBackGroundColor.getColor();
+                if (backgroundColor == Color.YELLOW) {
+                    textView.setBackgroundColor(Color.WHITE);
+                } else {
+                    textView.setBackgroundColor(Color.YELLOW);
+                }
             }
         };
     }
 
+    /**
+     * Turns all the highlighted text into a White the background
+     */
     private void cleanUpPageText() {
         for (TableLayout tableLayout : mTableLayouts) {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
@@ -227,6 +277,9 @@ public class PageFragment extends Fragment implements
         }
     }
 
+    /**
+     * Finds all the highlighted text on the screen and stores it into an arrayList
+     */
     private void findHighlightedWords() {
         for (TableLayout tableLayout : mTableLayouts) {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
@@ -259,19 +312,6 @@ public class PageFragment extends Fragment implements
         } else {
             Log.e("TTS", "Initilization Failed!");
         }
-    }
-
-    private void speakOut() {
-
-        String wordsToSpeech = "";
-
-        for (String word : mWordsToSpeechBank) {
-            wordsToSpeech += word + " ";
-        }
-        mWordsToSpeechBank.clear();
-
-        tts.setSpeechRate(0.65f);
-        tts.speak(wordsToSpeech, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     @Override
