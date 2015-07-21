@@ -17,9 +17,7 @@ public class WordAudioFiles {
     /**
      * Adds the files to the list when it is created
      * @param c
-     * dsafadsgagagg
-     * sgdagasdg
-     * asdgas
+     * eeeeeeeeeeeeeee
      */
     public WordAudioFiles(Context c){
         mWordAudioFiles = new ArrayList<>();
