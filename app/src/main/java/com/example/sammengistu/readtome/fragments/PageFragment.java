@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -45,7 +44,7 @@ public class PageFragment extends Fragment implements
     private TextToSpeech tts;
     private ImageView mPlayButton;
     private ArrayList<String> mWordsToSpeechBank;
-    private Button mClearHighlights;
+    private ImageView mClearHighlights;
     private Book currentBook;
     private TextView mChapterTextView;
 
@@ -149,7 +148,7 @@ public class PageFragment extends Fragment implements
 
         );
 
-        mClearHighlights = (Button) blankPage.findViewById(R.id.clear_highlights_button);
+        mClearHighlights = (ImageView) blankPage.findViewById(R.id.clear_highlights_button);
         mClearHighlights.setOnClickListener(new View.OnClickListener()
 
                                             {

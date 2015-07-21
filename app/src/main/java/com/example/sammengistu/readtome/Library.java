@@ -28,7 +28,7 @@ public class Library {
                 new CuriousGeorgePages(mAppContext).getPagesOfTheBook());
 
         Book charlottesWeb = new Book("Charlottes Web", "E. B. White",
-                R.drawable.charlottes_web_book_cover, new CharlottesWebPages().getPagesOfTheBook(), "Chapter 1");
+                R.drawable.charlottes_web_book_cover, new CharlottesWebPages(mAppContext).getPagesOfTheBook(), "Chapter 1");
 
 
         mMyLibrary.add(curiousGeorge);

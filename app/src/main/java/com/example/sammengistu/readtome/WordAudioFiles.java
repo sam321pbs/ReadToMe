@@ -67,6 +67,7 @@ public class WordAudioFiles {
         mWordAudioFiles.add(new WordAndAudio("the", R.raw.word_the));
         mWordAudioFiles.add(new WordAndAudio("what", R.raw.word_what));
         mWordAudioFiles.add(new WordAndAudio("yellow", R.raw.word_yellow));
+        mWordAudioFiles.add(new WordAndAudio("was", R.raw.word_was));
 
     }
 
