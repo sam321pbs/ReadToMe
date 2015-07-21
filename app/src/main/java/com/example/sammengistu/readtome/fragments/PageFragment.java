@@ -95,54 +95,75 @@ public class PageFragment extends Fragment implements
             setUpChapterLabel();
         }
 
+
+
+
         setTableLayouts(blankPage);
+
         setImage();
 
         mTurnPage = (ImageView) blankPage.findViewById(R.id.turn_page);
-        mTurnPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pageNumber++;
-                if (pageNumber > mPagesOfBook.size() - 1) {
-                    pageNumber = mPagesOfBook.size() - 1;
-                }
-                handlePageTurn();
-                mWordsToSpeechBank.clear();
-            }
-        });
+        mTurnPage.setOnClickListener(new View.OnClickListener()
+
+                                     {
+                                         @Override
+                                         public void onClick(View v) {
+                                             pageNumber++;
+                                             if (pageNumber > mPagesOfBook.size() - 1) {
+                                                 pageNumber = mPagesOfBook.size() - 1;
+                                             }
+                                             handlePageTurn();
+                                             mWordsToSpeechBank.clear();
+                                         }
+                                     }
+
+        );
         mGoBackPage = (ImageView) blankPage.findViewById(R.id.go_back);
-        mGoBackPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pageNumber--;
-                if (pageNumber < 0) {
-                    pageNumber = 0;
-                }
-                handlePageTurn();
-            }
-        });
+        mGoBackPage.setOnClickListener(new View.OnClickListener()
+
+                                       {
+                                           @Override
+                                           public void onClick(View v) {
+                                               pageNumber--;
+                                               if (pageNumber < 0) {
+                                                   pageNumber = 0;
+                                               }
+                                               handlePageTurn();
+                                           }
+                                       }
+
+        );
 
         mPlayButton = (ImageView) blankPage.findViewById(R.id.play_button);
-        mPlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findHighlightedWords();
+        mPlayButton.setOnClickListener(new View.OnClickListener()
 
-                mWordPlayer.play(mWordsToSpeechBank);
-                mWordsToSpeechBank.clear();
-            }
-        });
+                                       {
+                                           @Override
+                                           public void onClick(View v) {
+                                               findHighlightedWords();
+
+                                               mWordPlayer.play(mWordsToSpeechBank);
+                                               mWordsToSpeechBank.clear();
+                                           }
+                                       }
+
+        );
 
         mClearHighlights = (Button) blankPage.findViewById(R.id.clear_highlights_button);
-        mClearHighlights.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setUpPageText();
-                mWordsToSpeechBank.clear();
-            }
-        });
+        mClearHighlights.setOnClickListener(new View.OnClickListener()
+
+                                            {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    setUpPageText();
+                                                    mWordsToSpeechBank.clear();
+                                                }
+                                            }
+
+        );
 
         setUpPageText();
+
         return blankPage;
     }
 
@@ -158,6 +179,7 @@ public class PageFragment extends Fragment implements
 
     /**
      * Checks if the book has a chapter in it
+     *
      * @return
      */
     private boolean doesBookHaveChapters() {
@@ -190,6 +212,7 @@ public class PageFragment extends Fragment implements
     /**
      * Sets up the table layouts in side the view
      * Adds the extra layouts to the table views for the Charolottes web book
+     *
      * @param view
      */
     private void setTableLayouts(View view) {
@@ -245,6 +268,7 @@ public class PageFragment extends Fragment implements
     /**
      * Sets the onClickListener for the texts
      * Changes the color of the background onClick
+     *
      * @return
      */
     private View.OnClickListener onClick() {

@@ -52,7 +52,21 @@ public class WordAudioFiles {
         mWordAudioFiles.add(new WordAndAudio("one", R.raw.word_one));
         mWordAudioFiles.add(new WordAndAudio("too",R.raw.word_too));
         mWordAudioFiles.add(new WordAndAudio("very",R.raw.word_very));
-        mWordAudioFiles.add(new WordAndAudio("was", R.raw.word_was));
+        mWordAudioFiles.add(new WordAndAudio("a", R.raw.word_a));
+        mWordAudioFiles.add(new WordAndAudio("came", R.raw.word_came));
+        mWordAudioFiles.add(new WordAndAudio("day", R.raw.word_day));
+        mWordAudioFiles.add(new WordAndAudio("ground", R.raw.word_ground));
+        mWordAudioFiles.add(new WordAndAudio("hat", R.raw.word_hat));
+        mWordAudioFiles.add(new WordAndAudio("home", R.raw.word_home));
+        mWordAudioFiles.add(new WordAndAudio("large", R.raw.word_large));
+        mWordAudioFiles.add(new WordAndAudio("little", R.raw.word_little));
+        mWordAudioFiles.add(new WordAndAudio("man", R.raw.word_man));
+        mWordAudioFiles.add(new WordAndAudio("nice", R.raw.word_nice));
+        mWordAudioFiles.add(new WordAndAudio("saw", R.raw.word_saw));
+        mWordAudioFiles.add(new WordAndAudio("straw", R.raw.word_straw));
+        mWordAudioFiles.add(new WordAndAudio("the", R.raw.word_the));
+        mWordAudioFiles.add(new WordAndAudio("what", R.raw.word_what));
+        mWordAudioFiles.add(new WordAndAudio("yellow", R.raw.word_yellow));
 
     }
 
