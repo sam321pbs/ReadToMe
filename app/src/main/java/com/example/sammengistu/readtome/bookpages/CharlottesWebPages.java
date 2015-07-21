@@ -20,6 +20,7 @@ public class CharlottesWebPages implements MakeAPage {
     private static void addPages() {
 
         PageOfBook pageOne = new PageOfBook(R.drawable.curious_geroge_page_1,
+                //Read from a file
                 "Before Breakfast... " +
                         "Where's Papa going with that ax?\" said Fern to her mother as they were " +
                         "setting the table for breakfast. " +
