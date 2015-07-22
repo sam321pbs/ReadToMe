@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.sammengistu.readtome.Book;
-import com.example.sammengistu.readtome.Library;
+import com.example.sammengistu.readtome.models.Book;
+import com.example.sammengistu.readtome.models.Library;
 import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.activities.PagesActivity;
 

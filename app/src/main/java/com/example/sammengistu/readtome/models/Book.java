@@ -1,11 +1,10 @@
-package com.example.sammengistu.readtome;
+package com.example.sammengistu.readtome.models;
+
+import com.example.sammengistu.readtome.PageOfBook;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-/**
- * Created by SamMengistu on 7/10/15.
- */
 public class Book {
 
     private String mTitle;

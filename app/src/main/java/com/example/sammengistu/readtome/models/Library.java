@@ -1,16 +1,14 @@
-package com.example.sammengistu.readtome;
+package com.example.sammengistu.readtome.models;
 
 import android.content.Context;
 
+import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.bookpages.CharlottesWebPages;
 import com.example.sammengistu.readtome.bookpages.CuriousGeorgePages;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-/**
- * Created by SamMengistu on 7/10/15.
- */
 public class Library {
 
     private static Library sLibrary;
@@ -20,7 +18,7 @@ public class Library {
 
     public Library (Context appContext){
         mAppContext = appContext;
-        mMyLibrary = new ArrayList<Book>();
+        mMyLibrary = new ArrayList<>();
 
 
         Book curiousGeorge = new Book("Curious George", "H.A.Rey",

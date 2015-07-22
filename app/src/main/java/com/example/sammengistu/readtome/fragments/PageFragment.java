@@ -15,8 +15,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.sammengistu.readtome.Book;
-import com.example.sammengistu.readtome.Library;
+import com.example.sammengistu.readtome.models.Book;
+import com.example.sammengistu.readtome.models.Library;
 import com.example.sammengistu.readtome.PageOfBook;
 import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.WordPlayer;
