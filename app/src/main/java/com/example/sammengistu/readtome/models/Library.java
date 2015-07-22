@@ -2,6 +2,7 @@ package com.example.sammengistu.readtome.models;
 
 import android.content.Context;
 
+import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.bookpages.CharlottesWebPages;
 import com.example.sammengistu.readtome.bookpages.CuriousGeorgePages;
 
