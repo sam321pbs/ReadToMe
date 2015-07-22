@@ -94,9 +94,6 @@ public class PageFragment extends Fragment implements
             setUpChapterLabel();
         }
 
-
-
-
         setTableLayouts(blankPage);
 
         setImage();

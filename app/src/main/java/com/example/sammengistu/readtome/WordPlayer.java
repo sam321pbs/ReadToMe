@@ -142,7 +142,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     @SuppressWarnings("deprecation")
     private void speakOut(String words) {
         Log.e("TTS", "Speak");
-        tts.setSpeechRate(0.60f);
+        tts.setSpeechRate(0.53f);
         tts.speak(words, TextToSpeech.QUEUE_FLUSH, null);
     }
 }
