@@ -14,7 +14,7 @@ public class Book {
     private ArrayList<PageOfBook> mPagesOfBook;
     private String mChapter;
 
-    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook){
+    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook) {
         mBookCover = bookCover;
         mTitle = title;
         mAuthor = author;
@@ -22,8 +22,8 @@ public class Book {
         mBookId = UUID.randomUUID();
     }
 
-    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook, String chapter){
-        this(title, author,bookCover, pagesOfBook);
+    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook, String chapter) {
+        this(title, author, bookCover, pagesOfBook);
         mChapter = chapter;
     }
 

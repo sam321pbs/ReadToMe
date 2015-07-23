@@ -16,7 +16,7 @@ public class Library {
     private ArrayList<Book> mMyLibrary;
     private Context mAppContext;
 
-    public Library (Context appContext){
+    public Library(Context appContext) {
         mAppContext = appContext;
         mMyLibrary = new ArrayList<>();
 
@@ -34,26 +34,26 @@ public class Library {
     }
 
     public static Library get(Context c) {
-        if (sLibrary == null){
+        if (sLibrary == null) {
             sLibrary = new Library(c.getApplicationContext());
         }
         return sLibrary;
     }
 
-    public Book getBook(UUID bookId){
-        for (Book book : mMyLibrary){
-            if (book.getBookId().equals(bookId)){
+    public Book getBook(UUID bookId) {
+        for (Book book : mMyLibrary) {
+            if (book.getBookId().equals(bookId)) {
                 return book;
             }
         }
         return null;
     }
 
-    public void addBook(Book book){
+    public void addBook(Book book) {
         mMyLibrary.add(book);
     }
 
-    public void deleteBook(Book book){
+    public void deleteBook(Book book) {
         mMyLibrary.remove(book);
     }
 

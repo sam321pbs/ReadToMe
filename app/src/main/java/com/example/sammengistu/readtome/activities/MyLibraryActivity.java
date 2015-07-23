@@ -8,8 +8,8 @@ import com.example.sammengistu.readtome.SingleFragmentActivity;
 
 public class MyLibraryActivity extends SingleFragmentActivity {
 
-  @Override
-    public Fragment createFragment(){
+    @Override
+    public Fragment createFragment() {
         return new MyLibraryFragment();
-  }
+    }
 }

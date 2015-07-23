@@ -212,6 +212,7 @@
         <include
             layout="@layout/words_row"/>
     </TableLayout>
+
     <TableLayout
         android:id="@+id/fragment_page_tableLayout23"
         style="@style/TableLayoutView"

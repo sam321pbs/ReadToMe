@@ -47,6 +47,7 @@ public class PageFragment extends Fragment implements
     private ImageView mClearHighlights;
     private Book currentBook;
     private TextView mChapterTextView;
+    private ArrayList<TextView> mHighlightedTextViews;
 
     private WordPlayer mWordPlayer;
 
@@ -56,6 +57,7 @@ public class PageFragment extends Fragment implements
 
         mTableLayouts = new ArrayList<TableLayout>();
         mWordsToSpeechBank = new ArrayList<String>();
+        mHighlightedTextViews = new ArrayList<>();
 
         UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
 
@@ -110,6 +112,7 @@ public class PageFragment extends Fragment implements
                                              }
                                              handlePageTurn();
                                              mWordsToSpeechBank.clear();
+                                             mHighlightedTextViews.clear();
                                          }
                                      }
 
@@ -138,8 +141,9 @@ public class PageFragment extends Fragment implements
                                            public void onClick(View v) {
                                                findHighlightedWords();
 
-                                               mWordPlayer.play(mWordsToSpeechBank);
+                                               mWordPlayer.play(mWordsToSpeechBank, mHighlightedTextViews);
                                                mWordsToSpeechBank.clear();
+                                               mHighlightedTextViews.clear();
                                            }
                                        }
 
@@ -153,6 +157,7 @@ public class PageFragment extends Fragment implements
                                                 public void onClick(View v) {
                                                     setUpPageText();
                                                     mWordsToSpeechBank.clear();
+                                                    mHighlightedTextViews.clear();
                                                 }
                                             }
 
@@ -309,6 +314,7 @@ public class PageFragment extends Fragment implements
                 int backgroundColor = textBackGroundColor.getColor();
                 if (backgroundColor == Color.YELLOW) {
                     mWordsToSpeechBank.add(word.getText() + "");
+                    mHighlightedTextViews.add(word);
                     Log.i(TAG, word.getText() + "");
                 }
             }

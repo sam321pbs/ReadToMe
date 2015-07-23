@@ -8,7 +8,7 @@ public class WordAndAudio {
     private int mAudioId;
 
 
-    public WordAndAudio(String word, int audio){
+    public WordAndAudio(String word, int audio) {
         mWord = word;
         mAudioId = audio;
     }

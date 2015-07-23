@@ -63,7 +63,7 @@ public class CuriousGeorgePages implements MakeAPage {
                 1);
 
         PageOfBook pageTwo = new PageOfBook(R.drawable.curious_george_page_2,
-               page2.toString(), 2);
+                page2.toString(), 2);
 
         mPagesOfTheBook.add(pageOne);
         mPagesOfTheBook.add(pageTwo);

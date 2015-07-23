@@ -9,7 +9,7 @@ public class PageOfBook {
     private String mPageText;
     private int mPageNumber;
 
-    public PageOfBook (int pic, String text, int pageNumber){
+    public PageOfBook(int pic, String text, int pageNumber) {
         mPagePicture = pic;
         mPageText = text;
         mPageNumber = pageNumber;

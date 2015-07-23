@@ -30,11 +30,11 @@ public class MyLibraryFragment extends Fragment {
 
 
     @Override
-    public void onCreate(Bundle onSavedInstanceState){
+    public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
 
         ArrayList<Book> myLibrary = Library.get(getActivity()).getMyLibrary();
-        curiousGeorge =  myLibrary.get(0);
+        curiousGeorge = myLibrary.get(0);
         charlottesWeb = myLibrary.get(1);
     }
 
@@ -56,7 +56,7 @@ public class MyLibraryFragment extends Fragment {
             }
         });
 
-        mBookTwoImage = (ImageView)v.findViewById(R.id.charlottes_web_book_cover_book_cover);
+        mBookTwoImage = (ImageView) v.findViewById(R.id.charlottes_web_book_cover_book_cover);
         mBookTwoImage.setImageResource(charlottesWeb.getBookCover());
 
         mBookTwoImage.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +67,6 @@ public class MyLibraryFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
 
 
         return v;

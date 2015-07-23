@@ -7,6 +7,6 @@ import java.util.ArrayList;
  */
 public interface MakeAPage {
 
-     ArrayList<PageOfBook> getPagesOfTheBook();
+    ArrayList<PageOfBook> getPagesOfTheBook();
 
 }

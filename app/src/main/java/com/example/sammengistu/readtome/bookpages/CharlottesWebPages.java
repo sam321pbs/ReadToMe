@@ -60,7 +60,7 @@ public class CharlottesWebPages implements MakeAPage {
 
 
         PageOfBook pageOne = new PageOfBook(R.drawable.curious_geroge_page_1,
-               page1.toString(),
+                page1.toString(),
                 1);
 
         PageOfBook pageTwo = new PageOfBook(R.drawable.curious_george_page_2,

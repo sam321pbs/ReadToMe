@@ -1,9 +1,11 @@
 package com.example.sammengistu.readtome;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -18,10 +20,9 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private TextToSpeech tts;
     private Context mAppContext;
 
-    public WordPlayer (Context c, TextToSpeech.OnInitListener listener){
+    public WordPlayer(Context c, TextToSpeech.OnInitListener listener) {
         tts = new TextToSpeech(c, listener);
         mAppContext = c;
-
     }
 
     /**
@@ -39,16 +40,22 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      * Takes in an ArrayList of words
      * Copies the list of words
      * Either finds its audio file or uses text to speech to play the word
+     *
      * @param words
      */
-    public void play(ArrayList<String> words) {
+    public void play(ArrayList<String> words, ArrayList<TextView> highlightedWords) {
         stopAudioFile();
 
         if (words != null && words.size() > 0) {
             final ArrayList<String> wordsToPlay = new ArrayList<String>(words);
+            final ArrayList<TextView> highLightedTextView = new ArrayList<TextView>(highlightedWords);
 
             String word = wordsToPlay.get(0);
+            final TextView highlighted = highLightedTextView.get(0);
             wordsToPlay.remove(0);
+            highLightedTextView.remove(0);
+
+            Log.i(TAG, highlighted.getText() + "");
 
             if (WordAudioFiles.get(mAppContext).isWordInFiles(word)) {
                 Log.i(TAG, "True");
@@ -59,6 +66,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     public void onPrepared(MediaPlayer mp) {
                         if (mp == mWordPlayer) {
                             mWordPlayer.start();
+                            highlighted.setBackgroundColor(Color.BLUE);
                         }
                     }
                 });
@@ -67,54 +75,35 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         stopAudioFile();
+                        highlighted.setBackgroundColor(Color.YELLOW);
                         // Recursively call the play() method with one less
                         // track in the list.
-                        play(wordsToPlay);
+                        play(wordsToPlay, highLightedTextView);
                     }
                 });
-            } else{
+            } else {
                 Log.i(TAG, "Inside else block of play");
 
-                String wordsToGo = word + " ";
-                int foundNextWordInFile = 0;
-                for (int i = 0; i < wordsToPlay.size(); i++){
-                    Log.i(TAG, "Word at " + i + " is: " + wordsToPlay.get(i));
-                    Log.i(TAG, "Is in file: " + WordAudioFiles.get(mAppContext)
-                            .isWordInFiles(wordsToPlay.get(i)));
-                    if (WordAudioFiles.get(mAppContext).isWordInFiles(wordsToPlay.get(i))){
-                        foundNextWordInFile = i;
-                        break;
-                    } else {
-                        wordsToGo += wordsToPlay.get(i) + " ";
-                        foundNextWordInFile++;
-                    }
-                }
+                highlighted.setBackgroundColor(Color.BLUE);
 
-                Log.i(TAG, foundNextWordInFile + "");
-                for (int i = 0; i < foundNextWordInFile; i++){
-                    Log.i(TAG, "Remove word at " + i + " is: " + wordsToPlay.get(0));
-
-                    wordsToPlay.remove(0);
-                }
-
-                Log.i(TAG, " This is the word going: " + wordsToGo);
-                speakOut(wordsToGo);
+                speakOut(word);
 
                 do {
 
                 } while (tts.isSpeaking());
 
-                    play(wordsToPlay);
+                play(wordsToPlay, highLightedTextView);
 
             }
-
 
         }
     }
 
+
     /**
      * Checks to make sure the Text to speech engine is working properly
      * Then sets up its language
+     *
      * @param status
      */
     @Override
@@ -137,12 +126,16 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     /**
      * Uses the text to speech engine to actually play the word that is being
      * passed in
-     * @param words
+     *
+     * @param word
      */
     @SuppressWarnings("deprecation")
-    private void speakOut(String words) {
-        Log.e("TTS", "Speak");
+    private void speakOut(String word) {
+
         tts.setSpeechRate(0.53f);
-        tts.speak(words, TextToSpeech.QUEUE_FLUSH, null);
+
+        tts.speak(word, TextToSpeech.QUEUE_FLUSH, null);
+
+
     }
 }
