@@ -19,10 +19,12 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private MediaPlayer mWordPlayer;
     private TextToSpeech tts;
     private Context mAppContext;
+    private TextToSpeech.OnInitListener mListener;
 
     public WordPlayer(Context c, TextToSpeech.OnInitListener listener) {
         tts = new TextToSpeech(c, listener);
         mAppContext = c;
+        mListener = listener;
     }
 
     /**
@@ -45,6 +47,8 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      */
     public void play(ArrayList<String> words, ArrayList<TextView> highlightedWords) {
         stopAudioFile();
+
+        TextToSpeech speech = new TextToSpeech(mAppContext,mListener);
 
         if (words != null && words.size() > 0) {
             final ArrayList<String> wordsToPlay = new ArrayList<String>(words);
@@ -95,7 +99,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 play(wordsToPlay, highLightedTextView);
 
             }
-
         }
     }
 
@@ -135,7 +138,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         tts.setSpeechRate(0.53f);
 
         tts.speak(word, TextToSpeech.QUEUE_FLUSH, null);
-
 
     }
 }
