@@ -4,7 +4,6 @@ package com.example.sammengistu.readtome.fragments;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,14 +14,13 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.sammengistu.readtome.models.Book;
-import com.example.sammengistu.readtome.models.Library;
 import com.example.sammengistu.readtome.PageOfBook;
 import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.WordPlayer;
+import com.example.sammengistu.readtome.models.Book;
+import com.example.sammengistu.readtome.models.Library;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.UUID;
 
 
@@ -30,8 +28,8 @@ import java.util.UUID;
  * Sets up the page view of the book
  * A simple {@link Fragment} subclass.
  */
-public class PageFragment extends Fragment implements
-        TextToSpeech.OnInitListener {
+public class PageFragment extends Fragment /*implements
+        TextToSpeech.OnInitListener*/ {
 
     private static final String TAG = "PageFragment";
     private ArrayList<PageOfBook> mPagesOfBook;
@@ -41,7 +39,6 @@ public class PageFragment extends Fragment implements
     private String[] mPageWordBank;
     int pageNumber;
     private ArrayList<TableLayout> mTableLayouts;
-    private TextToSpeech tts;
     private ImageView mPlayButton;
     private ArrayList<String> mWordsToSpeechBank;
     private ImageView mClearHighlights;
@@ -67,11 +64,10 @@ public class PageFragment extends Fragment implements
 
         pageNumber = 0;
 
-        mWordPlayer = new WordPlayer(getActivity(), PageFragment.this);
+        mWordPlayer = new WordPlayer(getActivity());
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
-        tts = new TextToSpeech(getActivity(), this);
     }
 
     /**
@@ -322,31 +318,7 @@ public class PageFragment extends Fragment implements
     }
 
     @Override
-    public void onInit(int status) {
-
-        if (status == TextToSpeech.SUCCESS) {
-
-            int result = tts.setLanguage(Locale.US);
-
-            if (result == TextToSpeech.LANG_MISSING_DATA
-                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "This Language is not supported");
-            } else {
-                mPlayButton.setEnabled(true);
-            }
-
-        } else {
-            Log.e("TTS", "Initilization Failed!");
-        }
-    }
-
-    @Override
     public void onDestroy() {
-        // Don't forget to shutdown tts!
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        }
 
         mWordPlayer.stopAudioFile();
         super.onDestroy();

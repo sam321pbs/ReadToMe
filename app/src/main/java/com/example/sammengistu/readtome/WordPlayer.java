@@ -3,6 +3,7 @@ package com.example.sammengistu.readtome;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.TextView;
@@ -19,12 +20,10 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private MediaPlayer mWordPlayer;
     private TextToSpeech tts;
     private Context mAppContext;
-    private TextToSpeech.OnInitListener mListener;
 
-    public WordPlayer(Context c, TextToSpeech.OnInitListener listener) {
-        tts = new TextToSpeech(c, listener);
+    public WordPlayer(Context c) {
+        tts = new TextToSpeech(c, this);
         mAppContext = c;
-        mListener = listener;
     }
 
     /**
@@ -34,6 +33,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         if (mWordPlayer != null) {
             mWordPlayer.release();
             mWordPlayer = null;
+            tts.shutdown();
         }
 
     }
@@ -47,8 +47,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      */
     public void play(ArrayList<String> words, ArrayList<TextView> highlightedWords) {
         stopAudioFile();
-
-        TextToSpeech speech = new TextToSpeech(mAppContext,mListener);
 
         if (words != null && words.size() > 0) {
             final ArrayList<String> wordsToPlay = new ArrayList<String>(words);
@@ -88,7 +86,16 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
             } else {
                 Log.i(TAG, "Inside else block of play");
 
-                highlighted.setBackgroundColor(Color.BLUE);
+                Handler mainHandler = new Handler(mAppContext.getMainLooper());
+
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        highlighted.setBackgroundColor(Color.BLUE);
+                    }
+                };
+                mainHandler.post(myRunnable);
+
 
                 speakOut(word);
 
@@ -96,6 +103,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
                 } while (tts.isSpeaking());
 
+                tts.shutdown();
                 play(wordsToPlay, highLightedTextView);
 
             }
