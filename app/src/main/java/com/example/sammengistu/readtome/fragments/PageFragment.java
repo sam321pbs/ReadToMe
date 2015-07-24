@@ -319,7 +319,7 @@ public class PageFragment extends Fragment /*implements
 
     @Override
     public void onDestroy() {
-
+        mWordPlayer.shutDownTTS();
         mWordPlayer.stopAudioFile();
         super.onDestroy();
     }

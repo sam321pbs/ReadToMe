@@ -33,9 +33,13 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         if (mWordPlayer != null) {
             mWordPlayer.release();
             mWordPlayer = null;
-            tts.shutdown();
+
         }
 
+    }
+
+    public void shutDownTTS(){
+        tts.shutdown();
     }
 
     /**
@@ -46,7 +50,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      * @param words
      */
     public void play(ArrayList<String> words, ArrayList<TextView> highlightedWords) {
-        stopAudioFile();
+
 
         if (words != null && words.size() > 0) {
             final ArrayList<String> wordsToPlay = new ArrayList<String>(words);
@@ -60,6 +64,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
             Log.i(TAG, highlighted.getText() + "");
 
             if (WordAudioFiles.get(mAppContext).isWordInFiles(word)) {
+                stopAudioFile();
                 Log.i(TAG, "True");
                 mWordPlayer = MediaPlayer.create(mAppContext, WordAudioFiles.get(mAppContext).getWordAudio(word));
 
@@ -84,6 +89,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     }
                 });
             } else {
+                highlighted.setBackgroundColor(Color.BLUE);
                 Log.i(TAG, "Inside else block of play");
 
                 Handler mainHandler = new Handler(mAppContext.getMainLooper());
@@ -91,19 +97,18 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        highlighted.setBackgroundColor(Color.BLUE);
+
                     }
                 };
-                mainHandler.post(myRunnable);
 
 
                 speakOut(word);
 
                 do {
-
+                    mainHandler.post(myRunnable);
                 } while (tts.isSpeaking());
 
-                tts.shutdown();
+
                 play(wordsToPlay, highLightedTextView);
 
             }
