@@ -2,8 +2,8 @@ package com.example.sammengistu.readtome;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.TextView;
@@ -18,11 +18,12 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
     private static final String TAG = "WordPlayer";
     private MediaPlayer mWordPlayer;
-    private TextToSpeech tts;
+    private TextToSpeech mTts;
     private Context mAppContext;
+    private TextView mHighlighted;
 
     public WordPlayer(Context c) {
-        tts = new TextToSpeech(c, this);
+        mTts = new TextToSpeech(c, this);
         mAppContext = c;
     }
 
@@ -35,11 +36,10 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
             mWordPlayer = null;
 
         }
-
     }
 
     public void shutDownTTS(){
-        tts.shutdown();
+        mTts.shutdown();
     }
 
     /**
@@ -57,11 +57,15 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
             final ArrayList<TextView> highLightedTextView = new ArrayList<TextView>(highlightedWords);
 
             String word = wordsToPlay.get(0);
-            final TextView highlighted = highLightedTextView.get(0);
+            mHighlighted = highLightedTextView.get(0);
             wordsToPlay.remove(0);
             highLightedTextView.remove(0);
 
-            Log.i(TAG, highlighted.getText() + "");
+            ColorDrawable backGroundColor = (ColorDrawable) mHighlighted.getBackground();
+            int backgroundColor = backGroundColor.getColor();
+            Log.i(TAG, backgroundColor + "");
+
+            Log.i(TAG, mHighlighted.getText() + "");
 
             if (WordAudioFiles.get(mAppContext).isWordInFiles(word)) {
                 stopAudioFile();
@@ -73,7 +77,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     public void onPrepared(MediaPlayer mp) {
                         if (mp == mWordPlayer) {
                             mWordPlayer.start();
-                            highlighted.setBackgroundColor(Color.BLUE);
+                            mHighlighted.setBackgroundColor(Color.BLUE);
                         }
                     }
                 });
@@ -82,36 +86,37 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         stopAudioFile();
-                        highlighted.setBackgroundColor(Color.YELLOW);
+                        mHighlighted.setBackgroundColor(Color.YELLOW);
                         // Recursively call the play() method with one less
                         // track in the list.
                         play(wordsToPlay, highLightedTextView);
                     }
                 });
             } else {
-                highlighted.setBackgroundColor(Color.BLUE);
+
+                /**
+                 * TODO:
+                 * The problem is that every time the text to speech is running the highlighted text turns
+                 * blue after the TextToSpeech is done speaking
+                 * The view isn't updated until the TextToSpeech is done speaking
+                 */
+
+                mTts.stop();
+                //mHighlighted.setBackgroundColor(Color.BLUE);
+                Log.i(TAG, backgroundColor + "");
+
                 Log.i(TAG, "Inside else block of play");
-
-                Handler mainHandler = new Handler(mAppContext.getMainLooper());
-
-                Runnable myRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                };
-
 
                 speakOut(word);
 
                 do {
-                    mainHandler.post(myRunnable);
-                } while (tts.isSpeaking());
 
+                } while (mTts.isSpeaking());
 
                 play(wordsToPlay, highLightedTextView);
 
             }
+
         }
     }
 
@@ -127,7 +132,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
         if (status == TextToSpeech.SUCCESS) {
 
-            int result = tts.setLanguage(Locale.US);
+            int result = mTts.setLanguage(Locale.US);
 
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -148,9 +153,9 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     @SuppressWarnings("deprecation")
     private void speakOut(String word) {
 
-        tts.setSpeechRate(0.53f);
+        mTts.setSpeechRate(0.53f);
 
-        tts.speak(word, TextToSpeech.QUEUE_FLUSH, null);
+        mTts.speak(word, TextToSpeech.QUEUE_FLUSH, null);
 
     }
 }

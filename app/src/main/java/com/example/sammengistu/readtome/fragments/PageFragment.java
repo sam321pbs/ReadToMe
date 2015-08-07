@@ -28,8 +28,7 @@ import java.util.UUID;
  * Sets up the page view of the book
  * A simple {@link Fragment} subclass.
  */
-public class PageFragment extends Fragment /*implements
-        TextToSpeech.OnInitListener*/ {
+public class PageFragment extends Fragment  {
 
     private static final String TAG = "PageFragment";
     private ArrayList<PageOfBook> mPagesOfBook;
