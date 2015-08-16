@@ -10,21 +10,35 @@
         android:id="@+id/go_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight=".25"
-        android:src="@drawable/left_button_shape"/>
+        android:layout_weight=".16"
+        android:src="@drawable/left_arrow_smaller"/>
 
     <ImageView
         android:id="@+id/play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight=".25"
+        android:layout_weight=".16"
         android:src="@drawable/play_button_updated"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight=".16"
+        android:id="@+id/highlight_sentence"
+        android:text="sent."/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight=".16"
+        android:id="@+id/highlight_page"
+        android:text="page"/>
 
     <ImageView
         android:id="@+id/clear_highlights_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight=".25"
+        android:layout_weight=".16"
         android:src="@drawable/clear_button"/>
 
     <ImageView
