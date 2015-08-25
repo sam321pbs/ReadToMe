@@ -35,7 +35,7 @@ public class DefinitionDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        String findWord = getArguments().getString(FIND_WORD_DEFINITION);
+        String findWord = removePunctuations(getArguments().getString(FIND_WORD_DEFINITION));
         String definition = getArguments().getString(DEFINITION);
 
         Log.i(TAG, "word is " + findWord );
@@ -44,8 +44,9 @@ public class DefinitionDialog extends DialogFragment {
         View v = getActivity().getLayoutInflater()
                 .inflate(R.layout.definition_dialog, null);
 
-        mDefintion = (TextView)v.findViewById(R.id.dialog_word_defintion_box);
         mWord = (TextView)v.findViewById(R.id.dialog_word_title);
+        mDefintion = (TextView)v.findViewById(R.id.dialog_word_defintion_box);
+
         mWord.setText(findWord);
 
         findDefinition(findWord);
@@ -53,6 +54,19 @@ public class DefinitionDialog extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setView(v)
                 .create();
+    }
+
+    public static String removePunctuations(String wordIn){
+        StringBuilder cleanedWord = new StringBuilder();
+
+        char [] currentWord = wordIn.toCharArray();
+
+        for (char letter : currentWord){
+            if (Character.isLetter(letter)){
+                cleanedWord.append(letter);
+            }
+        }
+        return cleanedWord.toString();
     }
 
     public void findDefinition(String word){

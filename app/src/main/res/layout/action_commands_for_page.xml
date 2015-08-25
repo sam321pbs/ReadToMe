@@ -20,19 +20,19 @@
         android:layout_weight=".16"
         android:src="@drawable/play_button_updated"/>
 
-    <Button
+    <ImageView
+        android:id="@+id/sentence_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight=".16"
-        android:id="@+id/highlight_sentence"
-        android:text="sent."/>
+        android:src="@drawable/sentence_button"/>
 
-    <Button
+    <ImageView
+        android:id="@+id/page_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight=".16"
-        android:id="@+id/highlight_page"
-        android:text="page"/>
+        android:src="@drawable/page_button_image"/>
 
     <ImageView
         android:id="@+id/clear_highlights_button"
