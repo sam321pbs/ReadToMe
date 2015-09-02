@@ -46,14 +46,18 @@ public class PageFragment extends Fragment {
     private Book currentBook;
     private TextView mChapterTextView;
     private ArrayList<TextView> mHighlightedTextViews;
-    private  ImageView mHighlightPage;
+    private ImageView mHighlightPage;
     private TextToSpeech mTts;
     private int mHighlightType = PAGE;
     private WordPlayer mWordPlayer;
+    private boolean mOnClickHighLightSentenceMode;
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
         super.onCreate(savedInstnaceState);
+
+        //TODO: check which if mOnClickHighLightSentenceMode is set
+        mOnClickHighLightSentenceMode = false;
 
         mTableLayouts = new ArrayList<TableLayout>();
         mWordsToSpeechBank = new ArrayList<String>();
@@ -67,7 +71,7 @@ public class PageFragment extends Fragment {
 
         pageNumber = 0;
 
-        mWordPlayer = new WordPlayer(getActivity(), getActivity());
+        mWordPlayer = new WordPlayer(getActivity(), getActivity(), mOnClickHighLightSentenceMode);
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
@@ -88,8 +92,6 @@ public class PageFragment extends Fragment {
                 }
             }
         });
-
-
     }
 
     /**
@@ -160,7 +162,12 @@ public class PageFragment extends Fragment {
                                           public void onClick(View v) {
 
                                               findHighlightedWords();
-                                              mWordPlayer.play(mWordsToSpeechBank, mHighlightedTextViews);
+                                              if (mOnClickHighLightSentenceMode){
+                                                  mWordPlayer.playSentenceBySentence(mWordsToSpeechBank, mHighlightedTextViews);
+                                              }else {
+                                                  mWordPlayer.play(mWordsToSpeechBank, mHighlightedTextViews);
+                                              }
+
                                               mWordsToSpeechBank.clear();
                                               mHighlightedTextViews.clear();
 
@@ -180,7 +187,7 @@ public class PageFragment extends Fragment {
         });
 
         ImageView highlightSentence = (ImageView) blankPage.findViewById(R.id.sentence_button);
-         // highlightSentence.setVisibility(View.INVISIBLE);
+        // highlightSentence.setVisibility(View.INVISIBLE);
         highlightSentence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,6 +253,39 @@ public class PageFragment extends Fragment {
 //         return false;
 //    }
 
+    /**
+     * Hightlights a sentence based on the location of the textView that was selected
+     * @param v - specific textView that was clicked
+     */
+    private void highlightSentenceMode(TextView v) {
+
+        int tableLayoutHolder = 0;
+        int tableRowHolderForHighlightingToEndOfSent = 0;
+        int tableRowHolderForHighlightingToBeginingOfSent = 0;
+
+        for (int i = 0; i < mTableLayouts.size(); i++) {
+            TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
+            for (int j = 0; j < row.getChildCount(); j++) {
+                TextView word = (TextView) row.getChildAt(j);
+                if (v.equals(word)) {
+                    tableLayoutHolder = i;
+                    tableRowHolderForHighlightingToEndOfSent = j;
+                    tableRowHolderForHighlightingToBeginingOfSent = j;
+                }
+            }
+        }
+
+        highlightSentenceLoops(tableLayoutHolder,
+                tableRowHolderForHighlightingToEndOfSent,
+                tableRowHolderForHighlightingToBeginingOfSent);
+
+    }
+
+    /**
+     * Highligts a sentence if only one word was highlighted
+     * It does this because it is easier to find the sentence when only
+     * one word is selected
+     */
     private void highlightSentence() {
         int counter = 0;
         int tableLayoutHolder = 0;
@@ -273,10 +313,20 @@ public class PageFragment extends Fragment {
             }
         }
 
+        if (counter == 1) {
+            highlightSentenceLoops( tableLayoutHolder
+                    , tableRowHolderForHighlightingToEndOfSent,
+                    tableRowHolderForHighlightingToBeginingOfSent);
+        }
+    }
+
+    private void highlightSentenceLoops ( int tableLayoutHolder,
+                                        int tableRowHolderForHighlightingToEndOfSent,
+                                        int tableRowHolderForHighlightingToBeginingOfSent){
         boolean end = false;
 
         //If there is only one higlighted word it highlights the sentence
-        if (counter == 1) {
+
 
             for (int i = tableLayoutHolder; i < mTableLayouts.size(); i++) {
                 TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
@@ -293,7 +343,7 @@ public class PageFragment extends Fragment {
                                 wordFromView.equals("Mr.") ||
                                 wordFromView.equals("Ms.")) {
 
-                           continue;
+                            continue;
                         } else {
 
                             end = true;
@@ -337,7 +387,7 @@ public class PageFragment extends Fragment {
                 skipCurrentWord = 0;
             }
         }
-    }
+
 
     private void highlightThePage() {
         for (TableLayout tableLayout : mTableLayouts) {
@@ -482,6 +532,10 @@ public class PageFragment extends Fragment {
                     textView.setBackgroundColor(Color.WHITE);
                 } else {
                     textView.setBackgroundColor(Color.YELLOW);
+                }
+
+                if (mOnClickHighLightSentenceMode) {
+                    highlightSentenceMode((TextView)v);
                 }
 
 //                Log.i(TAG, "Are there more than one highlights? " + highlightsMoreThanOne());

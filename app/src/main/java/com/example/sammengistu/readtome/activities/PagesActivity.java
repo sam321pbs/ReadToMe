@@ -8,6 +8,7 @@ import com.example.sammengistu.readtome.SingleFragmentActivity;
 
 public class PagesActivity extends SingleFragmentActivity {
 
+
     @Override
     public Fragment createFragment() {
         return new PageFragment();

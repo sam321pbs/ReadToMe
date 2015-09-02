@@ -8,7 +8,8 @@ import android.support.v4.app.FragmentManager;
 /**
  * Created by sam321pbs on 4/27/15.
  */
-public abstract class SingleFragmentActivity extends FragmentActivity {
+public abstract class SingleFragmentActivity extends FragmentActivity
+        {
     public abstract Fragment createFragment();
 
     @Override

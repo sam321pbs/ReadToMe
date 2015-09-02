@@ -33,13 +33,23 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private TextToSpeech mTts;
     private Context mAppContext;
     private Activity mAppActivity;
+    private boolean mOnClickHighLightSentenceMode;
 
-    public WordPlayer(Context c, Activity appActivity) {
+
+    /**
+     * Creates a wordPlayer that sets up all the requirements that is need for
+     * WordPlayer to work
+     *
+     * @param c              - context of the activity
+     * @param appActivity    - used to run on the mainthread of the activity
+     * @param readBySentence - to read like a sentence or word by word
+     */
+    public WordPlayer(Context c, Activity appActivity, boolean readBySentence) {
         mTts = new TextToSpeech(c, this);
         mTts.setSpeechRate(1.0f);
         mAppContext = c;
         mAppActivity = appActivity;
-
+        mOnClickHighLightSentenceMode = readBySentence;
 
     }
 
@@ -81,7 +91,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
             final TextView textView = highLightedTextView.get(FIRST_ITEM);
 
-            final String getFirst1 = wordsToPlay.get(FIRST_ITEM);
+            //    final String getFirst1 = wordsToPlay.get(FIRST_ITEM);
             final String getFirst = DefinitionDialog.removePunctuations(wordsToPlay.get(FIRST_ITEM));
             wordsToPlay.remove(FIRST_ITEM);
             highLightedTextView.remove(FIRST_ITEM);
@@ -128,7 +138,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                             textView.setBackgroundColor(Color.GREEN);
                         }
                     });
-
                 }
 
                 @Override
@@ -139,7 +148,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         public void run() {
                             textView.setBackgroundColor(Color.YELLOW);
                             // Log.i(TAG, textView.getText().toString());
-
                         }
                     });
                     play(wordsToPlay, highLightedTextView);
@@ -154,35 +162,120 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
 
-            mTts.speak(getFirst1, TextToSpeech.QUEUE_FLUSH, map);
+            if (mOnClickHighLightSentenceMode) {
+                // StringBuilder
+            }
+
+            mTts.speak(getFirst, TextToSpeech.QUEUE_FLUSH, map);
 
             //  }
         }
     }
 
+    @SuppressWarnings("deprecation")
+    public void playSentenceBySentence(ArrayList<String> playMe, ArrayList<TextView> highlightedWords) {
 
-    /**
-     * Checks to make sure the Text to speech engine is working properly
-     * Then sets up its language
-     *
-     * @param status
-     */
-    @Override
-    public void onInit(int status) {
+        if (playMe.size() > HAS_MORE_THAN_ONE) {
 
-        if (status == TextToSpeech.SUCCESS) {
+            final ArrayList<String> wordsToPlay = new ArrayList<String>(playMe);
+            final ArrayList<TextView> highLightedTextViews = new ArrayList<TextView>(highlightedWords);
 
-            int result = mTts.setLanguage(Locale.US);
+            //TextViews to highlight as a sentence
+            final ArrayList<TextView> textViewsOfSentence = new ArrayList<>();
+            //Sentence to play
+            StringBuilder sentenceToPlay = new StringBuilder();
 
-            if (result == TextToSpeech.LANG_MISSING_DATA
-                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "This Language is not supported");
+            for (int i = 0; i < highLightedTextViews.size(); i++) {
+
+                if (!highLightedTextViews.get(i).getText().toString().contains(".")) {
+
+                    textViewsOfSentence.add(highLightedTextViews.get(0));
+                    sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                    sentenceToPlay.append(" ");
+                    Log.i(TAG, sentenceToPlay.toString());
+
+                    highLightedTextViews.remove(FIRST_ITEM);
+                    wordsToPlay.remove(FIRST_ITEM);
+                    i--;
+
+                } else {
+
+                    textViewsOfSentence.add(highLightedTextViews.get(0));
+                    sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                    sentenceToPlay.append(" ");
+                    Log.i(TAG, sentenceToPlay.toString());
+
+                    highLightedTextViews.remove(FIRST_ITEM);
+                    wordsToPlay.remove(FIRST_ITEM);
+                    break;
+                }
             }
 
-        } else {
-            Log.e("TTS", "Initilization Failed!");
+                mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        //Log.i(TAG, "Started");
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (TextView textView: textViewsOfSentence) {
+                                    textView.setBackgroundColor(Color.GREEN);
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        //Log.i(TAG, "Done");
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (TextView textView: textViewsOfSentence) {
+                                    textView.setBackgroundColor(Color.YELLOW);
+                                }
+                            }
+                        });
+
+                        playSentenceBySentence(wordsToPlay, highLightedTextViews);
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
+                    }
+                });
+
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
+
+                mTts.speak(sentenceToPlay.toString(), TextToSpeech.QUEUE_FLUSH, map);
+
+            }
         }
-    }
+
+        /**
+         * Checks to make sure the Text to speech engine is working properly
+         * Then sets up its language
+         *
+         * @param status
+         */
+        @Override
+        public void onInit ( int status){
+
+            if (status == TextToSpeech.SUCCESS) {
+
+                int result = mTts.setLanguage(Locale.US);
+
+                if (result == TextToSpeech.LANG_MISSING_DATA
+                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "This Language is not supported");
+                }
+
+            } else {
+                Log.e("TTS", "Initilization Failed!");
+            }
+        }
 
     static MediaPlayer getMediaPlayer(Context context) {
 
