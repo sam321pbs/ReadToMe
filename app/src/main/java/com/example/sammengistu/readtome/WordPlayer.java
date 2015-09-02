@@ -33,6 +33,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private TextToSpeech mTts;
     private Context mAppContext;
     private Activity mAppActivity;
+    private float mVoiceSpeed;
     private boolean mOnClickHighLightSentenceMode;
 
 
@@ -44,9 +45,11 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      * @param appActivity    - used to run on the mainthread of the activity
      * @param readBySentence - to read like a sentence or word by word
      */
-    public WordPlayer(Context c, Activity appActivity, boolean readBySentence) {
+    public WordPlayer(Context c, Activity appActivity, boolean readBySentence,
+                      int voiceSpeed) {
         mTts = new TextToSpeech(c, this);
-        mTts.setSpeechRate(1.0f);
+        mVoiceSpeed = ((float)voiceSpeed / 20);
+        mTts.setSpeechRate(mVoiceSpeed);
         mAppContext = c;
         mAppActivity = appActivity;
         mOnClickHighLightSentenceMode = readBySentence;
@@ -83,6 +86,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      */
     @SuppressWarnings("deprecation")
     public void play(ArrayList<String> playMe, ArrayList<TextView> highlightedWords) {
+        mTts.setSpeechRate(mVoiceSpeed / 20);
 
         if (playMe.size() > HAS_MORE_THAN_ONE) {
 
@@ -174,6 +178,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
     @SuppressWarnings("deprecation")
     public void playSentenceBySentence(ArrayList<String> playMe, ArrayList<TextView> highlightedWords) {
+        mTts.setSpeechRate(mVoiceSpeed /20);
 
         if (playMe.size() > HAS_MORE_THAN_ONE) {
 
@@ -276,6 +281,10 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 Log.e("TTS", "Initilization Failed!");
             }
         }
+
+    public void setVoiceSpeed(float voiceSpeed) {
+        mVoiceSpeed = voiceSpeed;
+    }
 
     static MediaPlayer getMediaPlayer(Context context) {
 

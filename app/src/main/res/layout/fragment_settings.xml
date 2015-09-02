@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@drawable/blank_page">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:textSize="30sp"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/settings_title"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Have it read to you one word at a time?"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:layout_below="@+id/settings_title"
+        android:id="@+id/settings_read_one_at_a_time_text_view"/>
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/settings_read_by_sentence_mode"
+        android:layout_below="@+id/settings_read_one_at_a_time_text_view"
+        android:background="#ffe8ffb7"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:switchMinWidth="50sp"
+        android:switchPadding="50sp"
+        android:showText="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Voice speed"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:layout_below="@+id/settings_read_by_sentence_mode"
+        android:id="@+id/settings_voice_speed_text_view"/>
+
+    <SeekBar
+        android:id="@+id/settings_change_voice_speed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:max="40"
+        android:progress="20"
+        android:layout_below="@+id/settings_voice_speed_text_view"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Default"
+        android:id="@+id/settings_default_button"
+        android:layout_below="@+id/settings_change_voice_speed"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"/>
 
 </RelativeLayout>

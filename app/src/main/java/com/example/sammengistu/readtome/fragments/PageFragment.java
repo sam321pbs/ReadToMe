@@ -1,6 +1,8 @@
 package com.example.sammengistu.readtome.fragments;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -9,12 +11,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sammengistu.readtome.PageOfBook;
 import com.example.sammengistu.readtome.R;
@@ -36,6 +42,7 @@ public class PageFragment extends Fragment {
     private static final String TAG = "PageFragment";
     private static final int PAGE = 1;
     private static final int SENT = 2;
+    private static final int GET_SETTINGS = 3;
 
     private ArrayList<PageOfBook> mPagesOfBook;
     private ImageView mPagePicture;
@@ -51,10 +58,14 @@ public class PageFragment extends Fragment {
     private int mHighlightType = PAGE;
     private WordPlayer mWordPlayer;
     private boolean mOnClickHighLightSentenceMode;
+    private int voiceSpeed;
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
         super.onCreate(savedInstnaceState);
+        setHasOptionsMenu(true);
+
+        voiceSpeed = SettingsDialog.DEFAULT_NORMAL_SPEED;
 
         //TODO: check which if mOnClickHighLightSentenceMode is set
         mOnClickHighLightSentenceMode = false;
@@ -71,7 +82,8 @@ public class PageFragment extends Fragment {
 
         pageNumber = 0;
 
-        mWordPlayer = new WordPlayer(getActivity(), getActivity(), mOnClickHighLightSentenceMode);
+        mWordPlayer = new WordPlayer(getActivity(), getActivity(), mOnClickHighLightSentenceMode,
+                voiceSpeed);
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
@@ -108,6 +120,7 @@ public class PageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View blankPage;
+
         if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
             blankPage = inflater.inflate(R.layout.pages_fragment, container, false);
             mPagePicture = (ImageView) blankPage.findViewById(R.id.page_picture);
@@ -160,6 +173,8 @@ public class PageFragment extends Fragment {
                                       {
                                           @Override
                                           public void onClick(View v) {
+
+                                              mWordPlayer.setVoiceSpeed(voiceSpeed);
 
                                               findHighlightedWords();
                                               if (mOnClickHighLightSentenceMode){
@@ -490,6 +505,7 @@ public class PageFragment extends Fragment {
                 if (mPageWordBank.length != placeHolder) {
                     TextView word = (TextView) row.getChildAt(j);
                     word.setText(mPageWordBank[placeHolder]);
+                    word.setTextColor(Color.BLACK);
                     word.setOnClickListener(onClick());
                     word.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
@@ -575,6 +591,49 @@ public class PageFragment extends Fragment {
                     Log.i(TAG, word.getText() + "");
                 }
             }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GET_SETTINGS || requestCode == Activity.RESULT_OK){
+
+            voiceSpeed = data.getIntExtra(SettingsDialog.VOICE_SPEED, 20);
+            mOnClickHighLightSentenceMode = data.getBooleanExtra(
+                    SettingsDialog.SENTENCE_BY_SENTENCE_MODE, false);
+
+            Toast.makeText(getActivity(), "Voice speed: " +
+                    data.getIntExtra(SettingsDialog.VOICE_SPEED, 20)
+                    + "Sentence by sentence mode : " +
+                    data.getBooleanExtra(SettingsDialog.SENTENCE_BY_SENTENCE_MODE, false)
+                    , Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_pages, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_bookmark_page:
+                return true;
+
+            case R.id.menu_setting:
+                SettingsDialog dialog = SettingsDialog.newInstance(
+                        voiceSpeed, mOnClickHighLightSentenceMode);
+                dialog.setTargetFragment(PageFragment.this, GET_SETTINGS);
+
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                dialog.show(fm, SettingsDialog.SETTINGS);
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
