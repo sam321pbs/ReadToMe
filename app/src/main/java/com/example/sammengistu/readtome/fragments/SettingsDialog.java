@@ -34,7 +34,7 @@ public class SettingsDialog extends DialogFragment {
     private int voiceSpeed;
     public static final int DEFAULT_NORMAL_SPEED = 20;
     public static final boolean DEFAULT_SENTENCE_BY_SENTENCE_MODE = false;
-
+    private TextView mVoiceSpeedNumberTextView;
 
 
     @Override
@@ -56,6 +56,10 @@ public class SettingsDialog extends DialogFragment {
         final TextView mVoiceSpeedTextView = (TextView)settingsView.findViewById(R.id.settings_voice_speed_text_view);
         mVoiceSpeedTextView.setTextColor(Color.BLACK);
 
+        mVoiceSpeedNumberTextView = (TextView)settingsView.findViewById(R.id.settings_voice_speed_number_text_view);
+        mVoiceSpeedNumberTextView.setText(voiceSpeed + "");
+        mVoiceSpeedNumberTextView.setTextColor(Color.BLACK);
+
         final Switch mReadSentenceBySentence = (Switch)settingsView.findViewById(R.id.settings_read_by_sentence_mode);
         mReadSentenceBySentence.setChecked(readSentenceBySentence);
         mReadSentenceBySentence.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -72,6 +76,8 @@ public class SettingsDialog extends DialogFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 voiceSpeed = progress;
+                mVoiceSpeedNumberTextView.setText(progress + "");
+                mVoiceSpeedNumberTextView.setTextColor(Color.BLACK);
             }
 
             @Override
@@ -89,7 +95,7 @@ public class SettingsDialog extends DialogFragment {
         mDefaultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mReadSentenceBySentence.setChecked(false);
+                mReadSentenceBySentence.setChecked(true);
                 mVoiceSpeed.setProgress(DEFAULT_NORMAL_SPEED);
             }
         });

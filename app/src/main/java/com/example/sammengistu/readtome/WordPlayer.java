@@ -8,9 +8,11 @@ import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sammengistu.readtome.fragments.DefinitionDialog;
+import com.example.sammengistu.readtome.fragments.PageFragment;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -35,6 +37,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private Activity mAppActivity;
     private float mVoiceSpeed;
     private boolean mOnClickHighLightSentenceMode;
+    private boolean mPlay;
 
 
     /**
@@ -53,6 +56,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         mAppContext = c;
         mAppActivity = appActivity;
         mOnClickHighLightSentenceMode = readBySentence;
+        mPlay = false;
 
     }
 
@@ -85,20 +89,19 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      * @param highlightedWords
      */
     @SuppressWarnings("deprecation")
-    public void play(ArrayList<String> playMe, ArrayList<TextView> highlightedWords) {
-        mTts.setSpeechRate(mVoiceSpeed / 20);
+    public void play(ArrayList<String> playMe, ArrayList<TextView> highlightedWords, final ImageView playStopButton) {
 
-        if (playMe.size() > HAS_MORE_THAN_ONE) {
+        if (mPlay) {
+            if (playMe.size() > HAS_MORE_THAN_ONE) {
+                mTts.setSpeechRate(mVoiceSpeed / 20);
+                final ArrayList<String> wordsToPlay = new ArrayList<String>(playMe);
+                final ArrayList<TextView> highLightedTextView = new ArrayList<TextView>(highlightedWords);
 
-            final ArrayList<String> wordsToPlay = new ArrayList<String>(playMe);
-            final ArrayList<TextView> highLightedTextView = new ArrayList<TextView>(highlightedWords);
+                final TextView textView = highLightedTextView.get(FIRST_ITEM);
 
-            final TextView textView = highLightedTextView.get(FIRST_ITEM);
-
-            //    final String getFirst1 = wordsToPlay.get(FIRST_ITEM);
-            final String getFirst = DefinitionDialog.removePunctuations(wordsToPlay.get(FIRST_ITEM));
-            wordsToPlay.remove(FIRST_ITEM);
-            highLightedTextView.remove(FIRST_ITEM);
+                final String getFirst = DefinitionDialog.removePunctuations(wordsToPlay.get(FIRST_ITEM));
+                wordsToPlay.remove(FIRST_ITEM);
+                highLightedTextView.remove(FIRST_ITEM);
 
 //            if (WordAudioFiles.get(mAppContext).isWordInFiles(getFirst)) {
 //
@@ -132,89 +135,99 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 //
 //            } else {
 
-            mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                @Override
-                public void onStart(String utteranceId) {
-                    //Log.i(TAG, "Started");
-                    mAppActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setBackgroundColor(Color.GREEN);
-                        }
-                    });
+                mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        //Log.i(TAG, "Started");
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                textView.setBackgroundColor(Color.GREEN);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        //Log.i(TAG, "Done");
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                textView.setBackgroundColor(Color.YELLOW);
+                                // Log.i(TAG, textView.getText().toString());
+                            }
+                        });
+                        play(wordsToPlay, highLightedTextView, playStopButton);
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
+                    }
+                });
+
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
+
+                if (mOnClickHighLightSentenceMode) {
+                    // StringBuilder
                 }
 
-                @Override
-                public void onDone(String utteranceId) {
-                    //Log.i(TAG, "Done");
-                    mAppActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setBackgroundColor(Color.YELLOW);
-                            // Log.i(TAG, textView.getText().toString());
-                        }
-                    });
-                    play(wordsToPlay, highLightedTextView);
-                }
+                mTts.speak(getFirst, TextToSpeech.QUEUE_FLUSH, map);
 
-                @Override
-                public void onError(String utteranceId) {
-
-                }
-            });
-
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
-
-            if (mOnClickHighLightSentenceMode) {
-                // StringBuilder
+                //  }
+            } else {
+                mAppActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        playStopButton.setImageResource(R.drawable.play_button_updated);
+                        PageFragment.setPlayOrStopCounter(0);
+                    }
+                });
             }
-
-            mTts.speak(getFirst, TextToSpeech.QUEUE_FLUSH, map);
-
-            //  }
         }
     }
 
     @SuppressWarnings("deprecation")
-    public void playSentenceBySentence(ArrayList<String> playMe, ArrayList<TextView> highlightedWords) {
-        mTts.setSpeechRate(mVoiceSpeed /20);
+    public void playSentenceBySentence(ArrayList<String> playMe, ArrayList<TextView> highlightedWords, final ImageView playStopButton) {
 
-        if (playMe.size() > HAS_MORE_THAN_ONE) {
+        if (mPlay) {
+            mTts.setSpeechRate(mVoiceSpeed /20);
+            if (playMe.size() > HAS_MORE_THAN_ONE) {
 
-            final ArrayList<String> wordsToPlay = new ArrayList<String>(playMe);
-            final ArrayList<TextView> highLightedTextViews = new ArrayList<TextView>(highlightedWords);
+                final ArrayList<String> wordsToPlay = new ArrayList<String>(playMe);
+                final ArrayList<TextView> highLightedTextViews = new ArrayList<TextView>(highlightedWords);
 
-            //TextViews to highlight as a sentence
-            final ArrayList<TextView> textViewsOfSentence = new ArrayList<>();
-            //Sentence to play
-            StringBuilder sentenceToPlay = new StringBuilder();
+                //TextViews to highlight as a sentence
+                final ArrayList<TextView> textViewsOfSentence = new ArrayList<>();
+                //Sentence to play
+                StringBuilder sentenceToPlay = new StringBuilder();
 
-            for (int i = 0; i < highLightedTextViews.size(); i++) {
+                for (int i = 0; i < highLightedTextViews.size(); i++) {
 
-                if (!highLightedTextViews.get(i).getText().toString().contains(".")) {
+                    if (!highLightedTextViews.get(i).getText().toString().contains(".")) {
 
-                    textViewsOfSentence.add(highLightedTextViews.get(0));
-                    sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
-                    sentenceToPlay.append(" ");
-                    Log.i(TAG, sentenceToPlay.toString());
+                        textViewsOfSentence.add(highLightedTextViews.get(0));
+                        sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                        sentenceToPlay.append(" ");
+                        Log.i(TAG, sentenceToPlay.toString());
 
-                    highLightedTextViews.remove(FIRST_ITEM);
-                    wordsToPlay.remove(FIRST_ITEM);
-                    i--;
+                        highLightedTextViews.remove(FIRST_ITEM);
+                        wordsToPlay.remove(FIRST_ITEM);
+                        i--;
 
-                } else {
+                    } else {
 
-                    textViewsOfSentence.add(highLightedTextViews.get(0));
-                    sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
-                    sentenceToPlay.append(" ");
-                    Log.i(TAG, sentenceToPlay.toString());
+                        textViewsOfSentence.add(highLightedTextViews.get(0));
+                        sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                        sentenceToPlay.append(" ");
+                        Log.i(TAG, sentenceToPlay.toString());
 
-                    highLightedTextViews.remove(FIRST_ITEM);
-                    wordsToPlay.remove(FIRST_ITEM);
-                    break;
+                        highLightedTextViews.remove(FIRST_ITEM);
+                        wordsToPlay.remove(FIRST_ITEM);
+                        break;
+                    }
                 }
-            }
 
                 mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                     @Override
@@ -223,7 +236,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         mAppActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                for (TextView textView: textViewsOfSentence) {
+                                for (TextView textView : textViewsOfSentence) {
                                     textView.setBackgroundColor(Color.GREEN);
                                 }
                             }
@@ -236,13 +249,13 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         mAppActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                for (TextView textView: textViewsOfSentence) {
+                                for (TextView textView : textViewsOfSentence) {
                                     textView.setBackgroundColor(Color.YELLOW);
                                 }
                             }
                         });
 
-                        playSentenceBySentence(wordsToPlay, highLightedTextViews);
+                        playSentenceBySentence(wordsToPlay, highLightedTextViews, playStopButton);
                     }
 
                     @Override
@@ -256,7 +269,16 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
                 mTts.speak(sentenceToPlay.toString(), TextToSpeech.QUEUE_FLUSH, map);
 
+            } else {
+                mAppActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        playStopButton.setImageResource(R.drawable.play_button_updated);
+                        PageFragment.setPlayOrStopCounter(0);
+                    }
+                });
             }
+        }
         }
 
         /**
@@ -281,6 +303,14 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 Log.e("TTS", "Initilization Failed!");
             }
         }
+
+    public boolean isPlay() {
+        return mPlay;
+    }
+
+    public void setPlay(boolean play) {
+        mPlay = play;
+    }
 
     public void setVoiceSpeed(float voiceSpeed) {
         mVoiceSpeed = voiceSpeed;

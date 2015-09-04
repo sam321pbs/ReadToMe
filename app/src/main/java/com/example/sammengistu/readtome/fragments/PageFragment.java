@@ -41,7 +41,6 @@ public class PageFragment extends Fragment {
 
     private static final String TAG = "PageFragment";
     private static final int PAGE = 1;
-    private static final int SENT = 2;
     private static final int GET_SETTINGS = 3;
 
     private ArrayList<PageOfBook> mPagesOfBook;
@@ -53,12 +52,11 @@ public class PageFragment extends Fragment {
     private Book currentBook;
     private TextView mChapterTextView;
     private ArrayList<TextView> mHighlightedTextViews;
-    private ImageView mHighlightPage;
     private TextToSpeech mTts;
-    private int mHighlightType = PAGE;
     private WordPlayer mWordPlayer;
     private boolean mOnClickHighLightSentenceMode;
     private int voiceSpeed;
+    private static int playOrStopCounter;
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
@@ -66,8 +64,8 @@ public class PageFragment extends Fragment {
         setHasOptionsMenu(true);
 
         voiceSpeed = SettingsDialog.DEFAULT_NORMAL_SPEED;
+        playOrStopCounter = 0;
 
-        //TODO: check which if mOnClickHighLightSentenceMode is set
         mOnClickHighLightSentenceMode = false;
 
         mTableLayouts = new ArrayList<TableLayout>();
@@ -121,6 +119,7 @@ public class PageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View blankPage;
 
+        //Decides whether the page has a picture or not
         if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
             blankPage = inflater.inflate(R.layout.pages_fragment, container, false);
             mPagePicture = (ImageView) blankPage.findViewById(R.id.page_picture);
@@ -147,6 +146,7 @@ public class PageFragment extends Fragment {
                                             handlePageTurn();
                                             mWordsToSpeechBank.clear();
                                             mHighlightedTextViews.clear();
+                                            //mWordPlayer.setPlay(false);
                                         }
                                     }
 
@@ -167,21 +167,38 @@ public class PageFragment extends Fragment {
 
         );
 
-        ImageView playButton = (ImageView) blankPage.findViewById(R.id.play_button);
+        final ImageView playButton = (ImageView) blankPage.findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener()
 
                                       {
                                           @Override
                                           public void onClick(View v) {
 
-                                              mWordPlayer.setVoiceSpeed(voiceSpeed);
+                                                  playOrStopCounter++;
 
-                                              findHighlightedWords();
-                                              if (mOnClickHighLightSentenceMode){
-                                                  mWordPlayer.playSentenceBySentence(mWordsToSpeechBank, mHighlightedTextViews);
-                                              }else {
-                                                  mWordPlayer.play(mWordsToSpeechBank, mHighlightedTextViews);
+                                              if (playOrStopCounter == 1){
+                                                  mWordPlayer.setPlay(true);
+
+                                                  playButton.setImageResource(R.drawable.added_stop_button);
+                                                  mWordPlayer.setVoiceSpeed(voiceSpeed);
+
+                                                  findHighlightedWords();
+                                                  if (mOnClickHighLightSentenceMode){
+                                                      mWordPlayer.playSentenceBySentence(mWordsToSpeechBank,
+                                                              mHighlightedTextViews, playButton);
+                                                  }else {
+                                                      mWordPlayer.play(mWordsToSpeechBank,
+                                                              mHighlightedTextViews, playButton);
+                                                  }
                                               }
+
+                                              else {
+
+                                                  mWordPlayer.setPlay(false);
+                                                  playButton.setImageResource(R.drawable.play_button_updated);
+                                                  playOrStopCounter = 0;
+                                              }
+
 
                                               mWordsToSpeechBank.clear();
                                               mHighlightedTextViews.clear();
@@ -191,8 +208,8 @@ public class PageFragment extends Fragment {
 
         );
 
-        mHighlightPage = (ImageView) blankPage.findViewById(R.id.page_button);
-        mHighlightPage.setOnClickListener(new View.OnClickListener() {
+        ImageView highlightPage = (ImageView) blankPage.findViewById(R.id.page_button);
+        highlightPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -206,7 +223,7 @@ public class PageFragment extends Fragment {
         highlightSentence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                highlightSentence();
+                highlightSentence(Color.YELLOW);
             }
         });
 
@@ -230,49 +247,15 @@ public class PageFragment extends Fragment {
         return blankPage;
     }
 
-//    private void setUpSentencePageButton(){
-//        if (!highlightsMoreThanOne()){
-//            mHighlightPage.setImageResource(R.drawable.sentence_button);
-//            mHighlightType = SENT;
-//        } else {
-//            mHighlightPage.setImageResource(R.drawable.page_button_image);
-//            mHighlightType = PAGE;
-//        }
-//    }
-
-//    private boolean highlightsMoreThanOne(){
-//        int counter = 0;
-//
-//        for (int i = 0; i < mTableLayouts.size(); i++) {
-//            TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
-//            for (int j = 0; j < row.getChildCount(); j++) {
-//                TextView word = (TextView) row.getChildAt(j);
-//                ColorDrawable textBackGroundColor = (ColorDrawable) word.getBackground();
-//                int backgroundColor = textBackGroundColor.getColor();
-//
-//                if (backgroundColor == Color.YELLOW) {
-//                    counter++;
-//                    Log.i(TAG, "Number of Highlighted words: " + counter);
-//                    Log.i(TAG, "The Highlighted word is: " + word.getText());
-//                }
-//
-//                if (counter != 1){
-//                    mHighlightPage.setImageResource(R.drawable.page_button_image);
-//                    mHighlightType = PAGE;
-//                    return true;
-//                }
-//            }
-//        }
-//        mHighlightPage.setImageResource(R.drawable.sentence_button);
-//        mHighlightType = SENT;
-//         return false;
-//    }
+    public static void setPlayOrStopCounter(int playOrStopCounters) {
+        playOrStopCounter = playOrStopCounters;
+    }
 
     /**
      * Hightlights a sentence based on the location of the textView that was selected
      * @param v - specific textView that was clicked
      */
-    private void highlightSentenceMode(TextView v) {
+    private void highlightSentenceMode(TextView v, int color) {
 
         int tableLayoutHolder = 0;
         int tableRowHolderForHighlightingToEndOfSent = 0;
@@ -292,7 +275,7 @@ public class PageFragment extends Fragment {
 
         highlightSentenceLoops(tableLayoutHolder,
                 tableRowHolderForHighlightingToEndOfSent,
-                tableRowHolderForHighlightingToBeginingOfSent);
+                tableRowHolderForHighlightingToBeginingOfSent, color);
 
     }
 
@@ -301,7 +284,7 @@ public class PageFragment extends Fragment {
      * It does this because it is easier to find the sentence when only
      * one word is selected
      */
-    private void highlightSentence() {
+    private void highlightSentence(int color) {
         int counter = 0;
         int tableLayoutHolder = 0;
         int tableRowHolderForHighlightingToEndOfSent = 0;
@@ -331,13 +314,15 @@ public class PageFragment extends Fragment {
         if (counter == 1) {
             highlightSentenceLoops( tableLayoutHolder
                     , tableRowHolderForHighlightingToEndOfSent,
-                    tableRowHolderForHighlightingToBeginingOfSent);
+                    tableRowHolderForHighlightingToBeginingOfSent,
+                    color);
         }
     }
 
     private void highlightSentenceLoops ( int tableLayoutHolder,
                                         int tableRowHolderForHighlightingToEndOfSent,
-                                        int tableRowHolderForHighlightingToBeginingOfSent){
+                                        int tableRowHolderForHighlightingToBeginingOfSent,
+                                          int color){
         boolean end = false;
 
         //If there is only one higlighted word it highlights the sentence
@@ -349,7 +334,7 @@ public class PageFragment extends Fragment {
 
                     tableRowHolderForHighlightingToEndOfSent = 0;
                     TextView word = (TextView) row.getChildAt(j);
-                    word.setBackgroundColor(Color.YELLOW);
+                    word.setBackgroundColor(color);
                     String wordFromView = word.getText().toString();
 
                     if (wordFromView.contains(".")) {
@@ -385,7 +370,7 @@ public class PageFragment extends Fragment {
                             word.getText().toString().equals("Mr.") ||
                             word.getText().toString().equals("Ms.")) {
 
-                        word.setBackgroundColor(Color.YELLOW);
+                        word.setBackgroundColor(color);
 
                     } else {
                         breakPoint = true;
@@ -511,6 +496,11 @@ public class PageFragment extends Fragment {
                         @Override
                         public boolean onLongClick(View v) {
 
+                            //TODO: Get a dictionary defintion offline
+//                            Intent intent = new Intent();
+//                            intent.setComponent(new ComponentName("com.example", "com.example.MyExampleActivity"));
+//                            startActivity(intent);
+
                             TextView currentWordTextView = (TextView) v;
                             DefinitionDialog dialog = DefinitionDialog.newInstance(
                                     currentWordTextView.getText().toString());
@@ -544,15 +534,21 @@ public class PageFragment extends Fragment {
                 ColorDrawable textBackGroundColor = (ColorDrawable) v.getBackground();
                 int backgroundColor = textBackGroundColor.getColor();
 
-                if (backgroundColor == Color.YELLOW) {
-                    textView.setBackgroundColor(Color.WHITE);
+                if (mOnClickHighLightSentenceMode){
+                    if (backgroundColor == Color.WHITE) {
+                        highlightSentenceMode((TextView)v, Color.YELLOW);
+                    } else {
+                        highlightSentenceMode((TextView)v, Color.WHITE);
+                    }
                 } else {
-                    textView.setBackgroundColor(Color.YELLOW);
+                    if (backgroundColor == Color.YELLOW) {
+                        textView.setBackgroundColor(Color.WHITE);
+                    } else {
+                        textView.setBackgroundColor(Color.YELLOW);
+                    }
                 }
 
-                if (mOnClickHighLightSentenceMode) {
-                    highlightSentenceMode((TextView)v);
-                }
+
 
 //                Log.i(TAG, "Are there more than one highlights? " + highlightsMoreThanOne());
 //

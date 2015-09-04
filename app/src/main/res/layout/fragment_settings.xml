@@ -7,15 +7,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:text="Settings"
         android:textSize="30sp"
-        android:layout_marginLeft="15dp"
         android:id="@+id/settings_title"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Have it read to you one word at a time?"
+        android:text="@string/instructions_on_the_switch_button"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:textSize="20sp"
@@ -37,12 +37,23 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Voice speed"
+        android:text="Voice speed :"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:textSize="20sp"
         android:layout_below="@+id/settings_read_by_sentence_mode"
         android:id="@+id/settings_voice_speed_text_view"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/settings_voice_speed_number_text_view"
+        android:layout_toRightOf="@+id/settings_voice_speed_text_view"
+        android:text="20"
+        android:textSize="20sp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/settings_read_by_sentence_mode"/>
 
     <SeekBar
         android:id="@+id/settings_change_voice_speed"

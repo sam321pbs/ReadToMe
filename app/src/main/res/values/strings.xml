@@ -8,4 +8,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_pages">Pages</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="instructions_on_the_switch_button">If this button is on it will read to you a sentence at a time. If It is off it will read to you one word at a time</string>
 </resources>
