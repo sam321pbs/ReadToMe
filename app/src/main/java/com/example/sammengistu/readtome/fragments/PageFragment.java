@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import com.example.sammengistu.readtome.PageOfBook;
 import com.example.sammengistu.readtome.R;
+import com.example.sammengistu.readtome.ReadToMeJSONSerializer;
+import com.example.sammengistu.readtome.SettingsPreferences;
 import com.example.sammengistu.readtome.WordLinkedWithDef;
 import com.example.sammengistu.readtome.WordPlayer;
 import com.example.sammengistu.readtome.models.Book;
@@ -50,6 +52,8 @@ public class PageFragment extends Fragment {
     private static final int GET_SETTINGS = 3;
     private static final int GET_PAGE_NUMBER = 4;
 
+    private static final String FILENAME = "readtome.json";
+
     private ArrayList<PageOfBook> mPagesOfBook;
     private TextView mPageNumber;
     private ImageView mBookmark;
@@ -68,6 +72,9 @@ public class PageFragment extends Fragment {
     private ArrayList<WordLinkedWithDef> mWordLinkedWithDefs;
     private boolean dictionaryReady;
     public ImageView playButton;
+    private int bookmarkedPage;
+    private SettingsPreferences mSettingsPreferences;
+    private ReadToMeJSONSerializer mReadToMeJSONSerializer;
 
 
     @Override
@@ -75,12 +82,27 @@ public class PageFragment extends Fragment {
         super.onCreate(savedInstnaceState);
         setHasOptionsMenu(true);
 
-//        mWordLinkedWithDefs = WordLinkedWithDef.linkWordsWithDefinitions(getActivity());
+        DictionaryLoader dictionaryLoader = new DictionaryLoader();
+        dictionaryLoader.execute();
 
-        voiceSpeed = SettingsDialog.DEFAULT_NORMAL_SPEED;
+        mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
+
+
+        try {
+            mSettingsPreferences = mReadToMeJSONSerializer.loadSettings();
+            Log.i(TAG, "Success loading");
+        } catch (Exception e) {
+
+            Log.i(TAG, e.getMessage());
+            Log.i(TAG, " Error loading");
+            mSettingsPreferences = new SettingsPreferences();
+        }
+
+
+        voiceSpeed = mSettingsPreferences.getVoiceSpeed();
+        mOnClickHighLightSentenceMode = mSettingsPreferences.isReadSentenceMode();
+
         playOrStopCounter = 0;
-
-        mOnClickHighLightSentenceMode = false;
 
         mTableLayouts = new ArrayList<TableLayout>();
         mWordsToSpeechBank = new ArrayList<String>();
@@ -92,7 +114,7 @@ public class PageFragment extends Fragment {
 
         mPagesOfBook = currentBook.getPagesOfBook();
 
-        pageNumber = 0;
+        pageNumber = mSettingsPreferences.getBookMarkedPage();
 
         mWordPlayer = new WordPlayer(getActivity(), getActivity(), mOnClickHighLightSentenceMode,
                 voiceSpeed);
@@ -134,8 +156,9 @@ public class PageFragment extends Fragment {
 
         dictionaryReady = false;
 
-        DictionaryLoader dictionaryLoader = new DictionaryLoader();
-        dictionaryLoader.execute();
+        Log.i(TAG, mSettingsPreferences.getBookMarkedPage() + " - Bookmarked page  " +
+                mSettingsPreferences.isReadSentenceMode() + " - readmode   " +
+                mSettingsPreferences.getVoiceSpeed() + " - voice speed");
 
         View blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
         mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textView);
@@ -162,7 +185,7 @@ public class PageFragment extends Fragment {
         );
 
         mBookmark = (ImageView) blankPage.findViewById(R.id.page_without_picture_bookmark);
-        mBookmark.setVisibility(View.INVISIBLE);
+        handleBookmark();
 
         ImageView goBackPage = (ImageView) blankPage.findViewById(R.id.go_back);
         goBackPage.setOnClickListener(new View.OnClickListener()
@@ -424,11 +447,21 @@ public class PageFragment extends Fragment {
         }
     }
 
+    private void handleBookmark(){
+        if (pageNumber == mSettingsPreferences.getBookMarkedPage()){
+            mBookmark.setVisibility(View.VISIBLE);
+        } else {
+            mBookmark.setVisibility(View.INVISIBLE);
+        }
+    }
+
     /**
      * Handles the page turning
      * Sets up the views according to the content
      */
     private void handlePageTurn() {
+        handleBookmark();
+
         setUpPageText();
         setUpChapterLabel();
     }
@@ -725,13 +758,16 @@ public class PageFragment extends Fragment {
         if (requestCode == GET_SETTINGS || requestCode == Activity.RESULT_OK) {
 
             voiceSpeed = data.getIntExtra(SettingsDialog.VOICE_SPEED, 20);
+
             mOnClickHighLightSentenceMode = data.getBooleanExtra(
                     SettingsDialog.SENTENCE_BY_SENTENCE_MODE, false);
 
-            Toast.makeText(getActivity(), "Voice speed: " +
-                    data.getIntExtra(SettingsDialog.VOICE_SPEED, 20)
-                    + "Sentence by sentence mode : " +
-                    data.getBooleanExtra(SettingsDialog.SENTENCE_BY_SENTENCE_MODE, false)
+            mSettingsPreferences.setVoiceSpeed(voiceSpeed);
+            mSettingsPreferences.setReadSentenceMode(mOnClickHighLightSentenceMode);
+
+
+            saveSettings();
+            Toast.makeText(getActivity(), "Settings Saved"
                     , Toast.LENGTH_LONG).show();
 
         }
@@ -793,6 +829,9 @@ public class PageFragment extends Fragment {
                 //TODO: Save Page
                 if (mBookmark.getVisibility() == View.INVISIBLE) {
                     mBookmark.setVisibility(View.VISIBLE);
+
+                    mSettingsPreferences.setBookMarkedPage(pageNumber);
+                    saveSettings();
                 } else {
                     mBookmark.setVisibility(View.INVISIBLE);
                 }
@@ -821,6 +860,24 @@ public class PageFragment extends Fragment {
         }
     }
 
+
+    public boolean saveSettings() {
+        try {
+            mReadToMeJSONSerializer.savePreferences(mSettingsPreferences);
+            Log.d(TAG, "Settings saved");
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving settings", e);
+            return false;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveSettings();
+    }
+
     @Override
     public void onDestroy() {
         mWordPlayer.shutDownTTS();
@@ -828,4 +885,3 @@ public class PageFragment extends Fragment {
         super.onDestroy();
     }
 }
-
