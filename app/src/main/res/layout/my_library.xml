@@ -2,29 +2,23 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context=".MainActivity"
-                android:background="@drawable/bookshelf_empty">
+                android:background="@drawable/bookshelf_empty"
+                tools:context=".MainActivity">
 
     <TableLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
-        android:layout_marginLeft="30dp">
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="70dp">
 
         <TableRow>
 
             <ImageView
+                android:id="@+id/things_fall_apart_book_cover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/curious_george_book_cover"
-                android:id="@+id/curious_george_book_cover"/>
+                android:src="@drawable/things_fall_apart_book_cover"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-               android:src="@drawable/charlottes_web_book_cover_1_65x95"
-                android:id="@+id/charlottes_web_book_cover_book_cover"
-                android:layout_marginLeft="25dp"/>
         </TableRow>
 
 

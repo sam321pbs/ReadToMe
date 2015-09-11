@@ -25,7 +25,7 @@ public class MyLibraryFragment extends Fragment {
     public static final String BOOK_ID = "Book Id";
     private ImageView mBookOneImage;
     private ImageView mBookTwoImage;
-    private Book curiousGeorge;
+    private Book mThingsFallApart;
     private Book charlottesWeb;
 
 
@@ -34,7 +34,7 @@ public class MyLibraryFragment extends Fragment {
         super.onCreate(onSavedInstanceState);
 
         ArrayList<Book> myLibrary = Library.get(getActivity()).getMyLibrary();
-        curiousGeorge = myLibrary.get(0);
+        mThingsFallApart = myLibrary.get(0);
         charlottesWeb = myLibrary.get(1);
     }
 
@@ -44,30 +44,17 @@ public class MyLibraryFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.my_library, container, false);
 
-        mBookOneImage = (ImageView) v.findViewById(R.id.curious_george_book_cover);
-        mBookOneImage.setImageResource(curiousGeorge.getBookCover());
+        mBookOneImage = (ImageView) v.findViewById(R.id.things_fall_apart_book_cover);
+        mBookOneImage.setImageResource(mThingsFallApart.getBookCover());
 
         mBookOneImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, curiousGeorge.getBookId());
+                intent.putExtra(BOOK_ID, mThingsFallApart.getBookId());
                 startActivity(intent);
             }
         });
-
-        mBookTwoImage = (ImageView) v.findViewById(R.id.charlottes_web_book_cover_book_cover);
-        mBookTwoImage.setImageResource(charlottesWeb.getBookCover());
-
-        mBookTwoImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, charlottesWeb.getBookId());
-                startActivity(intent);
-            }
-        });
-
 
         return v;
     }

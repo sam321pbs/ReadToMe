@@ -2,9 +2,12 @@ package com.example.sammengistu.readtome.fragments;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
@@ -24,10 +27,13 @@ import android.widget.Toast;
 
 import com.example.sammengistu.readtome.PageOfBook;
 import com.example.sammengistu.readtome.R;
+import com.example.sammengistu.readtome.WordLinkedWithDef;
 import com.example.sammengistu.readtome.WordPlayer;
 import com.example.sammengistu.readtome.models.Book;
 import com.example.sammengistu.readtome.models.Library;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
@@ -42,9 +48,11 @@ public class PageFragment extends Fragment {
     private static final String TAG = "PageFragment";
     private static final int PAGE = 1;
     private static final int GET_SETTINGS = 3;
+    private static final int GET_PAGE_NUMBER = 4;
 
     private ArrayList<PageOfBook> mPagesOfBook;
-    private ImageView mPagePicture;
+    private TextView mPageNumber;
+    private ImageView mBookmark;
     private String[] mPageWordBank;
     int pageNumber;
     private ArrayList<TableLayout> mTableLayouts;
@@ -57,11 +65,17 @@ public class PageFragment extends Fragment {
     private boolean mOnClickHighLightSentenceMode;
     private int voiceSpeed;
     private static int playOrStopCounter;
+    private ArrayList<WordLinkedWithDef> mWordLinkedWithDefs;
+    private boolean dictionaryReady;
+    public ImageView playButton;
+
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
         super.onCreate(savedInstnaceState);
         setHasOptionsMenu(true);
+
+//        mWordLinkedWithDefs = WordLinkedWithDef.linkWordsWithDefinitions(getActivity());
 
         voiceSpeed = SettingsDialog.DEFAULT_NORMAL_SPEED;
         playOrStopCounter = 0;
@@ -117,21 +131,17 @@ public class PageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View blankPage;
 
-        //Decides whether the page has a picture or not
-        if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
-            blankPage = inflater.inflate(R.layout.pages_fragment, container, false);
-            mPagePicture = (ImageView) blankPage.findViewById(R.id.page_picture);
-        } else {
-            blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
-            mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textview);
-            setUpChapterLabel();
-        }
+        dictionaryReady = false;
+
+        DictionaryLoader dictionaryLoader = new DictionaryLoader();
+        dictionaryLoader.execute();
+
+        View blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
+        mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textView);
+        setUpChapterLabel();
 
         setTableLayouts(blankPage);
-
-        setImage();
 
         ImageView turnPage = (ImageView) blankPage.findViewById(R.id.turn_page);
         turnPage.setOnClickListener(new View.OnClickListener()
@@ -146,11 +156,14 @@ public class PageFragment extends Fragment {
                                             handlePageTurn();
                                             mWordsToSpeechBank.clear();
                                             mHighlightedTextViews.clear();
-                                            //mWordPlayer.setPlay(false);
                                         }
                                     }
 
         );
+
+        mBookmark = (ImageView) blankPage.findViewById(R.id.page_without_picture_bookmark);
+        mBookmark.setVisibility(View.INVISIBLE);
+
         ImageView goBackPage = (ImageView) blankPage.findViewById(R.id.go_back);
         goBackPage.setOnClickListener(new View.OnClickListener()
 
@@ -162,43 +175,40 @@ public class PageFragment extends Fragment {
                                                   pageNumber = 0;
                                               }
                                               handlePageTurn();
+                                              mWordsToSpeechBank.clear();
+                                              mHighlightedTextViews.clear();
                                           }
                                       }
 
         );
 
-        final ImageView playButton = (ImageView) blankPage.findViewById(R.id.play_button);
+        playButton = (ImageView) blankPage.findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener()
 
                                       {
                                           @Override
                                           public void onClick(View v) {
 
-                                                  playOrStopCounter++;
+                                              playOrStopCounter++;
 
-                                              if (playOrStopCounter == 1){
+                                              if (playOrStopCounter == 1) {
                                                   mWordPlayer.setPlay(true);
 
                                                   playButton.setImageResource(R.drawable.added_stop_button);
                                                   mWordPlayer.setVoiceSpeed(voiceSpeed);
 
                                                   findHighlightedWords();
-                                                  if (mOnClickHighLightSentenceMode){
+                                                  if (mOnClickHighLightSentenceMode) {
                                                       mWordPlayer.playSentenceBySentence(mWordsToSpeechBank,
                                                               mHighlightedTextViews, playButton);
-                                                  }else {
+                                                  } else {
                                                       mWordPlayer.play(mWordsToSpeechBank,
                                                               mHighlightedTextViews, playButton);
                                                   }
+                                              } else {
+
+                                                  stopVoiceAndResetPlayButton();
                                               }
-
-                                              else {
-
-                                                  mWordPlayer.setPlay(false);
-                                                  playButton.setImageResource(R.drawable.play_button_updated);
-                                                  playOrStopCounter = 0;
-                                              }
-
 
                                               mWordsToSpeechBank.clear();
                                               mHighlightedTextViews.clear();
@@ -207,6 +217,8 @@ public class PageFragment extends Fragment {
                                       }
 
         );
+
+        mPageNumber = (TextView) blankPage.findViewById(R.id.action_command_page_number);
 
         ImageView highlightPage = (ImageView) blankPage.findViewById(R.id.page_button);
         highlightPage.setOnClickListener(new View.OnClickListener() {
@@ -219,7 +231,6 @@ public class PageFragment extends Fragment {
         });
 
         ImageView highlightSentence = (ImageView) blankPage.findViewById(R.id.sentence_button);
-        // highlightSentence.setVisibility(View.INVISIBLE);
         highlightSentence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -239,12 +250,19 @@ public class PageFragment extends Fragment {
                                                }
 
                                            }
-
         );
 
         setUpPageText();
 
         return blankPage;
+    }
+
+    private void stopVoiceAndResetPlayButton() {
+
+        mWordPlayer.stopTtsVoice();
+        mWordPlayer.setPlay(false);
+        playButton.setImageResource(R.drawable.play_button_updated);
+        playOrStopCounter = 0;
     }
 
     public static void setPlayOrStopCounter(int playOrStopCounters) {
@@ -253,6 +271,7 @@ public class PageFragment extends Fragment {
 
     /**
      * Hightlights a sentence based on the location of the textView that was selected
+     *
      * @param v - specific textView that was clicked
      */
     private void highlightSentenceMode(TextView v, int color) {
@@ -312,82 +331,86 @@ public class PageFragment extends Fragment {
         }
 
         if (counter == 1) {
-            highlightSentenceLoops( tableLayoutHolder
+            highlightSentenceLoops(tableLayoutHolder
                     , tableRowHolderForHighlightingToEndOfSent,
                     tableRowHolderForHighlightingToBeginingOfSent,
                     color);
         }
     }
 
-    private void highlightSentenceLoops ( int tableLayoutHolder,
+    private void highlightSentenceLoops(int tableLayoutHolder,
                                         int tableRowHolderForHighlightingToEndOfSent,
                                         int tableRowHolderForHighlightingToBeginingOfSent,
-                                          int color){
+                                        int color) {
         boolean end = false;
 
-        //If there is only one higlighted word it highlights the sentence
+
+        for (int i = tableLayoutHolder; i < mTableLayouts.size(); i++) {
+            TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
+            for (int j = tableRowHolderForHighlightingToEndOfSent; j < row.getChildCount(); j++) {
+
+                tableRowHolderForHighlightingToEndOfSent = 0; // when the row changes it starts highlighting at beginning
+                TextView word = (TextView) row.getChildAt(j);
 
 
-            for (int i = tableLayoutHolder; i < mTableLayouts.size(); i++) {
-                TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
-                for (int j = tableRowHolderForHighlightingToEndOfSent; j < row.getChildCount(); j++) {
-
-                    tableRowHolderForHighlightingToEndOfSent = 0;
-                    TextView word = (TextView) row.getChildAt(j);
+                // If the word box is empty it breaks it doesnt highlight it
+                if (!(word.getText().toString().isEmpty())) {
                     word.setBackgroundColor(color);
-                    String wordFromView = word.getText().toString();
-
-                    if (wordFromView.contains(".")) {
-
-                        if (wordFromView.equals("Mrs.") ||
-                                wordFromView.equals("Mr.") ||
-                                wordFromView.equals("Ms.")) {
-
-                            continue;
-                        } else {
-
-                            end = true;
-                            break;
-                        }
-                    }
                 }
+                String wordFromView = word.getText().toString();
 
-                if (end) {
-                    break;
-                }
-            }
+                if (wordFromView.contains(".")) {
 
-            boolean breakPoint = false;
-            int skipCurrentWord = 1;
+                    if (wordFromView.equals("Mrs.") ||
+                            wordFromView.equals("Mr.") ||
+                            wordFromView.equals("Ms.")) {
 
-            for (int i = tableLayoutHolder; i >= 0; i--) {
-                TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
-                for (int j = tableRowHolderForHighlightingToBeginingOfSent - skipCurrentWord; j >= 0; j--) {
-                    TextView word = (TextView) row.getChildAt(j);
-
-                    if (!word.getText().toString().contains(".") ||
-                            word.getText().toString().equals("Mrs.") ||
-                            word.getText().toString().equals("Mr.") ||
-                            word.getText().toString().equals("Ms.")) {
-
-                        word.setBackgroundColor(color);
-
+                        continue;
                     } else {
-                        breakPoint = true;
+
+                        // has it break out of the second loop
+                        end = true;
                         break;
                     }
                 }
-
-                if (breakPoint) {
-                    break;
-                } else {
-                    tableRowHolderForHighlightingToBeginingOfSent = row.getChildCount() - 1;
-                }
-
-                skipCurrentWord = 0;
+            }
+            if (end) {
+                break;
             }
         }
 
+        boolean breakPoint = false;
+        int skipCurrentWord = 1;
+
+        for (int i = tableLayoutHolder; i >= 0; i--) {
+            TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
+            for (int j = tableRowHolderForHighlightingToBeginingOfSent - skipCurrentWord; j >= 0; j--) {
+                TextView word = (TextView) row.getChildAt(j);
+
+                if (!word.getText().toString().contains(".") ||
+                        word.getText().toString().equals("Mrs.") ||
+                        word.getText().toString().equals("Mr.") ||
+                        word.getText().toString().equals("Ms.")) {
+
+                    if (!(word.getText().toString().isEmpty())) {
+                        word.setBackgroundColor(color);
+                    }
+
+                } else {
+                    breakPoint = true;
+                    break;
+                }
+            }
+
+            if (breakPoint) {
+                break;
+            } else {
+                tableRowHolderForHighlightingToBeginingOfSent = row.getChildCount() - 1;
+            }
+
+            skipCurrentWord = 0;
+        }
+    }
 
     private void highlightThePage() {
         for (TableLayout tableLayout : mTableLayouts) {
@@ -401,24 +424,13 @@ public class PageFragment extends Fragment {
         }
     }
 
-
     /**
      * Handles the page turning
      * Sets up the views according to the content
      */
     private void handlePageTurn() {
-        setUpChapterLabel();
         setUpPageText();
-        setImage();
-    }
-
-    /**
-     * Checks if the book has a chapter in it
-     *
-     * @return
-     */
-    private boolean doesBookHaveChapters() {
-        return currentBook.getTitle().equalsIgnoreCase("Charlottes web");
+        setUpChapterLabel();
     }
 
     /**
@@ -426,23 +438,15 @@ public class PageFragment extends Fragment {
      * chapters
      */
     private void setUpChapterLabel() {
-        if (doesBookHaveChapters() && pageNumber == 0) {
+        if (!mPagesOfBook.get(pageNumber).getChapterOfBook().equals("None")) {
             mChapterTextView.setVisibility(View.VISIBLE);
-            mChapterTextView.setText(currentBook.getChapter());
-        } else if (doesBookHaveChapters()) {
+            mChapterTextView.setText(mPagesOfBook.get(pageNumber).getChapterOfBook());
+            mChapterTextView.setTextColor(Color.BLACK);
+        } else {
             mChapterTextView.setVisibility(View.INVISIBLE);
         }
     }
 
-    /**
-     * Checks which book the current book is and sets up the images for curious
-     * george
-     */
-    private void setImage() {
-        if (currentBook.getTitle().equalsIgnoreCase("Curious George")) {
-            mPagePicture.setImageResource(mPagesOfBook.get(pageNumber).getPagePicture());
-        }
-    }
 
     /**
      * Sets up the table layouts in side the view
@@ -460,17 +464,21 @@ public class PageFragment extends Fragment {
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout7));
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout8));
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout9));
-        if (currentBook.getTitle().equalsIgnoreCase("Charlottes Web")) {
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout10));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout11));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout12));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout13));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout14));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout15));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout16));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout17));
-            mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout18));
-        }
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout10));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout11));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout12));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout13));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout14));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout15));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout16));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout17));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout18));
+
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout19));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout20));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout21));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout22));
+        mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout23));
     }
 
     /**
@@ -479,44 +487,154 @@ public class PageFragment extends Fragment {
      */
     private void setUpPageText() {
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
+        mPageNumber.setText(pageNumber + "");
+        mPageNumber.setTextColor(Color.BLACK);
+
+        int setUpTitlePage = 5;
 
         cleanUpPageText(Color.WHITE);
 
         int placeHolder = 0;
 
         for (TableLayout tableLayout : mTableLayouts) {
-            TableRow row = (TableRow) tableLayout.getChildAt(0);
-            for (int j = 0; j < row.getChildCount(); j++) {
-                if (mPageWordBank.length != placeHolder) {
-                    TextView word = (TextView) row.getChildAt(j);
-                    word.setText(mPageWordBank[placeHolder]);
-                    word.setTextColor(Color.BLACK);
-                    word.setOnClickListener(onClick());
-                    word.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
+            //sets up title page
+            if ((pageNumber == 0 || pageNumber == 1)) {
+                setupTitlePage();
 
-                            //TODO: Get a dictionary defintion offline
-//                            Intent intent = new Intent();
-//                            intent.setComponent(new ComponentName("com.example", "com.example.MyExampleActivity"));
-//                            startActivity(intent);
+            } else {
+                TableRow row = (TableRow) tableLayout.getChildAt(0);
+                for (int j = 0; j < row.getChildCount(); j++) {
 
-                            TextView currentWordTextView = (TextView) v;
-                            DefinitionDialog dialog = DefinitionDialog.newInstance(
-                                    currentWordTextView.getText().toString());
+                    if (mPageWordBank.length != placeHolder) {
+                        TextView word = (TextView) row.getChildAt(j);
+                        word.setText(mPageWordBank[placeHolder]);
+                        word.setTextSize(20f);
+                        word.setTextColor(Color.BLACK);
+                        word.setOnClickListener(onClick());
+                        word.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
 
-                            FragmentManager fm = getActivity().getSupportFragmentManager();
-                            dialog.show(fm, DefinitionDialog.DEFINITION);
+                                showDictionaryDialog((TextView) v);
+                                return true;
+                            }
+                        });
+                        placeHolder++;
 
-                            return true;
-                        }
-                    });
-                    placeHolder++;
-
-                } else {
-                    break;
+                    } else {
+                        break;
+                    }
                 }
             }
+        }
+    }
+
+    public void setupTitlePage() {
+        mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
+        mPageNumber.setText(pageNumber + "");
+        mPageNumber.setTextColor(Color.BLACK);
+
+        int setUpTitlePage = 5;
+        int takeAwayFromEnd = 3;
+
+
+        cleanUpPageText(Color.WHITE);
+
+        int placeHolder = 0;
+
+        for (TableLayout tableLayout : mTableLayouts) {
+            //sets up title page
+            if ((pageNumber == 0 || pageNumber == 1) && setUpTitlePage > 0) {
+                setUpTitlePage--;
+                continue;
+            }
+
+            if (pageNumber == 0) {
+
+
+                TableRow row = (TableRow) tableLayout.getChildAt(0);
+                for (int j = 2; j < row.getChildCount() - takeAwayFromEnd; j++) {
+
+                    if (mPageWordBank.length != placeHolder) {
+                        TextView word = (TextView) row.getChildAt(j);
+                        word.setText(mPageWordBank[placeHolder]);
+                        word.setTextSize(30f);
+                        word.setTextColor(Color.BLACK);
+                        word.setOnClickListener(onClick());
+                        word.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+
+                                showDictionaryDialog((TextView) v);
+
+                                return true;
+                            }
+                        });
+                        placeHolder++;
+
+                    } else {
+                        break;
+                    }
+                }
+                takeAwayFromEnd = 4;
+                continue;
+            }
+            takeAwayFromEnd = 0;
+
+            if (pageNumber == 1) {
+
+                TableRow row = (TableRow) tableLayout.getChildAt(0);
+                for (int j = 2; j < row.getChildCount() - takeAwayFromEnd; j++) {
+
+                    if (mPageWordBank.length != placeHolder) {
+                        TextView word = (TextView) row.getChildAt(j);
+                        word.setText(mPageWordBank[placeHolder]);
+                        word.setTextSize(25f);
+                        word.setTextColor(Color.BLACK);
+                        word.setOnClickListener(onClick());
+                        word.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View v) {
+
+                                showDictionaryDialog((TextView) v);
+                                return true;
+                            }
+                        });
+                        placeHolder++;
+
+
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void showDictionaryDialog(TextView currentWordTextView) {
+        if (dictionaryReady) {
+
+            String newWord = currentWordTextView.getText()
+                    .toString().replaceAll("\\s+", "");
+
+            WordLinkedWithDef findDef = WordLinkedWithDef.findDefinition(
+                    mWordLinkedWithDefs,
+                    DefinitionDialog.removePunctuations(newWord.toLowerCase()));
+
+
+            DefinitionDialog dialog = DefinitionDialog.newInstance(
+
+                    findDef.getWord(), findDef.getDefinition());
+
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+            dialog.show(fm, DefinitionDialog.DEFINITION);
+
+            DefinitionDialog.findDefinition2(
+                    currentWordTextView.getText().toString(), getActivity());
+
+        } else {
+            Toast.makeText(getActivity(),
+                    "Sorry, dictionary is being set up", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -534,33 +652,44 @@ public class PageFragment extends Fragment {
                 ColorDrawable textBackGroundColor = (ColorDrawable) v.getBackground();
                 int backgroundColor = textBackGroundColor.getColor();
 
-                if (mOnClickHighLightSentenceMode){
+                if (mOnClickHighLightSentenceMode) {
                     if (backgroundColor == Color.WHITE) {
-                        highlightSentenceMode((TextView)v, Color.YELLOW);
+                        highlightSentenceMode((TextView) v, Color.YELLOW);
                     } else {
-                        highlightSentenceMode((TextView)v, Color.WHITE);
+                        highlightSentenceMode((TextView) v, Color.WHITE);
                     }
                 } else {
-                    if (backgroundColor == Color.YELLOW) {
-                        textView.setBackgroundColor(Color.WHITE);
-                    } else {
-                        textView.setBackgroundColor(Color.YELLOW);
+                    if (!((TextView) v).getText().equals("")) {
+                        if (backgroundColor == Color.YELLOW) {
+                            textView.setBackgroundColor(Color.WHITE);
+                        } else {
+                            textView.setBackgroundColor(Color.YELLOW);
+                        }
                     }
                 }
 
-
-
-//                Log.i(TAG, "Are there more than one highlights? " + highlightsMoreThanOne());
-//
-//                highlightsMoreThanOne();
+                writeToFile(textView.getText().toString(), getActivity());
             }
         };
+    }
+
+    public static void writeToFile(String data, Context context) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+                    context.openFileOutput("dictionary_words_and_def.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        } catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
     }
 
     /**
      * Turns all the highlighted text into a White the background
      */
     private void cleanUpPageText(int backgroundColor) {
+        stopVoiceAndResetPlayButton();
+
         for (TableLayout tableLayout : mTableLayouts) {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
             for (int j = 0; j < row.getChildCount(); j++) {
@@ -592,7 +721,8 @@ public class PageFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == GET_SETTINGS || requestCode == Activity.RESULT_OK){
+
+        if (requestCode == GET_SETTINGS || requestCode == Activity.RESULT_OK) {
 
             voiceSpeed = data.getIntExtra(SettingsDialog.VOICE_SPEED, 20);
             mOnClickHighLightSentenceMode = data.getBooleanExtra(
@@ -603,8 +733,52 @@ public class PageFragment extends Fragment {
                     + "Sentence by sentence mode : " +
                     data.getBooleanExtra(SettingsDialog.SENTENCE_BY_SENTENCE_MODE, false)
                     , Toast.LENGTH_LONG).show();
+
+        }
+        if (requestCode == GET_PAGE_NUMBER) {
+
+            pageNumber = data.getIntExtra(SelectPageDialog.SELECTED_PAGE, 0);
+//            Toast.makeText(getActivity(), data.getIntExtra(SelectPageDialog.SELECTED_PAGE, 0) + "" , Toast.LENGTH_LONG).show();
+            setUpPageText();
         }
     }
+
+    private class DictionaryLoader extends AsyncTask<Void, Void, Void> {
+        ProgressDialog pdLoading = new ProgressDialog(getActivity());
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //this method will be running on UI thread
+
+            dictionaryReady = false;
+            Toast.makeText(getActivity(), "Dictionary is being set up", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            //this method will be running on background thread so don't update UI frome here
+            //do your long running http tasks here,you dont want to pass argument and u can access the parent class' variable url over here
+
+            mWordLinkedWithDefs = WordLinkedWithDef.linkWordsWithDefinitions(getActivity());
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            dictionaryReady = true;
+            //this method will be running on UI thread
+            Toast.makeText(getActivity(), "Dictionary is ready", Toast.LENGTH_LONG).show();
+            //pdLoading.dismiss();
+        }
+
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -616,6 +790,12 @@ public class PageFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_bookmark_page:
+                //TODO: Save Page
+                if (mBookmark.getVisibility() == View.INVISIBLE) {
+                    mBookmark.setVisibility(View.VISIBLE);
+                } else {
+                    mBookmark.setVisibility(View.INVISIBLE);
+                }
                 return true;
 
             case R.id.menu_setting:
@@ -627,6 +807,14 @@ public class PageFragment extends Fragment {
                 dialog.show(fm, SettingsDialog.SETTINGS);
 
                 return true;
+
+            case R.id.menu_select_page:
+                //TODO: create dialog
+                SelectPageDialog newPageDialog = SelectPageDialog.newInstance(pageNumber, mPagesOfBook.size());
+                newPageDialog.setTargetFragment(PageFragment.this, GET_PAGE_NUMBER);
+
+                FragmentManager fm1 = getActivity().getSupportFragmentManager();
+                newPageDialog.show(fm1, SelectPageDialog.SELECT_PAGE);
 
             default:
                 return super.onOptionsItemSelected(item);

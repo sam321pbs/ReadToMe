@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.bookpages.CharlottesWebPages;
-import com.example.sammengistu.readtome.bookpages.CuriousGeorgePages;
+import com.example.sammengistu.readtome.bookpages.ThingsFallApartBook;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -21,9 +21,9 @@ public class Library {
         mMyLibrary = new ArrayList<>();
 
 
-        Book curiousGeorge = new Book("Curious George", "H.A.Rey",
-                R.drawable.curious_george_book_cover,
-                new CuriousGeorgePages(mAppContext).getPagesOfTheBook());
+        Book curiousGeorge = new Book("Things Fall Apart", "Chinua Achebe",
+                R.drawable.things_fall_apart_book_cover,
+                new ThingsFallApartBook(mAppContext).getPagesOfTheBook());
 
         Book charlottesWeb = new Book("Charlottes Web", "E. B. White",
                 R.drawable.charlottes_web_book_cover, new CharlottesWebPages(mAppContext).getPagesOfTheBook(), "Chapter 1");

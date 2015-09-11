@@ -58,14 +58,14 @@ public class CuriousGeorgePages implements MakeAPage {
             e.printStackTrace();
         }
 
-        PageOfBook pageOne = new PageOfBook(R.drawable.curious_geroge_page_1,
-                page1.toString(),
-                1);
-
-        PageOfBook pageTwo = new PageOfBook(R.drawable.curious_george_page_2,
-                page2.toString(), 2);
-
-        mPagesOfTheBook.add(pageOne);
-        mPagesOfTheBook.add(pageTwo);
+//        PageOfBook pageOne = new PageOfBook(R.drawable.curious_geroge_page_1,
+//                page1.toString(),
+//                1);
+//
+//        PageOfBook pageTwo = new PageOfBook(R.drawable.curious_george_page_2,
+//                page2.toString(), 2);
+//
+//        mPagesOfTheBook.add(pageOne);
+//        mPagesOfTheBook.add(pageTwo);
     }
 }

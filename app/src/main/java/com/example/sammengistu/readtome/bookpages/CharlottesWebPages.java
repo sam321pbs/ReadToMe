@@ -31,9 +31,9 @@ public class CharlottesWebPages implements MakeAPage {
 
     private void addPages() {
 
-
         StringBuilder page1 = new StringBuilder();
         StringBuilder page2 = new StringBuilder();
+
         try {
             BufferedReader charlottesWeb = new BufferedReader(new InputStreamReader(
                     mContext.getResources().openRawResource(R.raw.charlottes_web_story)));
@@ -45,7 +45,7 @@ public class CharlottesWebPages implements MakeAPage {
             }
             String[] allWordsFromFirstTwoPages = stringBuffer.toString().split("\\s+");
             for (int i = 0; i < allWordsFromFirstTwoPages.length; i++) {
-                if (i < 144) {
+                if (i < 184) {
                     page1.append(allWordsFromFirstTwoPages[i] + " ");
                 } else {
                     page2.append(allWordsFromFirstTwoPages[i] + " ");
@@ -59,14 +59,14 @@ public class CharlottesWebPages implements MakeAPage {
         }
 
 
-        PageOfBook pageOne = new PageOfBook(R.drawable.curious_geroge_page_1,
-                page1.toString(),
-                1);
+//        PageOfBook pageOne = new PageOfBook(R.drawable.curious_geroge_page_1,
+//                page1.toString(),
+//                1);
+//
+//        PageOfBook pageTwo = new PageOfBook(R.drawable.curious_george_page_2,
+//                page2.toString(), 2);
 
-        PageOfBook pageTwo = new PageOfBook(R.drawable.curious_george_page_2,
-                page2.toString(), 2);
-
-        mPagesOfTheBook.add(pageOne);
-        mPagesOfTheBook.add(pageTwo);
+//        mPagesOfTheBook.add(pageOne);
+//        mPagesOfTheBook.add(pageTwo);
     }
 }

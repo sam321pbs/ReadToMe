@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffffff">
+
+    <TextView
+        android:id="@+id/select_page_dialog_current_page_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Current Page"
+        android:textSize="30sp"/>
+
+    <TextView
+        android:id="@+id/select_page_dialog_current_page_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/select_page_dialog_current_page_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="32"
+        android:textSize="25sp"/>
+
+    <TextView
+        android:id="@+id/select_page_dialog_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/select_page_dialog_current_page_number"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:text="Which page would you like to turn to?"
+        android:textSize="22sp"
+
+        />
+
+    <EditText
+        android:id="@+id/select_page_dialog_page_number_selected_by_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/select_page_dialog_question"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="2"
+        android:textSize="22sp"
+        android:selectAllOnFocus="true"/>
+
+</RelativeLayout>

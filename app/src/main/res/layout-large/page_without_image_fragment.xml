@@ -10,12 +10,12 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Chapter 1"
-        android:textSize="25sp"
+        android:textSize="35sp"
         android:layout_marginTop="20dp"
         android:id="@+id/book_chapter_textView"/>
 
     <ImageView
-        android:id="@+id/page_wihout_picture_bookmark"
+        android:id="@+id/page_without_picture_bookmark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -227,14 +227,12 @@
         android:layout_below="@+id/fragment_page_tableLayout22">
 
         <include
-
             layout="@layout/words_row"/>
     </TableLayout>
 
-
     <include
         android:id="@+id/action_command"
-
         layout="@layout/action_commands_for_page"/>
+
 
 </RelativeLayout>

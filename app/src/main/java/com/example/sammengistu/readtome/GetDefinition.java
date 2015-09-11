@@ -1,5 +1,6 @@
 package com.example.sammengistu.readtome;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.squareup.okhttp.Call;
@@ -13,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
@@ -24,8 +26,9 @@ public class GetDefinition {
     private static String mDefinition;
     static String[] def = new String[1];
     static ArrayList<String> o;
+    private static Context mContext;
 
-    public static String getDef(String word) {
+    public static String getDef(String word, Context context) {
         //findDefinition(word);
         return def[0];
     }
@@ -59,10 +62,12 @@ public class GetDefinition {
                 public void onResponse(Response response) throws IOException {
 
                     String jsonData = response.body().string();
+                    Log.i(TAG, jsonData);
 
                         if (response.isSuccessful()) {
                             try {
                                 GetDefinition.setDef(parseJSONForDefinition(jsonData));
+                                GetDefinition.writeToFile(jsonData);
 //                                 def[0] = parseJSONForDefinition(jsonData);
 //                                Log.i(TAG + "inner class", def[0]);
 
@@ -74,6 +79,18 @@ public class GetDefinition {
                 }
             });
 
+    }
+
+    public static void writeToFile(String data) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+                    mContext.openFileOutput("dictionary_word_and_def.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
     }
 
     public static String parseJSONForDefinition(String jsonData) throws JSONException {

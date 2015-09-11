@@ -8,11 +8,32 @@ public class PageOfBook {
     private int mPagePicture;
     private String mPageText;
     private int mPageNumber;
+    private String mChapterOfBook;
 
-    public PageOfBook(int pic, String text, int pageNumber) {
-        mPagePicture = pic;
+//    public PageOfBook(int pic, String text, int pageNumber) {
+//        mPagePicture = pic;
+//        mPageText = text;
+//        mPageNumber = pageNumber;
+//    }
+
+    public PageOfBook(String text, int pageNumber) {
+        mChapterOfBook = "None";
         mPageText = text;
         mPageNumber = pageNumber;
+    }
+
+    public PageOfBook(String text, int pageNumber, String chapterOfBook) {
+        mChapterOfBook = chapterOfBook;
+        mPageText = text;
+        mPageNumber = pageNumber;
+    }
+
+    public String getChapterOfBook() {
+        return mChapterOfBook;
+    }
+
+    public void setChapterOfBook(String chapterOfBook) {
+        mChapterOfBook = chapterOfBook;
     }
 
     public int getPagePicture() {
@@ -25,5 +46,9 @@ public class PageOfBook {
 
     public int getPageNumber() {
         return mPageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        mPageNumber = pageNumber;
     }
 }

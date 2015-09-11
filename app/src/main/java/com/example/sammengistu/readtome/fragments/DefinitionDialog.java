@@ -2,6 +2,7 @@ package com.example.sammengistu.readtome.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -20,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
  * Created by SamMengistu on 8/10/15.
@@ -35,8 +37,10 @@ public class DefinitionDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        String findWord = removePunctuations(getArguments().getString(FIND_WORD_DEFINITION));
+        String findWord = getArguments().getString(FIND_WORD_DEFINITION);
+        Log.i(TAG, findWord);
         String definition = getArguments().getString(DEFINITION);
+        Log.i(TAG, definition);
 
         Log.i(TAG, "word is " + findWord );
         //Log.i(TAG, "definition is " + definition);
@@ -47,9 +51,10 @@ public class DefinitionDialog extends DialogFragment {
         mWord = (TextView)v.findViewById(R.id.dialog_word_title);
         mDefintion = (TextView)v.findViewById(R.id.dialog_word_defintion_box);
 
+        //WordLinkedWithDef.findDefinition(getActivity(),)
         mWord.setText(findWord);
 
-        findDefinition(findWord);
+        mDefintion.setText(definition);
 
         return new AlertDialog.Builder(getActivity())
                 .setView(v)
@@ -95,36 +100,88 @@ public class DefinitionDialog extends DialogFragment {
 
             if (response.isSuccessful()) {
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                               mDefintion.setText(parseJSONForDefinition(jsonData));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            mDefintion.setText(parseJSONForDefinition(jsonData));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    });
+                    }
+                });
 
-                }
+            }
         }
     });
 
 }
 
-    public  String parseJSONForDefinition(String jsonData) throws JSONException {
+    public static void findDefinition2(String word, final Context context){
+        Request request = new Request.Builder()
+                .url("http://api.wordnik.com/v4/word.json/" +
+                        word.toLowerCase() +
+                        "/definitions?api_key=15dd8a92ea05080a54001050f1b0d798d2e96372d058cd735")
+                .build();
+
+        // http://api.wordnik.com/v4/word.json/car/definitions?api_key=15dd8a92ea05080a54001050f1b0d798d2e96372d058cd735
+
+        OkHttpClient client = new OkHttpClient();
+
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+
+                Log.i(TAG, e.toString());
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+
+                final String jsonData = response.body().string();
+
+                if (response.isSuccessful()) {
+
+
+                    try {
+                        writeToFile(parseJSONForDefinition(jsonData), context);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+
+    }
+    public static void writeToFile(String data, Context context) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+                    context.openFileOutput("dictionary_words_and_def.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+    public static String parseJSONForDefinition(String jsonData) throws JSONException {
 
         JSONArray arr  = new JSONArray(jsonData);
 
-        Log.i(TAG, ((JSONObject)arr.get(0)).get("text") + "");
+        Log.i(TAG, ((JSONObject) arr.get(0)).get("text") + "");
 
         return ((JSONObject)arr.get(0)).get("text") + "";
     }
 
-    public static DefinitionDialog newInstance(String word){
+
+
+    public static DefinitionDialog newInstance(String word, String definition){
         Bundle args = new Bundle();
         args.putString(FIND_WORD_DEFINITION, word);
-      //  args.putString(DEFINITION, definition);
+        args.putString(DEFINITION, definition);
 
         DefinitionDialog definitionDialog = new DefinitionDialog();
         definitionDialog.setArguments(args);
