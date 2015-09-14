@@ -75,6 +75,7 @@ public class PageFragment extends Fragment {
     private int bookmarkedPage;
     private SettingsPreferences mSettingsPreferences;
     private ReadToMeJSONSerializer mReadToMeJSONSerializer;
+    private DictionaryLoader mDictionaryLoader;
 
 
     @Override
@@ -82,8 +83,8 @@ public class PageFragment extends Fragment {
         super.onCreate(savedInstnaceState);
         setHasOptionsMenu(true);
 
-        DictionaryLoader dictionaryLoader = new DictionaryLoader();
-        dictionaryLoader.execute();
+        mDictionaryLoader = new DictionaryLoader();
+        mDictionaryLoader.execute();
 
         mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
 
@@ -322,15 +323,11 @@ public class PageFragment extends Fragment {
     }
 
     /**
-     * Highligts a sentence if only one word was highlighted
-     * It does this because it is easier to find the sentence when only
-     * one word is selected
+     * Highlights a sentence. By finding where all the words that were highlighted and
+     * makes a call to highlightSentenceMode.
      */
     private void highlightSentence(int color) {
         int counter = 0;
-        int tableLayoutHolder = 0;
-        int tableRowHolderForHighlightingToEndOfSent = 0;
-        int tableRowHolderForHighlightingToBeginingOfSent = 0;
 
         //Checks to see that only one word is highlighted and sets up its location
         for (int i = 0; i < mTableLayouts.size(); i++) {
@@ -342,22 +339,9 @@ public class PageFragment extends Fragment {
                 int backgroundColor = textBackGroundColor.getColor();
 
                 if (backgroundColor == Color.YELLOW) {
-                    tableLayoutHolder = i;
-                    tableRowHolderForHighlightingToEndOfSent = j;
-                    tableRowHolderForHighlightingToBeginingOfSent = j;
-                    counter++;
-                    Log.i(TAG, "counter = " + counter);
-                    Log.i(TAG, "tableLayoutHolder = " + tableLayoutHolder);
-                    Log.i(TAG, "tableRowHolderForHighlightingToEndOfSent = " + tableRowHolderForHighlightingToEndOfSent);
+                    highlightSentenceMode(word, Color.YELLOW);
                 }
             }
-        }
-
-        if (counter == 1) {
-            highlightSentenceLoops(tableLayoutHolder
-                    , tableRowHolderForHighlightingToEndOfSent,
-                    tableRowHolderForHighlightingToBeginingOfSent,
-                    color);
         }
     }
 
@@ -513,6 +497,17 @@ public class PageFragment extends Fragment {
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout22));
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout23));
     }
+    private View.OnLongClickListener onLongClick() {
+        return new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                showDictionaryDialog((TextView) v);
+                return true;
+            }
+        };
+    }
+
 
     /**
      * Sets up the page text by first breaking the texts into individual strings
@@ -522,8 +517,6 @@ public class PageFragment extends Fragment {
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
         mPageNumber.setText(pageNumber + "");
         mPageNumber.setTextColor(Color.BLACK);
-
-        int setUpTitlePage = 5;
 
         cleanUpPageText(Color.WHITE);
 
@@ -544,14 +537,7 @@ public class PageFragment extends Fragment {
                         word.setTextSize(20f);
                         word.setTextColor(Color.BLACK);
                         word.setOnClickListener(onClick());
-                        word.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-
-                                showDictionaryDialog((TextView) v);
-                                return true;
-                            }
-                        });
+                        word.setOnLongClickListener(onLongClick());
                         placeHolder++;
 
                     } else {
@@ -594,15 +580,7 @@ public class PageFragment extends Fragment {
                         word.setTextSize(30f);
                         word.setTextColor(Color.BLACK);
                         word.setOnClickListener(onClick());
-                        word.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-
-                                showDictionaryDialog((TextView) v);
-
-                                return true;
-                            }
-                        });
+                        word.setOnLongClickListener(onLongClick());
                         placeHolder++;
 
                     } else {
@@ -625,16 +603,8 @@ public class PageFragment extends Fragment {
                         word.setTextSize(25f);
                         word.setTextColor(Color.BLACK);
                         word.setOnClickListener(onClick());
-                        word.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-
-                                showDictionaryDialog((TextView) v);
-                                return true;
-                            }
-                        });
+                        word.setOnLongClickListener(onLongClick());
                         placeHolder++;
-
 
                     } else {
                         break;
@@ -643,6 +613,8 @@ public class PageFragment extends Fragment {
             }
         }
     }
+
+
 
     private void showDictionaryDialog(TextView currentWordTextView) {
         if (dictionaryReady) {
@@ -774,8 +746,8 @@ public class PageFragment extends Fragment {
         if (requestCode == GET_PAGE_NUMBER) {
 
             pageNumber = data.getIntExtra(SelectPageDialog.SELECTED_PAGE, 0);
-//            Toast.makeText(getActivity(), data.getIntExtra(SelectPageDialog.SELECTED_PAGE, 0) + "" , Toast.LENGTH_LONG).show();
             setUpPageText();
+            setUpChapterLabel();
         }
     }
 
@@ -810,7 +782,6 @@ public class PageFragment extends Fragment {
             dictionaryReady = true;
             //this method will be running on UI thread
             Toast.makeText(getActivity(), "Dictionary is ready", Toast.LENGTH_LONG).show();
-            //pdLoading.dismiss();
         }
 
     }
@@ -872,16 +843,26 @@ public class PageFragment extends Fragment {
         }
     }
 
+    private void stopAsyncTasks(){
+        if(mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING))
+        {
+            mDictionaryLoader.cancel(true);
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
         saveSettings();
+        stopAsyncTasks();
     }
 
     @Override
     public void onDestroy() {
+        mTts.shutdown();
         mWordPlayer.shutDownTTS();
         mWordPlayer.stopAudioFile();
+        Log.i(TAG, "Destroyed");
         super.onDestroy();
     }
 }
