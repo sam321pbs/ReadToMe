@@ -23,11 +23,11 @@ public class WordLinkedWithDef {
         mDefinition = definition;
     }
 
-    public static ArrayList<WordLinkedWithDef> linkWordsWithDefinitions(Context context) {
-        //TODO: Link words from file to definitions
+    public static ArrayList<WordLinkedWithDef> linkWordsWithDefinitions(Context context, int start,
+                                                                        int end) {
         mWordsAndDef = new ArrayList<>();
 
-        for (int i = 0; i < 4677; i++) {
+        for (int i = start; i < end; i++) {
 
             //Gets the entire line from the file
             String entireLine = "";
@@ -38,30 +38,30 @@ public class WordLinkedWithDef {
                 entireLine = "";
             }
 
+            char[] letters = entireLine.toCharArray();
+
+            int firstSlash = 0;
+            int counter = 0;
+
             StringBuilder createdWord = new StringBuilder();
 
             StringBuilder definition = new StringBuilder();
 
-            char[] letters = entireLine.toCharArray();
-
-            int firstSlash = 0;
-
             for (char letter : letters) {
                 if (letter == '/') {
+                    counter++;
                     firstSlash++;
-                    continue;
                 }
                 // Starts building the definition
-                if (firstSlash == 2) {
-                    if (letter == '-') {
-                        continue;
-                    } else {
-                        definition.append(letter);
-                    }
+                else if (firstSlash == 2) {
+                    definition.append(entireLine.substring(counter + 1));
+                    break;
                 }
                 // Builds the word
                 else {
+                    counter++;
                     createdWord.append(letter);
+
                 }
             }
 
@@ -115,6 +115,52 @@ public class WordLinkedWithDef {
         return found;
     }
 
+    public static String findDefFromFile (String word, Context context){
+
+        for (int i = 0; i < 4677; i ++) {
+            String entireLine = "";
+
+            try {
+                entireLine = WordLinkedWithDef.readLine(i, context);
+            } catch (IOException e) {
+                entireLine = "";
+            }
+
+            char[] letters = entireLine.toCharArray();
+
+            int firstSlash = 0;
+            int counter = 0;
+
+            StringBuilder createdWord = new StringBuilder();
+
+            StringBuilder definition = new StringBuilder();
+
+            for (char letter : letters) {
+                if (letter == '/') {
+                    counter++;
+                    firstSlash++;
+                }
+                // Starts building the definition
+                else if (firstSlash == 2) {
+                    definition.append(entireLine.substring(counter + 1));
+                    break;
+                }
+                // Builds the word
+                else {
+                    counter++;
+                    createdWord.append(letter);
+
+                }
+            }
+
+            if (word.equals(createdWord.toString())){
+                return definition.toString();
+            }
+            }
+        return "Couldn't find it";
+    }
+
+
     public String getWord() {
         return mWord;
     }
@@ -127,7 +173,4 @@ public class WordLinkedWithDef {
         return mDefinition;
     }
 
-    public void setDefinition(String definition) {
-        mDefinition = definition;
-    }
 }

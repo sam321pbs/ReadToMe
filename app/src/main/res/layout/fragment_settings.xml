@@ -1,25 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/blank_page">
+                android:layout_height="wrap_content"
+                android:padding="30dp"
+                android:background="#ffffffff">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/definition_word_box"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/settings_title_word_box"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Settings"
-        android:textSize="30sp"
-        android:id="@+id/settings_title"/>
+        android:textSize="40sp"
+        android:id="@+id/settings_title"
+        android:layout_marginTop="22dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/instructions_on_the_switch_button"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:textSize="20sp"
-        android:layout_below="@+id/settings_title"
+        android:layout_below="@+id/settings_title_word_box"
         android:id="@+id/settings_read_one_at_a_time_text_view"/>
 
     <Switch
@@ -73,6 +82,6 @@
         android:id="@+id/settings_default_button"
         android:layout_below="@+id/settings_change_voice_speed"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginTop="20dp"/>
 
 </RelativeLayout>

@@ -1,22 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
                 android:background="#ffffffff">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/definition_word_box"/>
+
     <TextView
+        android:id="@+id/dialog_word_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="Word"
-        android:textSize="25sp"
-        android:id="@+id/dialog_word_title"/>
+        android:textSize="35sp"
+        android:layout_marginTop="25dp"
+        />
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/dialog_word_defintion_box"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_word_title"
-        android:layout_marginTop="20dp"
-        android:id="@+id/dialog_word_defintion_box"/>
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="to Jump"
+        android:textSize="30sp"/>
 
 </RelativeLayout>

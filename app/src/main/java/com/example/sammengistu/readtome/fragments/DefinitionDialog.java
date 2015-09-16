@@ -3,6 +3,7 @@ package com.example.sammengistu.readtome.fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -44,15 +45,25 @@ public class DefinitionDialog extends DialogFragment {
 
         Log.i(TAG, "word is " + findWord );
         //Log.i(TAG, "definition is " + definition);
+        char [] array = findWord.toCharArray();
+        String updatedLetter = Character.toString(array[0]).toUpperCase();
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(updatedLetter);
+        stringBuilder.append(findWord.substring(1));
 
         View v = getActivity().getLayoutInflater()
                 .inflate(R.layout.definition_dialog, null);
 
         mWord = (TextView)v.findViewById(R.id.dialog_word_title);
+        mWord.setTextColor(Color.BLACK);
+
         mDefintion = (TextView)v.findViewById(R.id.dialog_word_defintion_box);
+        mDefintion.setTextColor(Color.BLACK);
 
         //WordLinkedWithDef.findDefinition(getActivity(),)
-        mWord.setText(findWord);
+        mWord.setText(stringBuilder.toString());
 
         mDefintion.setText(definition);
 

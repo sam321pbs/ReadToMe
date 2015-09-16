@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
@@ -28,6 +29,9 @@ public class SelectPageDialog extends DialogFragment {
 
     private TextView mCurrentPage;
     private EditText mSelectedPage;
+    private TextView mCurrentPageTitle;
+    private TextView mQuestion;
+
     final String[] selectedPageNumber = {""};
 
     @Override
@@ -39,12 +43,10 @@ public class SelectPageDialog extends DialogFragment {
         int currentPageNumber = getArguments().getInt(CURRENT_PAGE_NUMBER, 0);
         final int max = getArguments().getInt(MAX_NUMBER_OF_PAGES, 0);
 
-
-        mCurrentPage = (TextView)selectPageDialog.findViewById(R.id.select_page_dialog_current_page_number);
-        mCurrentPage.setText(currentPageNumber + "");
-
         mSelectedPage = (EditText)selectPageDialog.findViewById(R.id.select_page_dialog_page_number_selected_by_user);
         mSelectedPage.setText(currentPageNumber + "");
+        mSelectedPage.setTextColor(Color.BLACK);
+
         mSelectedPage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
