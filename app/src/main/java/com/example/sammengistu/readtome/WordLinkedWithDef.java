@@ -23,6 +23,13 @@ public class WordLinkedWithDef {
         mDefinition = definition;
     }
 
+    /**
+     * Creates an Object (WordLinked with defintion) pairs of word - defintion ()
+     * @param context- to get access of the deictionary file
+     * @param start - Where to start reading the file
+     * @param end - Where to stop reading the file
+     * @return - ArrayList of WordLinkedWithDefinitions
+     */
     public static ArrayList<WordLinkedWithDef> linkWordsWithDefinitions(Context context, int start,
                                                                         int end) {
         mWordsAndDef = new ArrayList<>();
@@ -74,6 +81,13 @@ public class WordLinkedWithDef {
     }
 
 
+    /**
+     * Reads a line from the file and converts it to a string
+     * @param line - line number you want to read
+     * @param context - to get access to the file
+     * @return - the string of the specified line
+     * @throws IOException
+     */
     public static String readLine(int line, Context context) throws IOException {
 
         InputStream in = context.getResources().openRawResource(R.raw.dictionary_words_and_def);
@@ -101,6 +115,13 @@ public class WordLinkedWithDef {
         return "didnt work";
     }
 
+    /**
+     * Finds a defintion of a word bys searching through the ArrayList<WordLinkedWithDef>
+     *     and returns the Defintion
+     * @param wordLinkedWithDefs - ArrayList of where to search
+     * @param findWord - word they are looking for
+     * @return - returns the definion
+     */
     public static WordLinkedWithDef findDefinition(
             ArrayList<WordLinkedWithDef> wordLinkedWithDefs,
             String findWord) {
@@ -115,6 +136,12 @@ public class WordLinkedWithDef {
         return found;
     }
 
+    /**
+     * Searches the file for the word and defintions
+     * @param word
+     * @param context
+     * @return
+     */
     public static String findDefFromFile (String word, Context context){
 
         for (int i = 0; i < 4677; i ++) {
