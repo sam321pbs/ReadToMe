@@ -11,7 +11,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sammengistu.readtome.R;
@@ -27,11 +26,6 @@ public class SelectPageDialog extends DialogFragment {
     public static final int PAGE_SELECTED = 6006;
     private static final String MAX_NUMBER_OF_PAGES = "max pages";
 
-    private TextView mCurrentPage;
-    private EditText mSelectedPage;
-    private TextView mCurrentPageTitle;
-    private TextView mQuestion;
-
     final String[] selectedPageNumber = {""};
 
     @Override
@@ -43,11 +37,11 @@ public class SelectPageDialog extends DialogFragment {
         int currentPageNumber = getArguments().getInt(CURRENT_PAGE_NUMBER, 0);
         final int max = getArguments().getInt(MAX_NUMBER_OF_PAGES, 0);
 
-        mSelectedPage = (EditText)selectPageDialog.findViewById(R.id.select_page_dialog_page_number_selected_by_user);
-        mSelectedPage.setText(currentPageNumber + "");
-        mSelectedPage.setTextColor(Color.BLACK);
+        EditText selectedPage = (EditText) selectPageDialog.findViewById(R.id.select_page_dialog_page_number_selected_by_user);
+        selectedPage.setText(currentPageNumber + "");
+        selectedPage.setTextColor(Color.BLACK);
 
-        mSelectedPage.addTextChangedListener(new TextWatcher() {
+        selectedPage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 

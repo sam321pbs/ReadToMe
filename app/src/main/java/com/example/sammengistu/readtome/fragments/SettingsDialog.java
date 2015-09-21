@@ -33,7 +33,6 @@ public class SettingsDialog extends DialogFragment {
     private boolean readSentenceBySentence;
     private int voiceSpeed;
     public static final int DEFAULT_NORMAL_SPEED = 20;
-    public static final boolean DEFAULT_SENTENCE_BY_SENTENCE_MODE = false;
     private TextView mVoiceSpeedNumberTextView;
 
 

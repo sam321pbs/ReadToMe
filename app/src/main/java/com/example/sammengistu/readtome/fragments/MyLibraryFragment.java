@@ -24,9 +24,7 @@ public class MyLibraryFragment extends Fragment {
 
     public static final String BOOK_ID = "Book Id";
     private ImageView mBookOneImage;
-    private ImageView mBookTwoImage;
     private Book mThingsFallApart;
-    private Book charlottesWeb;
 
 
     @Override
@@ -35,7 +33,7 @@ public class MyLibraryFragment extends Fragment {
 
         ArrayList<Book> myLibrary = Library.get(getActivity()).getMyLibrary();
         mThingsFallApart = myLibrary.get(0);
-        charlottesWeb = myLibrary.get(1);
+
     }
 
     @Override

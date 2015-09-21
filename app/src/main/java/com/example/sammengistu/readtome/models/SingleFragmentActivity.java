@@ -1,9 +1,11 @@
-package com.example.sammengistu.readtome;
+package com.example.sammengistu.readtome.models;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+
+import com.example.sammengistu.readtome.R;
 
 /**
  * Created by sam321pbs on 4/27/15.

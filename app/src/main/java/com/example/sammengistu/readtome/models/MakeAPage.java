@@ -1,4 +1,6 @@
-package com.example.sammengistu.readtome;
+package com.example.sammengistu.readtome.models;
+
+import com.example.sammengistu.readtome.models.PageOfBook;
 
 import java.util.ArrayList;
 

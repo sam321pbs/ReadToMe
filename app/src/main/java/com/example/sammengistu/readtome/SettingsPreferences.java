@@ -8,9 +8,6 @@ import org.json.JSONObject;
  */
 public class SettingsPreferences {
 
-    private static final String SENTENCE_READING_MODE = "Sentence reading mode";
-    private static final String VOICE_SPEED_FOR_SETTINGS = "Voice Speed settings";
-    private static final String BOOKMARKED_PAGE = "Bookmarked page";
     private static final String JSON_BOOKMARK = "JSON Bookmarked page";
     private static final String JSON_READ_SENTENCE_MODE = "json read sentence mode";
     private static final String JSON_VOICE_SPEED = "json voice speed";

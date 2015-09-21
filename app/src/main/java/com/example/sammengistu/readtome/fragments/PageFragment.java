@@ -23,7 +23,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sammengistu.readtome.PageOfBook;
+import com.example.sammengistu.readtome.models.PageOfBook;
 import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.ReadToMeJSONSerializer;
 import com.example.sammengistu.readtome.SettingsPreferences;
@@ -44,7 +44,6 @@ import java.util.UUID;
 public class PageFragment extends Fragment {
 
     private static final String TAG = "PageFragment";
-    private static final int PAGE = 1;
     private static final int GET_SETTINGS = 3;
     private static final int GET_PAGE_NUMBER = 4;
 
@@ -57,7 +56,6 @@ public class PageFragment extends Fragment {
     int pageNumber;
     private ArrayList<TableLayout> mTableLayouts;
     private ArrayList<String> mWordsToSpeechBank;
-    private Book currentBook;
     private TextView mChapterTextView;
     private ArrayList<TextView> mHighlightedTextViews;
     private TextToSpeech mTts;
@@ -104,13 +102,13 @@ public class PageFragment extends Fragment {
 
         playOrStopCounter = 0;
 
-        mTableLayouts = new ArrayList<TableLayout>();
-        mWordsToSpeechBank = new ArrayList<String>();
+        mTableLayouts = new ArrayList<>();
+        mWordsToSpeechBank = new ArrayList<>();
         mHighlightedTextViews = new ArrayList<>();
 
         UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
 
-        currentBook = Library.get(getActivity()).getBook(bookId);
+        Book currentBook = Library.get(getActivity()).getBook(bookId);
 
         mPagesOfBook = currentBook.getPagesOfBook();
 
@@ -154,7 +152,6 @@ public class PageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-//        dictionaryReady = false;
 
         Log.i(TAG, mSettingsPreferences.getBookMarkedPage() + " - Bookmarked page  " +
                 mSettingsPreferences.isReadSentenceMode() + " - readmode   " +
@@ -629,29 +626,6 @@ public class PageFragment extends Fragment {
         }
     }
 
-    /**
-     * This creates the dialog after finding the definition
-     * @param wordLinkedWithDefs
-     * @param currentWordTextView
-     */
-    private void getDefinition(ArrayList<WordLinkedWithDef> wordLinkedWithDefs,
-                               TextView currentWordTextView){
-        String newWord = currentWordTextView.getText()
-                .toString().replaceAll("\\s+", "");
-
-        WordLinkedWithDef findDef = WordLinkedWithDef.findDefinition(
-                wordLinkedWithDefs,
-                DefinitionDialog.removePunctuations(newWord.toLowerCase()));
-
-
-        DefinitionDialog dialog = DefinitionDialog.newInstance(
-
-                findDef.getWord(), findDef.getDefinition());
-
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        dialog.show(fm, DefinitionDialog.DEFINITION);
-
-    }
 
     /**
      * If the dictionary is ready it will let you get the definition
@@ -714,7 +688,6 @@ public class PageFragment extends Fragment {
             }
         };
     }
-
 
 
     /**
@@ -812,7 +785,6 @@ public class PageFragment extends Fragment {
 
             dictionaryReady = true;
 
-           // mDictionary2Loader.execute();
             //this method will be running on UI thread
             Toast.makeText(getActivity(), "Dictionary1 is ready", Toast.LENGTH_SHORT).show();
         }
@@ -900,7 +872,6 @@ public class PageFragment extends Fragment {
     public void onDestroy() {
         mTts.shutdown();
         mWordPlayer.shutDownTTS();
-        mWordPlayer.stopAudioFile();
         Log.i(TAG, "Destroyed");
         super.onDestroy();
     }

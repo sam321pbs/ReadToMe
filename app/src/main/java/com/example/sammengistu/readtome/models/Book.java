@@ -1,7 +1,5 @@
 package com.example.sammengistu.readtome.models;
 
-import com.example.sammengistu.readtome.PageOfBook;
-
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -35,16 +33,8 @@ public class Book {
         return mPagesOfBook;
     }
 
-    public void setPageOfBook(ArrayList<PageOfBook> pageOfBook) {
-        mPagesOfBook = pageOfBook;
-    }
-
     public UUID getBookId() {
         return mBookId;
-    }
-
-    public void setBookId(UUID bookId) {
-        mBookId = bookId;
     }
 
     public String getTitle() {
@@ -59,15 +49,8 @@ public class Book {
         return mAuthor;
     }
 
-    public void setAuthor(String author) {
-        mAuthor = author;
-    }
-
     public int getBookCover() {
         return mBookCover;
     }
 
-    public void setBookCover(int bookCover) {
-        mBookCover = bookCover;
-    }
 }

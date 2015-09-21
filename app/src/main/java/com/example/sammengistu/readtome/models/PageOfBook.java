@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome;
+package com.example.sammengistu.readtome.models;
 
 /**
  * Created by SamMengistu on 7/11/15.
@@ -10,11 +10,6 @@ public class PageOfBook {
     private int mPageNumber;
     private String mChapterOfBook;
 
-//    public PageOfBook(int pic, String text, int pageNumber) {
-//        mPagePicture = pic;
-//        mPageText = text;
-//        mPageNumber = pageNumber;
-//    }
 
     public PageOfBook(String text, int pageNumber) {
         mChapterOfBook = "None";

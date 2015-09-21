@@ -3,7 +3,6 @@ package com.example.sammengistu.readtome;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
@@ -25,8 +24,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private static final String TAG = "WordPlayer";
     private static final int HAS_MORE_THAN_ONE = 0;
     private static final int FIRST_ITEM = 0;
-
-    private MediaPlayer mWordPlayer;
 
     private TextToSpeech mTts;
     private Activity mAppActivity;
@@ -52,17 +49,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         mOnClickHighLightSentenceMode = readBySentence;
         mPlay = false;
 
-    }
-
-    /**
-     * Stops the media player if it is turned on
-     */
-    public void stopAudioFile() {
-        if (mWordPlayer != null) {
-            mWordPlayer.release();
-            mWordPlayer = null;
-
-        }
     }
 
     public void stopTtsVoice(){
@@ -101,38 +87,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 wordsToPlay.remove(FIRST_ITEM);
                 highLightedTextView.remove(FIRST_ITEM);
 
-//            if (WordAudioFiles.get(mAppContext).isWordInFiles(getFirst)) {
-//
-//                stopAudioFile();
-//
-//                mWordPlayer = MediaPlayer.create(mAppContext, WordAudioFiles.get(mAppContext)
-//                        .getWordAudio(getFirst));
-//
-//               // mWordPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//
-//                mWordPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//                    @Override
-//                    public void onPrepared(MediaPlayer mp) {
-//                        if (mp == mWordPlayer) {
-//                            mWordPlayer.start();
-//                            textView.setBackgroundColor(Color.BLUE);
-//                        }
-//                    }
-//                });
-//
-//                mWordPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                    @Override
-//                    public void onCompletion(MediaPlayer mp) {
-//                        stopAudioFile();
-//                        textView.setBackgroundColor(Color.YELLOW);
-//                        // Recursively call the play() method with one less
-//                        // track in the list.
-//                        play(wordsToPlay, highLightedTextView);
-//                    }
-//                });
-//
-//            } else {
-
                 mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                     @Override
                     public void onStart(String utteranceId) {
@@ -170,7 +124,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
                 mTts.speak(getFirst, TextToSpeech.QUEUE_FLUSH, map);
 
-                //  }
             } else {
                 mAppActivity.runOnUiThread(new Runnable() {
                     @Override

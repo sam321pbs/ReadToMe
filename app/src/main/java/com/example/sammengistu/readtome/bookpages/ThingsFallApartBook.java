@@ -3,8 +3,8 @@ package com.example.sammengistu.readtome.bookpages;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.sammengistu.readtome.MakeAPage;
-import com.example.sammengistu.readtome.PageOfBook;
+import com.example.sammengistu.readtome.models.MakeAPage;
+import com.example.sammengistu.readtome.models.PageOfBook;
 import com.example.sammengistu.readtome.R;
 
 import java.io.BufferedReader;

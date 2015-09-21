@@ -3,7 +3,7 @@ package com.example.sammengistu.readtome.activities;
 import android.support.v4.app.Fragment;
 
 import com.example.sammengistu.readtome.fragments.MyLibraryFragment;
-import com.example.sammengistu.readtome.SingleFragmentActivity;
+import com.example.sammengistu.readtome.models.SingleFragmentActivity;
 
 
 public class MyLibraryActivity extends SingleFragmentActivity {
