@@ -10,9 +10,11 @@ public class PageOfBook {
     private int mPageNumber;
     private String mChapterOfBook;
 
+    public static final String PAGE_HAS_NO_CHAPTER = "None";
+
 
     public PageOfBook(String text, int pageNumber) {
-        mChapterOfBook = "None";
+        mChapterOfBook = PAGE_HAS_NO_CHAPTER;
         mPageText = text;
         mPageNumber = pageNumber;
     }

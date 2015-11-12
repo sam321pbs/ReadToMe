@@ -51,53 +51,54 @@ public class ThingsFallApartBook implements MakeAPage {
             }
 
             //creates an array of all the words from the book
-            String[] allWordsFromFirstTwoPages = stringBuffer.toString().split("\\s+");
+            String[] allWordsFromBook = stringBuffer.toString().split("\\s+");
 
             boolean makeTitlePageFirst = true;
             boolean makePageTwo = false;
             boolean hasChapter = true;
             boolean nextPageHasChapter = false;
 
-            for (wordCount = 0; wordCount < allWordsFromFirstTwoPages.length; wordCount++) {
+            for (wordCount = 0; wordCount < allWordsFromBook.length; wordCount++) {
 
                 if (makeTitlePageFirst) {
 
-                    makeSpecialPage(allWordsFromFirstTwoPages, TITLE_PAGE_LIMIT);
+                    makeSpecialPage(allWordsFromBook, TITLE_PAGE_LIMIT);
 
                     makeTitlePageFirst = false;
                     makePageTwo = true;
 
                 } else if (makePageTwo) {
-                    makeSpecialPage(allWordsFromFirstTwoPages, LENGTH_OF_QUOTE);
+                    makeSpecialPage(allWordsFromBook, LENGTH_OF_QUOTE);
                     makePageTwo = false;
                 } else {
                     StringBuilder chapterName = new StringBuilder();
                     StringBuilder page = new StringBuilder();
 
                     //See if word has chapter
-                    if (allWordsFromFirstTwoPages[wordCount].equals("CHAPTER")){
-                        Log.i("Things fall apart", allWordsFromFirstTwoPages[wordCount]);
-                        Log.i("Things fall apart", allWordsFromFirstTwoPages[wordCount + 1]);
+                    if (allWordsFromBook[wordCount].equals("CHAPTER")) {
+                        Log.i("Things fall apart", allWordsFromBook[wordCount]);
+                        Log.i("Things fall apart", allWordsFromBook[wordCount + 1]);
                         hasChapter = true;
                     } else {
                         hasChapter = false;
                     }
 
                     if (hasChapter) {
-                        chapterName.append(allWordsFromFirstTwoPages[wordCount++] + " ");
-                        chapterName.append(allWordsFromFirstTwoPages[wordCount++]);
+                        chapterName.append(allWordsFromBook[wordCount++] + " ");
+                        chapterName.append(allWordsFromBook[wordCount++]);
 
                     }
-                        for (int temp = 0; temp < MAX_NUMBER_OF_WORDS_PER_PAGE; temp++) {
+                    //Puts together enough words to fill a page
+                    for (int temp = 0; temp < MAX_NUMBER_OF_WORDS_PER_PAGE; temp++) {
 
-                            if (wordCount == allWordsFromFirstTwoPages.length ){
-                                break;
-                            }
-                            if (allWordsFromFirstTwoPages[wordCount] .equals("CHAPTER")){
-                                break;
-                            } else {
-                                page.append(allWordsFromFirstTwoPages[wordCount++] + " ");
-                            }
+                        if (wordCount == allWordsFromBook.length) {
+                            break;
+                        }
+                        if (allWordsFromBook[wordCount].equals("CHAPTER")) {
+                            break;
+                        } else {
+                            page.append(allWordsFromBook[wordCount++] + " ");
+                        }
                     }
 
                     if (hasChapter) {
@@ -105,8 +106,10 @@ public class ThingsFallApartBook implements MakeAPage {
                                 page.toString(),
                                 pageNumber++,
                                 chapterName.toString());
+
                         mPagesOfTheBook.add(newPage);
                         wordCount--;
+
                     } else {
                         PageOfBook newPage = new PageOfBook(
                                 page.toString(),
@@ -115,8 +118,8 @@ public class ThingsFallApartBook implements MakeAPage {
                         wordCount--;
                     }
 
-                    }
                 }
+            }
         } catch (IOException e)
 
         {

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="400dp"
+    android:padding="15dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/definition_word_box"
+        android:id="@+id/image_box"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select a chapter"
+        android:id="@+id/select_chapeter_text_view"
+        android:textSize="40sp"
+        android:layout_marginTop="22dp"
+        android:layout_centerHorizontal="true"/>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="wrap_content"
+        android:layout_height="400dp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/image_box">
+
+
+    </ListView>
+</RelativeLayout>

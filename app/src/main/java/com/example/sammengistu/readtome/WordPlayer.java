@@ -153,7 +153,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
                 for (int i = 0; i < highLightedTextViews.size(); i++) {
 
-                    if (!highLightedTextViews.get(i).getText().toString().contains(".")) {
+                    if (!PageFragment.endOfSentence(highLightedTextViews.get(i).getText().toString())) {
 
                         textViewsOfSentence.add(highLightedTextViews.get(0));
                         sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());

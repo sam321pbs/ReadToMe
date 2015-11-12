@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:contentDescription="book images"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/curious_geroge_page_1"
         android:layout_marginTop="10dp"/>
 
 

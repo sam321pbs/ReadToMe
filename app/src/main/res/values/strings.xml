@@ -8,7 +8,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_pages">Pages</string>
     <string name="title_activity_settings">SettingsActivity</string>
-    <string name="instructions_on_the_switch_button">If this button is on it will read to you a sentence at a time. If It is off it will read to you one word at a time</string>
+    <string name="instructions_on_the_switch_button">If this button is on, it will read to you a sentence at a time. If it is off, it will read to you one word at a time</string>
     <string name="help_fragment_title">How to use</string>
     <string name="help_fragment_how_to_use_play_button">After a word or multiple words have been highlighted, this button will start reading to you. Once it starts playing, it will turn to a stop button.</string>
     <string name="help_fragment_how_to_use_sentence_button">If settings mode is set to read one word at a time, it will highlight the sentence of each word that was selected on the page.</string>

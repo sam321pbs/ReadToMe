@@ -74,6 +74,12 @@
                 android:src="@drawable/right_arrow_smaller"
                 android:layout_marginTop="22dp"/>
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/bookmark"
+                android:layout_marginTop="32dp"/>
+
 
 
         </LinearLayout>
@@ -135,6 +141,15 @@
                 android:textSize="20sp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="35dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="If you see the bookmark than this will be the first page you see when you restart the app"
+                android:textSize="20sp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="40dp"/>
 
             <TextView
                 android:layout_width="wrap_content"

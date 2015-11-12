@@ -2,7 +2,6 @@ package com.example.sammengistu.readtome.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -22,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 
 /**
  * Created by SamMengistu on 8/10/15.
@@ -127,18 +125,6 @@ public class DefinitionDialog extends DialogFragment {
     });
 
 }
-
-    public static void writeToFile(String data, Context context) {
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
-                    context.openFileOutput("dictionary_words_and_def.txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
-    }
 
     public static String parseJSONForDefinition(String jsonData) throws JSONException {
 

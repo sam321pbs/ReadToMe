@@ -46,9 +46,6 @@ public class Library {
         mMyLibrary.add(book);
     }
 
-    public void deleteBook(Book book) {
-        mMyLibrary.remove(book);
-    }
 
     public ArrayList<Book> getMyLibrary() {
         return mMyLibrary;

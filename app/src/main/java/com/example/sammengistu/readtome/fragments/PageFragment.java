@@ -48,6 +48,7 @@ public class PageFragment extends Fragment {
     private static final int GET_PAGE_NUMBER = 4;
 
     private static final String FILENAME = "readtome.json";
+    private static final int GET_CHAPTER_NUMBER = 2;
 
     private ArrayList<PageOfBook> mPagesOfBook;
     private TextView mPageNumber;
@@ -73,38 +74,27 @@ public class PageFragment extends Fragment {
 
     private Dictionary1Loader mDictionaryLoader;
 
+    private ArrayList<Integer> mChaptersOfTheBook;
+
     @Override
     public void onCreate(Bundle savedInstnaceState) {
         super.onCreate(savedInstnaceState);
         setHasOptionsMenu(true);
 
-
         mDictionaryLoader = new Dictionary1Loader();
         mDictionaryLoader.execute();
 
-
         mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
 
+        loadUpSettings();
 
-        try {
-            mSettingsPreferences = mReadToMeJSONSerializer.loadSettings();
-            Log.i(TAG, "Success loading");
-        } catch (Exception e) {
-
-            Log.i(TAG, e.getMessage());
-            Log.i(TAG, " Error loading");
-            mSettingsPreferences = new SettingsPreferences();
-        }
-
+        instantiateLists();
 
         voiceSpeed = mSettingsPreferences.getVoiceSpeed();
         mOnClickHighLightSentenceMode = mSettingsPreferences.isReadSentenceMode();
 
         playOrStopCounter = 0;
 
-        mTableLayouts = new ArrayList<>();
-        mWordsToSpeechBank = new ArrayList<>();
-        mHighlightedTextViews = new ArrayList<>();
 
         UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
 
@@ -113,6 +103,8 @@ public class PageFragment extends Fragment {
         mPagesOfBook = currentBook.getPagesOfBook();
 
         pageNumber = mSettingsPreferences.getBookMarkedPage();
+
+        setUpChapters();
 
         mWordPlayer = new WordPlayer(getActivity(), getActivity(), mOnClickHighLightSentenceMode,
                 voiceSpeed);
@@ -277,6 +269,35 @@ public class PageFragment extends Fragment {
         return blankPage;
     }
 
+    private void setUpChapters() {
+
+        for (PageOfBook pageOfBook : mPagesOfBook) {
+            if (!pageOfBook.getChapterOfBook().equals(PageOfBook.PAGE_HAS_NO_CHAPTER)) {
+                mChaptersOfTheBook.add(pageOfBook.getPageNumber());
+                Log.i(TAG, "" + pageOfBook.getPageNumber());
+            }
+        }
+    }
+
+    private void instantiateLists() {
+        mTableLayouts = new ArrayList<>();
+        mWordsToSpeechBank = new ArrayList<>();
+        mHighlightedTextViews = new ArrayList<>();
+        mChaptersOfTheBook = new ArrayList<>();
+    }
+
+    private void loadUpSettings() {
+        try {
+            mSettingsPreferences = mReadToMeJSONSerializer.loadSettings();
+            Log.i(TAG, "Success loading");
+        } catch (Exception e) {
+
+            Log.i(TAG, e.getMessage());
+            Log.i(TAG, " Error loading");
+            mSettingsPreferences = new SettingsPreferences();
+        }
+    }
+
     private void stopVoiceAndResetPlayButton() {
 
         mWordPlayer.stopTtsVoice();
@@ -342,10 +363,11 @@ public class PageFragment extends Fragment {
 
     /**
      * Given the parameters it will know where to start highlightings and stop highlighting
+     *
      * @param tableLayoutHolder
-     * @param tableRowHolderForHighlightingToEndOfSent - where to
+     * @param tableRowHolderForHighlightingToEndOfSent      - where to
      * @param tableRowHolderForHighlightingToBeginingOfSent - where to highlight to
-     * @param color - color to highlight
+     * @param color                                         - color to highlight
      */
     private void highlightSentenceLoops(int tableLayoutHolder,
                                         int tableRowHolderForHighlightingToEndOfSent,
@@ -360,16 +382,14 @@ public class PageFragment extends Fragment {
 
                 tableRowHolderForHighlightingToEndOfSent = 0; // when the row changes it starts highlighting at beginning
                 TextView word = (TextView) row.getChildAt(j);
-
-
-                // If the word box is not empty it will highlight it
-                if (!(word.getText().toString().isEmpty())) {
-                    word.setBackgroundColor(color);
-                }
                 String wordFromView = word.getText().toString();
 
-                if (wordFromView.contains(".") || wordFromView.contains("!")
-                        || wordFromView.contains("?")) {
+                // If the word box is not empty it will highlight it
+                if (!(wordFromView.isEmpty())) {
+                    word.setBackgroundColor(color);
+                }
+
+                if (endOfSentence(wordFromView)) {
 
                     if (isItAFamilyName(wordFromView)) {
 
@@ -394,11 +414,16 @@ public class PageFragment extends Fragment {
             TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
             for (int j = tableRowHolderForHighlightingToBeginingOfSent - skipCurrentWord; j >= 0; j--) {
                 TextView word = (TextView) row.getChildAt(j);
+                String textWord = word.getText().toString();
 
-                if (!word.getText().toString().contains(".") ||
-                        isItAFamilyName(word.getText().toString())) {
+                if (isItAFamilyName(textWord)) {
+                    word.setBackgroundColor(color);
+                    continue;
+                }
 
-                    if (!(word.getText().toString().isEmpty())) {
+                if (!endOfSentence(textWord)) {
+
+                    if (!(textWord.isEmpty())) {
                         word.setBackgroundColor(color);
                     }
 
@@ -418,7 +443,13 @@ public class PageFragment extends Fragment {
         }
     }
 
-    private boolean isItAFamilyName(String word){
+    public static boolean endOfSentence(String textWord) {
+        return textWord.contains(".") || textWord.contains("!")
+                || textWord.contains("?") || textWord.contains(":");
+
+    }
+
+    private boolean isItAFamilyName(String word) {
 
         return word.equals("Mrs.") ||
                 word.equals("Mr.") ||
@@ -437,8 +468,8 @@ public class PageFragment extends Fragment {
         }
     }
 
-    private void handleBookmark(){
-        if (pageNumber == mSettingsPreferences.getBookMarkedPage()){
+    private void handleBookmark() {
+        if (pageNumber == mSettingsPreferences.getBookMarkedPage()) {
             mBookmark.setVisibility(View.VISIBLE);
         } else {
             mBookmark.setVisibility(View.INVISIBLE);
@@ -629,12 +660,13 @@ public class PageFragment extends Fragment {
 
     /**
      * If the dictionary is ready it will let you get the definition
+     *
      * @param currentWordTextView
      */
     private void showDictionaryDialog(TextView currentWordTextView) {
         if (dictionaryReady) {
-            String newWord = currentWordTextView.getText()
-                    .toString().replaceAll("\\s+", "");
+            String newWord = DefinitionDialog.removePunctuations(currentWordTextView.getText()
+                    .toString().replaceAll("\\s+", ""));
 
             WordLinkedWithDef findDef = WordLinkedWithDef.findDefinition(
                     mDictionaryOne,
@@ -644,15 +676,14 @@ public class PageFragment extends Fragment {
             DefinitionDialog dialog = DefinitionDialog.newInstance(
 
                     newWord, findDef.getDefinition()
-                    );
+            );
 
             FragmentManager fm = getActivity().getSupportFragmentManager();
             dialog.show(fm, DefinitionDialog.DEFINITION);
 
-        }
-    else {
+        } else {
             Toast.makeText(getActivity(),
-                    "Sorry, dictionary is being set up", Toast.LENGTH_LONG).show();
+                    "Sorry, the dictionary is being set up", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -740,13 +771,21 @@ public class PageFragment extends Fragment {
 
 
             saveSettings();
-            Toast.makeText(getActivity(), "Settings Saved"
+            Toast.makeText(getActivity(), "Settings saved"
                     , Toast.LENGTH_LONG).show();
 
         }
         if (requestCode == GET_PAGE_NUMBER) {
 
             pageNumber = data.getIntExtra(SelectPageDialog.SELECTED_PAGE, 0);
+            setUpPageText();
+            setUpChapterLabel();
+            handleBookmark();
+        }
+
+        if (requestCode == GET_CHAPTER_NUMBER) {
+
+            pageNumber = data.getIntExtra(ChaptersDialog.SELECTED_CHAPTER, 0);
             setUpPageText();
             setUpChapterLabel();
             handleBookmark();
@@ -765,7 +804,7 @@ public class PageFragment extends Fragment {
             //this method will be running on UI thread
 
             dictionaryReady = false;
-            Toast.makeText(getActivity(), "Dictionary1 is being set up", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Dictionary is being set up", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -786,7 +825,7 @@ public class PageFragment extends Fragment {
             dictionaryReady = true;
 
             //this method will be running on UI thread
-            Toast.makeText(getActivity(), "Dictionary1 is ready", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Dictionary is ready", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -800,6 +839,8 @@ public class PageFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+
         switch (item.getItemId()) {
             case R.id.menu_bookmark_page:
                 if (mBookmark.getVisibility() == View.INVISIBLE) {
@@ -817,7 +858,6 @@ public class PageFragment extends Fragment {
                         voiceSpeed, mOnClickHighLightSentenceMode);
                 dialog.setTargetFragment(PageFragment.this, GET_SETTINGS);
 
-                FragmentManager fm = getActivity().getSupportFragmentManager();
                 dialog.show(fm, SettingsDialog.SETTINGS);
 
                 return true;
@@ -826,15 +866,21 @@ public class PageFragment extends Fragment {
                 SelectPageDialog newPageDialog = SelectPageDialog.newInstance(pageNumber, mPagesOfBook.size());
                 newPageDialog.setTargetFragment(PageFragment.this, GET_PAGE_NUMBER);
 
-                FragmentManager fm1 = getActivity().getSupportFragmentManager();
-                newPageDialog.show(fm1, SelectPageDialog.SELECT_PAGE);
+                newPageDialog.show(fm, SelectPageDialog.SELECT_PAGE);
+
+                return true;
+
+            case R.id.menu_select_chapter:
+                ChaptersDialog chaptersDialog = ChaptersDialog.newInstance(mChaptersOfTheBook);
+                chaptersDialog.setTargetFragment(PageFragment.this, GET_CHAPTER_NUMBER);
+
+                chaptersDialog.show(fm, ChaptersDialog.SELECT_CHAPTER);
 
                 return true;
 
             case R.id.menu_help:
                 HelpDialog helpDialog = new HelpDialog();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                helpDialog.show(fragmentManager, TAG);
+                helpDialog.show(fm, TAG);
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -853,9 +899,8 @@ public class PageFragment extends Fragment {
         }
     }
 
-    private void stopAsyncTasks(){
-        if(mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING))
-        {
+    private void stopAsyncTasks() {
+        if (mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING)) {
             mDictionaryLoader.cancel(true);
         }
     }
@@ -864,13 +909,13 @@ public class PageFragment extends Fragment {
     public void onPause() {
         super.onPause();
         saveSettings();
-        stopAsyncTasks();
         stopVoiceAndResetPlayButton();
     }
 
     @Override
     public void onDestroy() {
         mTts.shutdown();
+        stopAsyncTasks();
         mWordPlayer.shutDownTTS();
         Log.i(TAG, "Destroyed");
         super.onDestroy();
