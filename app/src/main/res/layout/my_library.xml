@@ -5,23 +5,20 @@
                 android:background="@drawable/bookshelf_empty"
                 tools:context=".MainActivity">
 
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="70dp">
 
-        <TableRow>
+    <TableRow android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="30dp"
+              android:layout_marginTop="70dp">
 
-            <ImageView
+        <ImageView
                 android:id="@+id/things_fall_apart_book_cover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/things_fall_apart_book_cover"/>
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
 
-        </TableRow>
+    </TableRow>
 
-
-    </TableLayout>
 
 </RelativeLayout>

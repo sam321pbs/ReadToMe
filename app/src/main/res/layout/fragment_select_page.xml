@@ -7,33 +7,32 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/definition_word_box"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/settings_title_word_box"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/definition_word_box"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/settings_title_word_box"/>
 
     <TextView
-        android:id="@+id/select_page_dialog_question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textSize="40sp"
-        android:layout_marginTop="27dp"
-        android:text="Select a page"
-        android:textColor="#ff000000"/>
+            android:id="@+id/select_page_dialog_question"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="40sp"
+            android:layout_marginTop="27dp"
+            android:text="@string/select_page_heading"
+            android:textColor="#ff000000"/>
 
     <EditText
-        android:id="@+id/select_page_dialog_page_number_selected_by_user"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/select_page_dialog_question"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="2"
-        android:textSize="30sp"
-        android:selectAllOnFocus="true"
-        android:textColor="#ff000000"
-        android:inputType="numberSigned"/>
+            android:id="@+id/select_page_dialog_page_number_selected_by_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/select_page_dialog_question"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:textSize="30sp"
+            android:selectAllOnFocus="true"
+            android:textColor="#ff000000"
+            android:inputType="numberSigned"/>
 
 </RelativeLayout>

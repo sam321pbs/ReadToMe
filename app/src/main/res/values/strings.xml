@@ -17,4 +17,23 @@
     <string name="help_fragment_how_to_use_previous_page_button">Turns to the previous page</string>
     <string name="help_fragment_how_to_use_next_page_button">Turns to the next page</string>
     <string name="help_fragment_how_to_use_dictionary">After the dictionary is finished setting up, you can hold down on a word and the dictionary definition will pop up.</string>
+    <string name="bookmark_description">If you see the bookmark than this will be the first page you
+        see when you restart the app
+    </string>
+    <string name="image_play_button_description">image play button description</string>
+    <string name="image_sentence_button_description">image sentence button description</string>
+    <string name="image_page_button_description">image page button description</string>
+    <string name="image_clear_button_description">image clear button description</string>
+    <string name="image_turn_back_page_button_description">image turn back page button description
+    </string>
+    <string name="image_turn_page_button_description">image turn page button description</string>
+    <string name="image_bookmark_button_description">image bookmark button description</string>
+    <string name="image_how_to_use">image how to use</string>
+    <string name="select_page_heading">Select a page</string>
+    <string name="settings_heading">Settings</string>
+    <string name="settings_heading_background">Settings heading background</string>
+    <string name="default_label">Default</string>
+    <string name="voice_speed_label">Voice speed :</string>
+    <string name="book_cover_image">Book Image box</string>
+    <string name="bookmark_on_page_desciption">Bookmark</string>
 </resources>

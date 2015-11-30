@@ -1,5 +1,7 @@
 package com.example.sammengistu.readtome.fragments;
 
+import com.example.sammengistu.readtome.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
@@ -16,26 +19,21 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.sammengistu.readtome.R;
-
-/**
- * Created by SamMengistu on 9/2/15.
- */
 public class SettingsDialog extends DialogFragment {
 
     public static final String SETTINGS = "Settings";
     public static final String VOICE_SPEED = "Voice Speed";
+    public static final int DEFAULT_NORMAL_SPEED = 20;
+
     public static final String SENTENCE_BY_SENTENCE_MODE = "Sentence by sentece";
     private static final String MODE = "Mode";
     private static final String VOICE_SETTINGS_SPEED = "Voice speed settings";
     private static final String TAG = "SettingsDialog";
-
     private boolean readSentenceBySentence;
     private int voiceSpeed;
-    public static final int DEFAULT_NORMAL_SPEED = 20;
     private TextView mVoiceSpeedNumberTextView;
 
-
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -49,17 +47,22 @@ public class SettingsDialog extends DialogFragment {
        TextView mSettingTitle = (TextView) settingsView.findViewById(R.id.settings_title);
         mSettingTitle.setTextColor(Color.BLACK);
 
-        final TextView mQuestionWordByWord = (TextView)settingsView.findViewById(R.id.settings_read_one_at_a_time_text_view);
+        final TextView mQuestionWordByWord = (TextView)settingsView
+            .findViewById(R.id.settings_read_one_at_a_time_text_view);
         mQuestionWordByWord.setTextColor(Color.BLACK);
 
-        final TextView mVoiceSpeedTextView = (TextView)settingsView.findViewById(R.id.settings_voice_speed_text_view);
+        final TextView mVoiceSpeedTextView = (TextView)settingsView
+            .findViewById(R.id.settings_voice_speed_text_view);
         mVoiceSpeedTextView.setTextColor(Color.BLACK);
 
-        mVoiceSpeedNumberTextView = (TextView)settingsView.findViewById(R.id.settings_voice_speed_number_text_view);
-        mVoiceSpeedNumberTextView.setText(voiceSpeed + "");
+        mVoiceSpeedNumberTextView = (TextView)settingsView
+            .findViewById(R.id.settings_voice_speed_number_text_view);
+        String voiceSpeedForView = voiceSpeed + "";
+        mVoiceSpeedNumberTextView.setText(voiceSpeedForView);
         mVoiceSpeedNumberTextView.setTextColor(Color.BLACK);
 
-        final Switch mReadSentenceBySentence = (Switch)settingsView.findViewById(R.id.settings_read_by_sentence_mode);
+        final Switch mReadSentenceBySentence = (Switch)settingsView
+            .findViewById(R.id.settings_read_by_sentence_mode);
         mReadSentenceBySentence.setChecked(readSentenceBySentence);
         mReadSentenceBySentence.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -69,13 +72,15 @@ public class SettingsDialog extends DialogFragment {
         });
 
 
-        final SeekBar mVoiceSpeed = (SeekBar)settingsView.findViewById(R.id.settings_change_voice_speed);
+        final SeekBar mVoiceSpeed = (SeekBar)settingsView
+            .findViewById(R.id.settings_change_voice_speed);
         mVoiceSpeed.setProgress(voiceSpeed);
         mVoiceSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 voiceSpeed = progress;
-                mVoiceSpeedNumberTextView.setText(progress + "");
+                String progressForView = progress + "";
+                mVoiceSpeedNumberTextView.setText(progressForView);
                 mVoiceSpeedNumberTextView.setTextColor(Color.BLACK);
             }
 

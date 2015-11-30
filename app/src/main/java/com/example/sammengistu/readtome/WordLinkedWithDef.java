@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by SamMengistu on 9/10/15.
- */
+
 public class WordLinkedWithDef {
 
-    public static ArrayList<WordLinkedWithDef> mWordsAndDef;
+    public static List<WordLinkedWithDef> mWordsAndDef;
 
     private String mWord;
     private String mDefinition;
@@ -25,19 +24,20 @@ public class WordLinkedWithDef {
 
     /**
      * Creates an Object (WordLinked with defintion) pairs of word - defintion ()
+     *
      * @param context- to get access of the deictionary file
-     * @param start - Where to start reading the file
-     * @param end - Where to stop reading the file
-     * @return - ArrayList of WordLinkedWithDefinitions
+     * @param start    - Where to start reading the file
+     * @param end      - Where to stop reading the file
+     * @return - List of WordLinkedWithDefinitions
      */
-    public static ArrayList<WordLinkedWithDef> linkWordsWithDefinitions(Context context, int start,
-                                                                        int end) {
+    public static List<WordLinkedWithDef> linkWordsWithDefinitions(Context context, int start,
+                                                                   int end) {
         mWordsAndDef = new ArrayList<>();
 
         for (int i = start; i < end; i++) {
 
             //Gets the entire line from the file
-            String entireLine = "";
+            String entireLine;
 
             try {
                 entireLine = WordLinkedWithDef.readLine(i, context);
@@ -73,7 +73,7 @@ public class WordLinkedWithDef {
             }
 
             WordLinkedWithDef wordLinkedWithDef = new WordLinkedWithDef(
-                    createdWord.toString(), definition.toString());
+                createdWord.toString(), definition.toString());
             mWordsAndDef.add(wordLinkedWithDef);
         }
 
@@ -83,10 +83,10 @@ public class WordLinkedWithDef {
 
     /**
      * Reads a line from the file and converts it to a string
-     * @param line - line number you want to read
+     *
+     * @param line    - line number you want to read
      * @param context - to get access to the file
      * @return - the string of the specified line
-     * @throws IOException
      */
     public static String readLine(int line, Context context) throws IOException {
 
@@ -108,23 +108,22 @@ public class WordLinkedWithDef {
         } catch (IOException e) {
 
         } finally {
-            if (r != null) {
-                r.close();
-            }
+            r.close();
         }
         return "didnt work";
     }
 
     /**
      * Finds a defintion of a word bys searching through the ArrayList<WordLinkedWithDef>
-     *     and returns the Defintion
+     * and returns the Defintion
+     *
      * @param wordLinkedWithDefs - ArrayList of where to search
-     * @param findWord - word they are looking for
+     * @param findWord           - word they are looking for
      * @return - returns the definion
      */
     public static WordLinkedWithDef findDefinition(
-            ArrayList<WordLinkedWithDef> wordLinkedWithDefs,
-            String findWord) {
+        List<WordLinkedWithDef> wordLinkedWithDefs,
+        String findWord) {
 
         WordLinkedWithDef found = new WordLinkedWithDef("There was an error", "Sorry");
 
@@ -138,13 +137,10 @@ public class WordLinkedWithDef {
 
     /**
      * Searches the file for the word and defintions
-     * @param word
-     * @param context
-     * @return
      */
-    public static String findDefFromFile (String word, Context context){
+    public static String findDefFromFile(String word, Context context) {
 
-        for (int i = 0; i < 4677; i ++) {
+        for (int i = 0; i < 4677; i++) {
             String entireLine = "";
 
             try {
@@ -180,10 +176,10 @@ public class WordLinkedWithDef {
                 }
             }
 
-            if (word.equals(createdWord.toString())){
+            if (word.equals(createdWord.toString())) {
                 return definition.toString();
             }
-            }
+        }
         return "Couldn't find it";
     }
 
@@ -192,9 +188,6 @@ public class WordLinkedWithDef {
         return mWord;
     }
 
-    public void setWord(String word) {
-        mWord = word;
-    }
 
     public String getDefinition() {
         return mDefinition;

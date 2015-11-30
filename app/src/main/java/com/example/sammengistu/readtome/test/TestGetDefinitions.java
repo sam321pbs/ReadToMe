@@ -1,13 +1,13 @@
 package com.example.sammengistu.readtome.test;
 
-import android.content.Context;
-import android.test.ActivityInstrumentationTestCase2;
-
 import com.example.sammengistu.readtome.WordLinkedWithDef;
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;
 import com.robotium.solo.Solo;
 
-import java.util.ArrayList;
+import android.content.Context;
+import android.test.ActivityInstrumentationTestCase2;
+
+import java.util.List;
 
 /**
  * Tests the first 10 words from the Dictionary file
@@ -17,7 +17,7 @@ public class TestGetDefinitions extends ActivityInstrumentationTestCase2<MyLibra
 
     private Solo solo;
     MyLibraryActivity mMyLibraryActivity;
-    private ArrayList<WordLinkedWithDef> mWordLinkedWithDefs;
+    private List<WordLinkedWithDef> mWordLinkedWithDefs;
 
     private Context mContext;
     private final int OFF_BY_ONE = 1;

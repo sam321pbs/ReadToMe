@@ -1,6 +1,6 @@
 package com.example.sammengistu.readtome.models;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Book {
@@ -9,10 +9,9 @@ public class Book {
     private String mAuthor;
     private UUID mBookId;
     private int mBookCover;
-    private ArrayList<PageOfBook> mPagesOfBook;
-    private String mChapter;
+    private List<PageOfBook> mPagesOfBook;
 
-    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook) {
+    public Book(String title, String author, int bookCover, List<PageOfBook> pagesOfBook) {
         mBookCover = bookCover;
         mTitle = title;
         mAuthor = author;
@@ -20,16 +19,7 @@ public class Book {
         mBookId = UUID.randomUUID();
     }
 
-    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook, String chapter) {
-        this(title, author, bookCover, pagesOfBook);
-        mChapter = chapter;
-    }
-
-    public String getChapter() {
-        return mChapter;
-    }
-
-    public ArrayList<PageOfBook> getPagesOfBook() {
+    public List<PageOfBook> getPagesOfBook() {
         return mPagesOfBook;
     }
 

@@ -1,11 +1,14 @@
 package com.example.sammengistu.readtome.fragments;
 
+import com.example.sammengistu.readtome.R;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,21 +16,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.sammengistu.readtome.R;
-
-/**
- * Created by SamMengistu on 9/9/15.
- */
 public class SelectPageDialog extends DialogFragment {
 
     public static final String SELECT_PAGE = "select Page";
-    private static final String CURRENT_PAGE_NUMBER = "Current Page";
     public static final String SELECTED_PAGE = "Selected Page";
     public static final int PAGE_SELECTED = 6006;
+
+    private static final String CURRENT_PAGE_NUMBER = "Current Page";
     private static final String MAX_NUMBER_OF_PAGES = "max pages";
 
     final String[] selectedPageNumber = {""};
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -37,8 +37,10 @@ public class SelectPageDialog extends DialogFragment {
         int currentPageNumber = getArguments().getInt(CURRENT_PAGE_NUMBER, 0);
         final int max = getArguments().getInt(MAX_NUMBER_OF_PAGES, 0);
 
-        EditText selectedPage = (EditText) selectPageDialog.findViewById(R.id.select_page_dialog_page_number_selected_by_user);
-        selectedPage.setText(currentPageNumber + "");
+        EditText selectedPage = (EditText) selectPageDialog
+            .findViewById(R.id.select_page_dialog_page_number_selected_by_user);
+        String currentPageNumberForView = currentPageNumber + "";
+        selectedPage.setText(currentPageNumberForView);
         selectedPage.setTextColor(Color.BLACK);
 
         selectedPage.addTextChangedListener(new TextWatcher() {

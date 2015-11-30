@@ -1,17 +1,12 @@
 package com.example.sammengistu.readtome.models;
 
-/**
- * Created by SamMengistu on 7/11/15.
- */
 public class PageOfBook {
 
-    private int mPagePicture;
     private String mPageText;
     private int mPageNumber;
     private String mChapterOfBook;
 
     public static final String PAGE_HAS_NO_CHAPTER = "None";
-
 
     public PageOfBook(String text, int pageNumber) {
         mChapterOfBook = PAGE_HAS_NO_CHAPTER;
@@ -29,23 +24,11 @@ public class PageOfBook {
         return mChapterOfBook;
     }
 
-    public void setChapterOfBook(String chapterOfBook) {
-        mChapterOfBook = chapterOfBook;
-    }
-
-    public int getPagePicture() {
-        return mPagePicture;
-    }
-
     public String getPageText() {
         return mPageText;
     }
 
     public int getPageNumber() {
         return mPageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        mPageNumber = pageNumber;
     }
 }

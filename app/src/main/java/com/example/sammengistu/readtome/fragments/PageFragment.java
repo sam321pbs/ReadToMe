@@ -1,6 +1,15 @@
 package com.example.sammengistu.readtome.fragments;
 
 
+import com.example.sammengistu.readtome.R;
+import com.example.sammengistu.readtome.ReadToMeJSONSerializer;
+import com.example.sammengistu.readtome.SettingsPreferences;
+import com.example.sammengistu.readtome.WordLinkedWithDef;
+import com.example.sammengistu.readtome.WordPlayer;
+import com.example.sammengistu.readtome.models.Book;
+import com.example.sammengistu.readtome.models.Library;
+import com.example.sammengistu.readtome.models.PageOfBook;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,16 +32,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sammengistu.readtome.models.PageOfBook;
-import com.example.sammengistu.readtome.R;
-import com.example.sammengistu.readtome.ReadToMeJSONSerializer;
-import com.example.sammengistu.readtome.SettingsPreferences;
-import com.example.sammengistu.readtome.WordLinkedWithDef;
-import com.example.sammengistu.readtome.WordPlayer;
-import com.example.sammengistu.readtome.models.Book;
-import com.example.sammengistu.readtome.models.Library;
-
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -50,41 +51,38 @@ public class PageFragment extends Fragment {
     private static final String FILENAME = "readtome.json";
     private static final int GET_CHAPTER_NUMBER = 2;
 
-    private ArrayList<PageOfBook> mPagesOfBook;
+    private List<PageOfBook> mPagesOfBook;
+    private List<TableLayout> mTableLayouts;
+    private List<String> mWordsToSpeechBank;
+    private List<TextView> mHighlightedTextViews;
+    private List<WordLinkedWithDef> mDictionaryOne;
+    private List<Integer> mChaptersOfTheBook;
+
     private TextView mPageNumber;
     private ImageView mBookmark;
     private String[] mPageWordBank;
-    int pageNumber;
-    private ArrayList<TableLayout> mTableLayouts;
-    private ArrayList<String> mWordsToSpeechBank;
+    private int pageNumber;
     private TextView mChapterTextView;
-    private ArrayList<TextView> mHighlightedTextViews;
     private TextToSpeech mTts;
     private WordPlayer mWordPlayer;
     private boolean mOnClickHighLightSentenceMode;
     private int voiceSpeed;
     private static int playOrStopCounter;
-    public ImageView playButton;
     private SettingsPreferences mSettingsPreferences;
     private ReadToMeJSONSerializer mReadToMeJSONSerializer;
-
     private boolean dictionaryReady;
-
-    private ArrayList<WordLinkedWithDef> mDictionaryOne;
-
     private Dictionary1Loader mDictionaryLoader;
 
-    private ArrayList<Integer> mChaptersOfTheBook;
+    public ImageView playButton;
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
         super.onCreate(savedInstnaceState);
         setHasOptionsMenu(true);
 
-        mDictionaryLoader = new Dictionary1Loader();
-        mDictionaryLoader.execute();
-
         mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
+
+        loadDictionary();
 
         loadUpSettings();
 
@@ -93,21 +91,12 @@ public class PageFragment extends Fragment {
         voiceSpeed = mSettingsPreferences.getVoiceSpeed();
         mOnClickHighLightSentenceMode = mSettingsPreferences.isReadSentenceMode();
 
-        playOrStopCounter = 0;
+        playOrStopCounter = 0; // will change if it is in play mode or stop mode
 
+        setUpBook();
 
-        UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
-
-        Book currentBook = Library.get(getActivity()).getBook(bookId);
-
-        mPagesOfBook = currentBook.getPagesOfBook();
-
-        pageNumber = mSettingsPreferences.getBookMarkedPage();
-
-        setUpChapters();
-
-        mWordPlayer = new WordPlayer(getActivity(), getActivity(), mOnClickHighLightSentenceMode,
-                voiceSpeed);
+        mWordPlayer = new WordPlayer(getActivity(), getActivity(),
+            voiceSpeed);
 
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
 
@@ -119,7 +108,7 @@ public class PageFragment extends Fragment {
                     int result = mTts.setLanguage(Locale.US);
 
                     if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Log.e("TTS", "This Language is not supported");
                     }
 
@@ -131,13 +120,23 @@ public class PageFragment extends Fragment {
     }
 
     /**
+     * Loads up the book that was selected
+     */
+    private void setUpBook() {
+        UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
+
+        Book currentBook = Library.get(getActivity()).getBook(bookId);
+
+        mPagesOfBook = currentBook.getPagesOfBook();
+
+        pageNumber = mSettingsPreferences.getBookMarkedPage();
+
+        setUpChapters();
+    }
+
+    /**
      * Decides whether the page has a picture or not
      * then adds the words to the page in individual text text views
-     *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
      */
     @SuppressWarnings("deprecation")
     @Override
@@ -146,8 +145,8 @@ public class PageFragment extends Fragment {
 
 
         Log.i(TAG, mSettingsPreferences.getBookMarkedPage() + " - Bookmarked page  " +
-                mSettingsPreferences.isReadSentenceMode() + " - readmode   " +
-                mSettingsPreferences.getVoiceSpeed() + " - voice speed");
+            mSettingsPreferences.isReadSentenceMode() + " - readmode   " +
+            mSettingsPreferences.getVoiceSpeed() + " - voice speed");
 
         View blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
         mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textView);
@@ -212,14 +211,14 @@ public class PageFragment extends Fragment {
                                                   findHighlightedWords();
                                                   if (mOnClickHighLightSentenceMode) {
                                                       mWordPlayer.playSentenceBySentence(mWordsToSpeechBank,
-                                                              mHighlightedTextViews, playButton);
+                                                          mHighlightedTextViews, playButton);
                                                   } else {
                                                       mWordPlayer.play(mWordsToSpeechBank,
-                                                              mHighlightedTextViews, playButton);
+                                                          mHighlightedTextViews, playButton);
                                                   }
                                               } else {
 
-                                                  stopVoiceAndResetPlayButton();
+                                                  stopReadingAndResetPlayButton();
                                               }
 
                                               mWordsToSpeechBank.clear();
@@ -269,6 +268,16 @@ public class PageFragment extends Fragment {
         return blankPage;
     }
 
+    private void loadDictionary() {
+        mDictionaryLoader = new Dictionary1Loader();
+        mDictionaryLoader.execute();
+    }
+
+    /**
+     * Goes through all the pages of the book and decides whether the page is a chapter and if it
+     * is
+     * it saves the page number to be used in the chapter dialog
+     */
     private void setUpChapters() {
 
         for (PageOfBook pageOfBook : mPagesOfBook) {
@@ -293,12 +302,12 @@ public class PageFragment extends Fragment {
         } catch (Exception e) {
 
             Log.i(TAG, e.getMessage());
-            Log.i(TAG, " Error loading");
+            Log.i(TAG, " Error loading Settings");
             mSettingsPreferences = new SettingsPreferences();
         }
     }
 
-    private void stopVoiceAndResetPlayButton() {
+    private void stopReadingAndResetPlayButton() {
 
         mWordPlayer.stopTtsVoice();
         mWordPlayer.setPlay(false);
@@ -311,31 +320,34 @@ public class PageFragment extends Fragment {
     }
 
     /**
-     * Hightlights a sentence based on the location of the textView that was selected
+     * Highlights a sentence based on the location of the textView that was selected
      *
-     * @param v - specific textView that was clicked
+     * @param viewThatWillBeHighlighted - specific textView that was clicked
      */
-    private void highlightSentenceMode(TextView v, int color) {
+    private void highlightSentenceMode(TextView viewThatWillBeHighlighted, int color) {
 
         int tableLayoutHolder = 0;
-        int tableRowHolderForHighlightingToEndOfSent = 0;
-        int tableRowHolderForHighlightingToBeginingOfSent = 0;
+        int tableRowHolderForHighlightingToEndOfSent = 0; //Row to end the highlighting
+        int tableRowHolderForHighlightingToBeginningOfSent = 0; //Row to begin highlighting
 
         for (int i = 0; i < mTableLayouts.size(); i++) {
             TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
             for (int j = 0; j < row.getChildCount(); j++) {
-                TextView word = (TextView) row.getChildAt(j);
-                if (v.equals(word)) {
+                TextView wordView = (TextView) row.getChildAt(j);
+                if (viewThatWillBeHighlighted.equals(wordView)) {
+                    //Get the positions
                     tableLayoutHolder = i;
                     tableRowHolderForHighlightingToEndOfSent = j;
-                    tableRowHolderForHighlightingToBeginingOfSent = j;
+                    tableRowHolderForHighlightingToBeginningOfSent = j;
                 }
             }
         }
 
+        //Loop through the sentence and start highlighting
         highlightSentenceLoops(tableLayoutHolder,
-                tableRowHolderForHighlightingToEndOfSent,
-                tableRowHolderForHighlightingToBeginingOfSent, color);
+            tableRowHolderForHighlightingToEndOfSent,
+            tableRowHolderForHighlightingToBeginningOfSent,
+            color);
 
     }
 
@@ -362,44 +374,40 @@ public class PageFragment extends Fragment {
     }
 
     /**
-     * Given the parameters it will know where to start highlightings and stop highlighting
+     * Given the parameters it will know where to start highlighting and stop highlighting
      *
-     * @param tableLayoutHolder
-     * @param tableRowHolderForHighlightingToEndOfSent      - where to
-     * @param tableRowHolderForHighlightingToBeginingOfSent - where to highlight to
-     * @param color                                         - color to highlight
+     * @param tableLayoutHolder                              - the table layout were to begin
+     *                                                       highlighting
+     * @param tableRowHolderForHighlightingToEndOfSent       - where to stop highlighting in
+     *                                                       sentence
+     * @param tableRowHolderForHighlightingToBeginningOfSent - where to start highlighting in
+     *                                                       sentence
+     * @param color                                          - color to highlight
      */
     private void highlightSentenceLoops(int tableLayoutHolder,
                                         int tableRowHolderForHighlightingToEndOfSent,
-                                        int tableRowHolderForHighlightingToBeginingOfSent,
+                                        int tableRowHolderForHighlightingToBeginningOfSent,
                                         int color) {
         boolean end = false;
-
 
         for (int i = tableLayoutHolder; i < mTableLayouts.size(); i++) {
             TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
             for (int j = tableRowHolderForHighlightingToEndOfSent; j < row.getChildCount(); j++) {
 
-                tableRowHolderForHighlightingToEndOfSent = 0; // when the row changes it starts highlighting at beginning
-                TextView word = (TextView) row.getChildAt(j);
-                String wordFromView = word.getText().toString();
+                // when the row changes it starts highlighting at beginning of the row
+                tableRowHolderForHighlightingToEndOfSent = 0;
+                TextView wordView = (TextView) row.getChildAt(j);
+                String wordFromView = wordView.getText().toString();
 
-                // If the word box is not empty it will highlight it
+                // If the word box is NOT empty it will highlight it
                 if (!(wordFromView.isEmpty())) {
-                    word.setBackgroundColor(color);
+                    wordView.setBackgroundColor(color);
                 }
 
-                if (endOfSentence(wordFromView)) {
-
-                    if (isItAFamilyName(wordFromView)) {
-
-                        continue;
-                    } else {
-
-                        // has it break out of the second loop
-                        end = true;
-                        break;
-                    }
+                if (endOfSentence(wordFromView) && !isItAFamilyName(wordFromView)) {
+                    // break out of the second loop
+                    end = true;
+                    break;
                 }
             }
             if (end) {
@@ -412,7 +420,9 @@ public class PageFragment extends Fragment {
 
         for (int i = tableLayoutHolder; i >= 0; i--) {
             TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
-            for (int j = tableRowHolderForHighlightingToBeginingOfSent - skipCurrentWord; j >= 0; j--) {
+            for (int j = tableRowHolderForHighlightingToBeginningOfSent - skipCurrentWord;
+                 j >= 0; j--) {
+
                 TextView word = (TextView) row.getChildAt(j);
                 String textWord = word.getText().toString();
 
@@ -436,7 +446,7 @@ public class PageFragment extends Fragment {
             if (breakPoint) {
                 break;
             } else {
-                tableRowHolderForHighlightingToBeginingOfSent = row.getChildCount() - 1;
+                tableRowHolderForHighlightingToBeginningOfSent = row.getChildCount() - 1;
             }
 
             skipCurrentWord = 0;
@@ -445,15 +455,15 @@ public class PageFragment extends Fragment {
 
     public static boolean endOfSentence(String textWord) {
         return textWord.contains(".") || textWord.contains("!")
-                || textWord.contains("?") || textWord.contains(":");
+            || textWord.contains("?") || textWord.contains(":");
 
     }
 
     private boolean isItAFamilyName(String word) {
 
         return word.equals("Mrs.") ||
-                word.equals("Mr.") ||
-                word.equals("Ms.");
+            word.equals("Mr.") ||
+            word.equals("Ms.");
     }
 
     private void highlightThePage() {
@@ -507,8 +517,6 @@ public class PageFragment extends Fragment {
     /**
      * Sets up the table layouts in side the view
      * Adds the extra layouts to the table views for the Charolottes web book
-     *
-     * @param view
      */
     private void setTableLayouts(View view) {
         mTableLayouts.add((TableLayout) view.findViewById(R.id.fragment_page_tableLayout1));
@@ -555,11 +563,13 @@ public class PageFragment extends Fragment {
      */
     private void setUpPageText() {
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
-        mPageNumber.setText(pageNumber + "");
+        String pageNumberText = pageNumber + "";
+        mPageNumber.setText(pageNumberText);
         mPageNumber.setTextColor(Color.BLACK);
 
         cleanUpPageText(Color.WHITE);
 
+        //used to stop printing words on the screen because it is the end of the view
         int placeHolder = 0;
 
         for (TableLayout tableLayout : mTableLayouts) {
@@ -589,11 +599,12 @@ public class PageFragment extends Fragment {
     }
 
     /**
-     * This is used to set up the title page/ page zero
+     * This is used to set up the title page/page zero
      */
     public void setupTitlePage() {
         mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
-        mPageNumber.setText(pageNumber + "");
+        String pageNumberForView = pageNumber + "";
+        mPageNumber.setText(pageNumberForView);
         mPageNumber.setTextColor(Color.BLACK);
 
         int setUpTitlePage = 5;
@@ -660,22 +671,20 @@ public class PageFragment extends Fragment {
 
     /**
      * If the dictionary is ready it will let you get the definition
-     *
-     * @param currentWordTextView
      */
     private void showDictionaryDialog(TextView currentWordTextView) {
         if (dictionaryReady) {
             String newWord = DefinitionDialog.removePunctuations(currentWordTextView.getText()
-                    .toString().replaceAll("\\s+", ""));
+                .toString().replaceAll("\\s+", ""));
 
             WordLinkedWithDef findDef = WordLinkedWithDef.findDefinition(
-                    mDictionaryOne,
-                    DefinitionDialog.removePunctuations(newWord.toLowerCase()));
+                mDictionaryOne,
+                DefinitionDialog.removePunctuations(newWord.toLowerCase()));
 
 
             DefinitionDialog dialog = DefinitionDialog.newInstance(
 
-                    newWord, findDef.getDefinition()
+                newWord, findDef.getDefinition()
             );
 
             FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -683,15 +692,13 @@ public class PageFragment extends Fragment {
 
         } else {
             Toast.makeText(getActivity(),
-                    "Sorry, the dictionary is being set up", Toast.LENGTH_LONG).show();
+                "Sorry, the dictionary is being set up", Toast.LENGTH_LONG).show();
         }
     }
 
     /**
      * Sets the onClickListener for the texts
      * Changes the color of the background onClick
-     *
-     * @return
      */
     private View.OnClickListener onClick() {
         return new View.OnClickListener() {
@@ -725,7 +732,7 @@ public class PageFragment extends Fragment {
      * Turns all the highlighted text into a white background
      */
     private void cleanUpPageText(int backgroundColor) {
-        stopVoiceAndResetPlayButton();
+        stopReadingAndResetPlayButton();
 
         for (TableLayout tableLayout : mTableLayouts) {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
@@ -764,7 +771,7 @@ public class PageFragment extends Fragment {
             voiceSpeed = data.getIntExtra(SettingsDialog.VOICE_SPEED, 20);
 
             mOnClickHighLightSentenceMode = data.getBooleanExtra(
-                    SettingsDialog.SENTENCE_BY_SENTENCE_MODE, true);
+                SettingsDialog.SENTENCE_BY_SENTENCE_MODE, true);
 
             mSettingsPreferences.setVoiceSpeed(voiceSpeed);
             mSettingsPreferences.setReadSentenceMode(mOnClickHighLightSentenceMode);
@@ -772,7 +779,7 @@ public class PageFragment extends Fragment {
 
             saveSettings();
             Toast.makeText(getActivity(), "Settings saved"
-                    , Toast.LENGTH_LONG).show();
+                , Toast.LENGTH_LONG).show();
 
         }
         if (requestCode == GET_PAGE_NUMBER) {
@@ -855,7 +862,7 @@ public class PageFragment extends Fragment {
 
             case R.id.menu_setting:
                 SettingsDialog dialog = SettingsDialog.newInstance(
-                        voiceSpeed, mOnClickHighLightSentenceMode);
+                    voiceSpeed, mOnClickHighLightSentenceMode);
                 dialog.setTargetFragment(PageFragment.this, GET_SETTINGS);
 
                 dialog.show(fm, SettingsDialog.SETTINGS);
@@ -909,7 +916,7 @@ public class PageFragment extends Fragment {
     public void onPause() {
         super.onPause();
         saveSettings();
-        stopVoiceAndResetPlayButton();
+        stopReadingAndResetPlayButton();
     }
 
     @Override

@@ -16,9 +16,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-/**
- * Created by SamMengistu on 9/11/15.
- */
 public class ReadToMeJSONSerializer {
 
     private Context mContext;

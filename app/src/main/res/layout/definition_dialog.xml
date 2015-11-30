@@ -8,7 +8,8 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/definition_word_box"/>
+        android:src="@drawable/definition_word_box"
+        android:contentDescription="Image used to surround word being looked up"/>
 
     <TextView
         android:id="@+id/dialog_word_title"
