@@ -82,7 +82,7 @@ public class PageFragment extends Fragment {
 
         mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
 
-        loadDictionary();
+//        loadDictionary();
 
         loadUpSettings();
 
@@ -510,6 +510,7 @@ public class PageFragment extends Fragment {
             mChapterTextView.setTextColor(Color.BLACK);
         } else {
             mChapterTextView.setVisibility(View.INVISIBLE);
+            mChapterTextView.setText("");
         }
     }
 
@@ -574,10 +575,10 @@ public class PageFragment extends Fragment {
 
         for (TableLayout tableLayout : mTableLayouts) {
             //sets up title page
-            if ((pageNumber == 0 || pageNumber == 1)) {
-                setupTitlePage();
-
-            } else {
+//            if ((pageNumber == 0 || pageNumber == 1)) {
+//                setupTitlePage();
+//
+//            } else {
                 TableRow row = (TableRow) tableLayout.getChildAt(0);
                 for (int j = 0; j < row.getChildCount(); j++) {
 
@@ -594,79 +595,79 @@ public class PageFragment extends Fragment {
                         break;
                     }
                 }
-            }
+//            }
         }
     }
 
-    /**
-     * This is used to set up the title page/page zero
-     */
-    public void setupTitlePage() {
-        mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
-        String pageNumberForView = pageNumber + "";
-        mPageNumber.setText(pageNumberForView);
-        mPageNumber.setTextColor(Color.BLACK);
-
-        int setUpTitlePage = 5;
-        int takeAwayFromEnd = 3;
-
-
-        cleanUpPageText(Color.WHITE);
-
-        int placeHolder = 0;
-
-        for (TableLayout tableLayout : mTableLayouts) {
-            //sets up title page
-            if ((pageNumber == 0 || pageNumber == 1) && setUpTitlePage > 0) {
-                setUpTitlePage--;
-                continue;
-            }
-
-            if (pageNumber == 0) {
-
-
-                TableRow row = (TableRow) tableLayout.getChildAt(0);
-                for (int j = 2; j < row.getChildCount() - takeAwayFromEnd; j++) {
-
-                    if (mPageWordBank.length != placeHolder) {
-                        TextView word = (TextView) row.getChildAt(j);
-                        word.setText(mPageWordBank[placeHolder]);
-                        word.setTextSize(30f);
-                        word.setTextColor(Color.BLACK);
-                        word.setOnClickListener(onClick());
-                        word.setOnLongClickListener(onLongClick());
-                        placeHolder++;
-
-                    } else {
-                        break;
-                    }
-                }
-                takeAwayFromEnd = 4;
-                continue;
-            }
-            takeAwayFromEnd = 0;
-
-            if (pageNumber == 1) {
-
-                TableRow row = (TableRow) tableLayout.getChildAt(0);
-                for (int j = 2; j < row.getChildCount() - takeAwayFromEnd; j++) {
-
-                    if (mPageWordBank.length != placeHolder) {
-                        TextView word = (TextView) row.getChildAt(j);
-                        word.setText(mPageWordBank[placeHolder]);
-                        word.setTextSize(25f);
-                        word.setTextColor(Color.BLACK);
-                        word.setOnClickListener(onClick());
-                        word.setOnLongClickListener(onLongClick());
-                        placeHolder++;
-
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-    }
+//    /**
+//     * This is used to set up the title page/page zero
+//     */
+//    public void setupTitlePage() {
+//        mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
+//        String pageNumberForView = pageNumber + "";
+//        mPageNumber.setText(pageNumberForView);
+//        mPageNumber.setTextColor(Color.BLACK);
+//
+//        int setUpTitlePage = 5;
+//        int takeAwayFromEnd = 3;
+//
+//
+//        cleanUpPageText(Color.WHITE);
+//
+//        int placeHolder = 0;
+//
+//        for (TableLayout tableLayout : mTableLayouts) {
+//            //sets up title page
+//            if ((pageNumber == 0 || pageNumber == 1) && setUpTitlePage > 0) {
+//                setUpTitlePage--;
+//                continue;
+//            }
+//
+//            if (pageNumber == 0) {
+//
+//
+//                TableRow row = (TableRow) tableLayout.getChildAt(0);
+//                for (int j = 2; j < row.getChildCount() - takeAwayFromEnd; j++) {
+//
+//                    if (mPageWordBank.length != placeHolder) {
+//                        TextView word = (TextView) row.getChildAt(j);
+//                        word.setText(mPageWordBank[placeHolder]);
+//                        word.setTextSize(30f);
+//                        word.setTextColor(Color.BLACK);
+//                        word.setOnClickListener(onClick());
+//                        word.setOnLongClickListener(onLongClick());
+//                        placeHolder++;
+//
+//                    } else {
+//                        break;
+//                    }
+//                }
+//                takeAwayFromEnd = 4;
+//                continue;
+//            }
+//            takeAwayFromEnd = 0;
+//
+//            if (pageNumber == 1) {
+//
+//                TableRow row = (TableRow) tableLayout.getChildAt(0);
+//                for (int j = 2; j < row.getChildCount() - takeAwayFromEnd; j++) {
+//
+//                    if (mPageWordBank.length != placeHolder) {
+//                        TextView word = (TextView) row.getChildAt(j);
+//                        word.setText(mPageWordBank[placeHolder]);
+//                        word.setTextSize(25f);
+//                        word.setTextColor(Color.BLACK);
+//                        word.setOnClickListener(onClick());
+//                        word.setOnLongClickListener(onLongClick());
+//                        placeHolder++;
+//
+//                    } else {
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 
     /**

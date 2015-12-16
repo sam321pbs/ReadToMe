@@ -11,7 +11,8 @@
         android:gravity="center"
         android:textSize="35sp"
         android:layout_marginTop="20dp"
-        android:id="@+id/book_chapter_textView"/>
+        android:id="@+id/book_chapter_textView"
+        android:background="#d41313"/>
 
     <ImageView
         android:id="@+id/page_without_picture_bookmark"
@@ -25,7 +26,7 @@
     <TableLayout
         android:id="@+id/fragment_page_tableLayout1"
         style="@style/TableLayoutView"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:layout_below="@+id/book_chapter_textView">
 
         <include

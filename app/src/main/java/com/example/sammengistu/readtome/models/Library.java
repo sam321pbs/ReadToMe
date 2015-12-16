@@ -1,7 +1,7 @@
 package com.example.sammengistu.readtome.models;
 
 import com.example.sammengistu.readtome.R;
-import com.example.sammengistu.readtome.bookpages.ThingsFallApartBook;
+import com.example.sammengistu.readtome.bookpages.ThePlanetMappersBook;
 
 import android.content.Context;
 
@@ -23,7 +23,8 @@ public class Library {
             "Things Fall Apart",
             "Chinua Achebe",
             R.drawable.things_fall_apart_book_cover,
-            new ThingsFallApartBook(appContext).getPagesOfTheBook());
+            //Todo: Change back to Things fall apart
+            new ThePlanetMappersBook(appContext).getPagesOfTheBook());
 
         mMyLibrary.add(thingsFallApart);
     }

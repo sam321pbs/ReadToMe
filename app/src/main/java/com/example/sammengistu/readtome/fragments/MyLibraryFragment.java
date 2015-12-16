@@ -24,6 +24,7 @@ public class MyLibraryFragment extends Fragment {
 
     public static final String BOOK_ID = "Book Id";
     private Book mThingsFallApart;
+    private Book mThePlanetMappers;
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
