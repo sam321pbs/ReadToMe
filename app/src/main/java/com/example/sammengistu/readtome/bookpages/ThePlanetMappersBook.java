@@ -59,7 +59,7 @@ public class ThePlanetMappersBook implements MakeAPage {
 
             InputStream epubInputStream = assetManager
 
-                .open("the_planet_mappers.epub");
+                .open("in_the_wonderful_land_of_hez.epub");
 
             // Load Book from inputStream
 
@@ -83,9 +83,16 @@ public class ThePlanetMappersBook implements MakeAPage {
             int createFirstChapter = 0;
             boolean skipNextLineChapterRemainder = false;
             StringBuilder actualChapterLabelToCheckAgainst = new StringBuilder();
+            boolean nextSectionIgnoreLine;
+            int placeHolderForChapterLabelPosition = 0;
+            StringBuilder newChapterLabel = new StringBuilder();
+            int newChapterTracker = 0;
+            int mChapterTracker = 0;
+            int mChapterLength = 0;
 
             for (SpineReference bookSection : spine.getSpineReferences()) {
 
+                nextSectionIgnoreLine = true;
                 Log.i("Section", "-----------------------");
                 Resource res = bookSection.getResource();
 
@@ -97,56 +104,202 @@ public class ThePlanetMappersBook implements MakeAPage {
 
                     int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
 
+
                     while ((line = r.readLine()) != null) {
+
 
                         line = Html.fromHtml(line).toString();
 
                         line = line.replace("\n", "").replace("\r", "");
                         Log.i("Read it ", line);
 
-                        String [] lineIntoArray = line.split("\\s+");
+//                        Log.i(TAG, nextSectionIgnoreLine + "");
 
-                        //Removes
-                        if (skipNextLineChapterRemainder){
-                            skipNextLineChapterRemainder = false;
+                        if (mChapterTracker == mChapterNames.size()) {
+                            mChapterTracker = 0;
+                        }
 
-                            String [] chapterLabelArray = actualChapterLabelToCheckAgainst
-                                .toString().split("\\s+");
+                        String[] lineIntoArray = line.split("\\s+");
+                        String[] currentChapterArray = mChapterNames.get(mChapterTracker).split("\\s+");
 
-                            //May not a
-//                            if (line.contains(chapterLabelArray[chapterLabelArray.length - 1])){
-//                                Log.i("Next", "Line = " + line + "ChapterLabelArray = " + chapterLabelArray[chapterLabelArray.length -1]);
-//                                continue;
-//                            }
+                        boolean wholeLineIsApartOfChapter = false;
+
+
+                        boolean continueToNextLineInBook = false;
+
+
+                        for (int i = 0; i < lineIntoArray.length; i++) {
+
+                            if (mChapterLength == currentChapterArray.length) {
+                                mChapterLength = 0;
+                            }
+
+                            if (lineIntoArray[i].equals(currentChapterArray[mChapterLength])) {
+                                Log.i(TAG, "Found a match = " + lineIntoArray[i]);
+                                mChapterLength++;
+
+                                chapterLabel.append(lineIntoArray[i]);
+
+                                if (!chapterLabel.toString().equals(mChapterNames.get(mChapterTracker))) {
+                                    chapterLabel.append(" ");
+                                }
+
+//                                Log.i(TAG, "After Found a match Chapter label = " + chapterLabel.toString());
+                            }
+
+                            if (chapterLabel.toString().equals(mChapterNames.get(mChapterTracker))) {
+                                Log.i(TAG, "Chapter Label  = " +  chapterLabel.toString());
+                                Log.i(TAG, "Create first chapter = " + createFirstChapter);
+
+                                Log.i(TAG, "ChapterTracker = " + mChapterTracker);
+                                Log.i("mChapterName", "Length = " + mChapterNames.size());
+
+//                                chapterLabel.append(mChapterNames.get(mChapterTracker));
+                                mChapterTracker++;
+
+//                                chapterLabel = new StringBuilder();
+                                haveChapterLabel = true;
+
+
+                                createFirstChapter++;
+//                                continueToNextLineInBook = true;
+
+                                mChapterLength = 0;
+
+                                Log.i(TAG, "Chapter Label boolean value = " +  haveChapterLabel );
+                            }
 
                         }
 
-                        //Check if the current line is a chapter and decide if it needs a label
-                        if (isItAChapterLabel(line)){
-                            chapterLabel = new StringBuilder();
-                            chapterLabel.append(mChapterNames.get(mChapterTracker - 1));
-                            haveChapterLabel = true;
-                            Log.i(TAG, "Found a chapter label : " + line);
-
-                            if (createFirstChapter != 0 ){
-                                PageOfBook newPage = new PageOfBook(page.toString(), pageNumber++);
+//                        if (pageIsReady) {
+/*
+TODo
+If it detects a new chapter label it needs to finish the previous page and add the new chapter label to a new page
+                    vvvvvvvvvvvvvvvvvvvvvvvvvvvv
+ */
+                            if (haveChapterLabel) {
+                                PageOfBook newPage = new PageOfBook(
+                                    page.toString(),
+                                    pageNumber++,
+                                    chapterLabel.toString());
 
                                 mPagesOfTheBook.add(newPage);
                                 page = new StringBuilder();
                                 pageIsReady = false;
-                                wordCount = 0;
+                                chapterLabel = new StringBuilder("");
+
+                                Log.i("After", "Page down " + chapterLabel.toString());
+
+                                haveChapterLabel = false;
                             }
-                            createFirstChapter++;
 
-                            skipNextLineChapterRemainder = true;
-                            continue;
-                        }
+                        /*
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TODo
+If it detects a new chapter label it needs to finish the previous page and add the new chapter label to the new page
 
+ */
+//                        }
 
+//                        if (continueToNextLineInBook) {
+//                            continue;
+//                        }
 
+//                        StringBuilder stringBuilder = new StringBuilder();
+//                        StringBuilder stringBuilder1 = new StringBuilder();
+//
+//                        for (String s : lineIntoArray){
+//                            stringBuilder.append(s + " ");
+//                        }
+//                        Log.i("New line", stringBuilder.toString());
+//
+//                        for (String s : currentChapterArray){
+//                            stringBuilder1.append(s + " ");
+//                        }
+//                        Log.i("New Chapter", stringBuilder1.toString());
+//
+//
+//
+//                        if (lineIntoArray[0].replace("\\s+", "")
+//                            .equals(currentChapterArray[placeHolderForChapterLabelPosition].replace("\\s+", ""))){
+//
+//                            for (int i = 0; i < lineIntoArray.length; i++){
+//                                placeHolderForChapterLabelPosition++;
+//
+//                                wholeLineIsApartOfChapter = lineIntoArray[i]
+//                                    .equals(currentChapterArray[placeHolderForChapterLabelPosition]);
+//
+//                                if (!wholeLineIsApartOfChapter){
+//                                    break;
+//                                }
+//
+//
+//                            }
+//                        }
+//
+//                        if (wholeLineIsApartOfChapter){
+////                            chapterLabel.append(line + SPACE);
+//                            newChapterLabel.append(line + SPACE);
+//                            Log.i("New ChapterMaking" , newChapterLabel.toString());
+////                            continue;
+//                        }
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//                        //Removes the currunt line if it is apart of the chapter
+//                        if (skipNextLineChapterRemainder) {
+//                            skipNextLineChapterRemainder = false;
+//
+//                            String chapterLabelWithCurrentLine = " " + line;
+//                            actualChapterLabelToCheckAgainst.append(chapterLabelWithCurrentLine);
+//
+//                            Log.i("Check against ", actualChapterLabelToCheckAgainst.toString());
+//                            Log.i("Check against", mChapterNames.get(mChapterTracker - 1));
+//
+//                            if (actualChapterLabelToCheckAgainst.toString().equals(
+//                                mChapterNames.get(mChapterTracker - 1))) {
+//                                Log.i("Check against", actualChapterLabelToCheckAgainst.toString()
+//                                    + " == " + mChapterNames.get(mChapterTracker - 1));
+//
+//                                continue;
+//                            }
+//                        }
+//
+//                        //Check if the current line is a chapter and decide if it needs a label
+//                        if (isItAChapterLabel(line)) {
+//                            chapterLabel = new StringBuilder();
+//                            chapterLabel.append(mChapterNames.get(mChapterTracker - 1));
+//                            haveChapterLabel = true;
+//                            Log.i(TAG, "Found a chapter label : " + line);
+//
+//                            if (createFirstChapter != 0) {
+//                                PageOfBook newPage = new PageOfBook(page.toString(), pageNumber++);
+//
+//                                mPagesOfTheBook.add(newPage);
+//                                page = new StringBuilder();
+//                                pageIsReady = false;
+//                                wordCount = 0;
+//                            }
+//                            createFirstChapter++;
+//
+//                            actualChapterLabelToCheckAgainst = new StringBuilder();
+//
+//                            actualChapterLabelToCheckAgainst.append(line);
+//
+//                            Log.i(TAG, "actual chapter label = " + line);
+//                            skipNextLineChapterRemainder = true;
+//                            continue;
+//                        }
 
                         //Checks if the previous line had any leftover words before page break
-                        if (!leftOverWordsFromPrevPage.isEmpty()){
+                        if (!leftOverWordsFromPrevPage.isEmpty()) {
                             for (String wordFromLastLine : leftOverWordsFromPrevPage) {
                                 page.append(wordFromLastLine + SPACE);
                                 wordCount++;
@@ -155,7 +308,7 @@ public class ThePlanetMappersBook implements MakeAPage {
                             leftOverWordsFromPrevPage.clear();
                         }
 
-                        //Adds words from line to the page and the left words to the arrayList
+                        //Adds words from line to the page and the left over words to the arrayList
                         for (String aWordFromArray : lineIntoArray) {
 
 //                            Log.i(TAG, wordCount + "");
@@ -172,14 +325,14 @@ public class ThePlanetMappersBook implements MakeAPage {
                         }
 
                         //Finish forLoop to add the remainder of sentence to ArrayList then set Page up
-                        if (wordCount == MAX_NUMBER_OF_WORDS_PER_PAGE){
+                        if (wordCount == MAX_NUMBER_OF_WORDS_PER_PAGE) {
                             pageIsReady = true;
                             wordCount = 0;
                         }
 
-                        if (pageIsReady){
+                        if (pageIsReady) {
 
-                            if (haveChapterLabel){
+                            if (haveChapterLabel) {
                                 PageOfBook newPage = new PageOfBook(
                                     page.toString(),
                                     pageNumber++,
@@ -188,7 +341,9 @@ public class ThePlanetMappersBook implements MakeAPage {
                                 mPagesOfTheBook.add(newPage);
                                 page = new StringBuilder();
                                 pageIsReady = false;
-                                chapterLabel = new StringBuilder();
+                                chapterLabel = new StringBuilder("");
+
+                                Log.i("After", "Page down " + chapterLabel.toString());
 
                                 haveChapterLabel = false;
                             } else {
@@ -201,7 +356,9 @@ public class ThePlanetMappersBook implements MakeAPage {
                         }
 
                     }
+
                 } catch (IOException e) {
+                    Log.i("Exception", e.toString());
                 }
             }
 
@@ -211,7 +368,6 @@ public class ThePlanetMappersBook implements MakeAPage {
         }
     }
 
-
     private boolean isItAChapterLabel(String line) {
         String firstWordInChapterName = "";
         String firstWordInLine = "";
@@ -219,6 +375,7 @@ public class ThePlanetMappersBook implements MakeAPage {
         if (mChapterTracker >= mChapterNames.size()) {
             return false;
         }
+
         try {
             firstWordInChapterName = mChapterNames.get(mChapterTracker).substring(0
                 , mChapterNames.get(mChapterTracker).indexOf(' '));
@@ -226,7 +383,6 @@ public class ThePlanetMappersBook implements MakeAPage {
 
             firstWordInChapterName = mChapterNames
                 .get(mChapterTracker).replaceAll("\\s+", "");
-
         }
 
         try {
@@ -234,9 +390,7 @@ public class ThePlanetMappersBook implements MakeAPage {
         } catch (StringIndexOutOfBoundsException e) {
 
             firstWordInLine = line.replaceAll("\\s+", "");
-            ;
         }
-
 
         if (firstWordInLine.equals(firstWordInChapterName)) {
 
@@ -276,7 +430,6 @@ public class ThePlanetMappersBook implements MakeAPage {
 
                 + coverImage.getHeight() + " pixels");
 
-
 //             Log the tale of contents
 
             logTableOfContents(mThePlanetMappersBookEpubLib.getTableOfContents().getTocReferences(), 0);
@@ -284,7 +437,6 @@ public class ThePlanetMappersBook implements MakeAPage {
         } catch (IOException e) {
 
         }
-
     }
 
     /**
@@ -292,7 +444,6 @@ public class ThePlanetMappersBook implements MakeAPage {
      */
 
     private void logTableOfContents(List<TOCReference> tocReferences, int depth) {
-
 
         if (tocReferences == null) {
 
