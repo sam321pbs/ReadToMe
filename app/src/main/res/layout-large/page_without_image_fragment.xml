@@ -11,8 +11,7 @@
         android:gravity="center"
         android:textSize="35sp"
         android:layout_marginTop="20dp"
-        android:id="@+id/book_chapter_textView"
-        android:background="#d41313"/>
+        android:id="@+id/book_chapter_textView"/>
 
     <ImageView
         android:id="@+id/page_without_picture_bookmark"

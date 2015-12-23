@@ -25,25 +25,30 @@ public class ChaptersDialog extends DialogFragment {
 
     private static final String CHAPTER_PAGE_NUMBER = "Chapter page number";
     private static final int CHAPTER_SELECTED = 10;
+    private static final String CHAPTER_LABEL = "Chapter page label";
     private Integer mSelectedChapter;
+    private List<String> mChapterLabels;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        List<Integer> chapterPageNumbers = getArguments()
+        final List<Integer> chapterPageNumbers = getArguments()
             .getIntegerArrayList(CHAPTER_PAGE_NUMBER);
+
+        mChapterLabels = getArguments()
+            .getStringArrayList(CHAPTER_LABEL);
 
         View v = getActivity().getLayoutInflater()
             .inflate(R.layout.select_chapter_dialog, null);
 
         final ListView listView = (ListView) v.findViewById(android.R.id.list);
 
-        listView.setAdapter(new ChapterListAdapter(chapterPageNumbers));
+        listView.setAdapter(new ChapterListAdapter(mChapterLabels));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-                mSelectedChapter = ((ChapterListAdapter) listView.getAdapter()).getItem(position);
+                mSelectedChapter = chapterPageNumbers.get(position);
                 sendResult(CHAPTER_SELECTED);
             }
         });
@@ -66,10 +71,10 @@ public class ChaptersDialog extends DialogFragment {
             .onActivityResult(getTargetRequestCode(), resultCode, intent);
     }
 
-    public class ChapterListAdapter extends ArrayAdapter<Integer> {
+    public class ChapterListAdapter extends ArrayAdapter<String> {
 
-        public ChapterListAdapter(List<Integer> chapterNumbers) {
-            super(getActivity(), 0, chapterNumbers);
+        public ChapterListAdapter(List<String> chapterLabel) {
+            super(getActivity(), 0, chapterLabel);
         }
 
         @Override
@@ -83,7 +88,7 @@ public class ChaptersDialog extends DialogFragment {
             TextView chapterLabelTextView = (TextView)
                 convertView.findViewById(R.id.chapter_number);
 
-            String labelForChapter = "Chapter " + (position + 1);
+            String labelForChapter = mChapterLabels.get(position);
 
             chapterLabelTextView.setText(labelForChapter);
 
@@ -92,9 +97,12 @@ public class ChaptersDialog extends DialogFragment {
         }
     }
 
-    public static ChaptersDialog newInstance(List<Integer> chapterPageNumbers) {
+    public static ChaptersDialog newInstance(List<String> chapterPageLabel,
+                                             List<Integer> chaptersPageNum) {
         Bundle args = new Bundle();
-        args.putIntegerArrayList(CHAPTER_PAGE_NUMBER, (ArrayList<Integer>) chapterPageNumbers);
+        //TODO: Change to String arrayList
+        args.putStringArrayList(CHAPTER_LABEL, (ArrayList<String>) chapterPageLabel);
+        args.putIntegerArrayList(CHAPTER_PAGE_NUMBER, (ArrayList<Integer>) chaptersPageNum);
 
         ChaptersDialog chaptersDialog = new ChaptersDialog();
         chaptersDialog.setArguments(args);

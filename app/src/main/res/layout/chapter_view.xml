@@ -11,6 +11,6 @@
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:text="Chapter 1"
-        android:textSize="35sp"/>
+        android:textSize="30sp"/>
 
 </RelativeLayout>
