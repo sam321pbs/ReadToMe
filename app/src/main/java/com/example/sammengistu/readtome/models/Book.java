@@ -16,6 +16,7 @@ public class Book {
     private Bitmap mBookCover;
     private String mEPubFileName;
     private Context mAppContext;
+    private int bookImage;
 
     public Book(String title, String author, Bitmap bookCover, String epubFileName, Context appContext) {
         mBookCover = bookCover;
@@ -24,6 +25,20 @@ public class Book {
         mEPubFileName = epubFileName;
         mBookId = UUID.randomUUID();
         mAppContext = appContext;
+    }
+
+    public Book(String title, String author, int bookCover, String epubFileName, Context appContext) {
+        bookImage = bookCover;
+        mTitle = title;
+        mAuthor = author;
+        mEPubFileName = epubFileName;
+        mBookId = UUID.randomUUID();
+        mAppContext = appContext;
+    }
+
+
+    public int getBookImage() {
+        return bookImage;
     }
 
     public String getEPubFileName() {

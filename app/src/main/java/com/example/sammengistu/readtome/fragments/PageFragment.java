@@ -60,10 +60,10 @@ public class PageFragment extends Fragment {
     private List<String> mChaptersOfTheBookName;
     private List<Integer> mChaptersOfTheBookPageNum;
 
-    private TextView mPageNumber;
+    private TextView mPageNumberTextView;
     private ImageView mBookmark;
     private String[] mPageWordBank;
-    private int pageNumber;
+    private int mPageNumber;
     private TextView mChapterTextView;
     private TextToSpeech mTts;
     private WordPlayer mWordPlayer;
@@ -102,7 +102,11 @@ public class PageFragment extends Fragment {
         mWordPlayer = new WordPlayer(getActivity(), getActivity(),
             voiceSpeed);
 
-        mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
+        if (mPageNumber == -1) {
+            mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
+        } else {
+            mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
+        }
 
         mTts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
             @Override
@@ -133,7 +137,7 @@ public class PageFragment extends Fragment {
 
         mPagesOfBook = mCurrentBook.getPagesOfBook();
 
-        pageNumber = mSettingsPreferences.getBookMarkedPage();
+        mPageNumber = mSettingsPreferences.getBookMarkedPage();
 
         setUpChapters();
     }
@@ -164,9 +168,9 @@ public class PageFragment extends Fragment {
                                     {
                                         @Override
                                         public void onClick(View v) {
-                                            pageNumber++;
-                                            if (pageNumber > mPagesOfBook.size() - 1) {
-                                                pageNumber = mPagesOfBook.size() - 1;
+                                            mPageNumber++;
+                                            if (mPageNumber > mPagesOfBook.size() - 1) {
+                                                mPageNumber = mPagesOfBook.size() - 1;
                                             }
                                             handlePageTurn();
                                             mWordsToSpeechBank.clear();
@@ -185,9 +189,9 @@ public class PageFragment extends Fragment {
                                       {
                                           @Override
                                           public void onClick(View v) {
-                                              pageNumber--;
-                                              if (pageNumber < -1) {
-                                                  pageNumber = -1;
+                                              mPageNumber--;
+                                              if (mPageNumber < -1) {
+                                                  mPageNumber = -1;
                                               }
                                               handlePageTurn();
                                               mWordsToSpeechBank.clear();
@@ -233,7 +237,7 @@ public class PageFragment extends Fragment {
 
         );
 
-        mPageNumber = (TextView) blankPage.findViewById(R.id.action_command_page_number);
+        mPageNumberTextView = (TextView) blankPage.findViewById(R.id.action_command_page_number);
 
         ImageView highlightPage = (ImageView) blankPage.findViewById(R.id.page_button);
         highlightPage.setOnClickListener(new View.OnClickListener() {
@@ -487,7 +491,7 @@ public class PageFragment extends Fragment {
     }
 
     private void handleBookmark() {
-        if (pageNumber == mSettingsPreferences.getBookMarkedPage()) {
+        if (mPageNumber == mSettingsPreferences.getBookMarkedPage()) {
             mBookmark.setVisibility(View.VISIBLE);
         } else {
             mBookmark.setVisibility(View.INVISIBLE);
@@ -512,10 +516,10 @@ public class PageFragment extends Fragment {
      * chapters
      */
     private void setUpChapterLabel() {
-        if (pageNumber != -1) {
-            if (!mPagesOfBook.get(pageNumber).getChapterOfBook().equals("None")) {
+        if (mPageNumber != -1) {
+            if (!mPagesOfBook.get(mPageNumber).getChapterOfBook().equals("None")) {
                 mChapterTextView.setVisibility(View.VISIBLE);
-                mChapterTextView.setText(mPagesOfBook.get(pageNumber).getChapterOfBook());
+                mChapterTextView.setText(mPagesOfBook.get(mPageNumber).getChapterOfBook());
                 mChapterTextView.setTextColor(Color.BLACK);
             } else {
                 mChapterTextView.setVisibility(View.INVISIBLE);
@@ -573,11 +577,14 @@ public class PageFragment extends Fragment {
      * Then goes through the tableLayouts and fills them with the text of the book
      */
     private void setUpPageText() {
-        if (pageNumber != -1) {
-            mPageWordBank = mPagesOfBook.get(pageNumber).getPageText().split("\\s+");
-            String pageNumberText = pageNumber + "";
-            mPageNumber.setText(pageNumberText);
-            mPageNumber.setTextColor(Color.BLACK);
+        if (mPageNumber != -1) {
+            mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
+            String pageNumberText = mPageNumber + "";
+            mPageNumberTextView.setText(pageNumberText);
+            mPageNumberTextView.setTextColor(Color.BLACK);
+            mPageNumberTextView.setVisibility(View.VISIBLE);
+        } else {
+            mPageNumberTextView.setVisibility(View.INVISIBLE);
         }
 
         cleanUpPageText(Color.WHITE);
@@ -587,7 +594,7 @@ public class PageFragment extends Fragment {
 
         for (TableLayout tableLayout : mTableLayouts) {
             //sets up title page
-            if ((pageNumber == -1)) {
+            if ((mPageNumber == -1)) {
                 setupTitlePage();
 
             } else {
@@ -615,9 +622,9 @@ public class PageFragment extends Fragment {
      * This is used to set up the title page/page zero
      */
     public void setupTitlePage() {
-        String pageNumberForView = pageNumber + "";
-        mPageNumber.setText(pageNumberForView);
-        mPageNumber.setTextColor(Color.BLACK);
+        String pageNumberForView = mPageNumber + "";
+        mPageNumberTextView.setText(pageNumberForView);
+        mPageNumberTextView.setTextColor(Color.BLACK);
 
         cleanUpPageText(Color.WHITE);
 
@@ -769,7 +776,7 @@ public class PageFragment extends Fragment {
         }
         if (requestCode == GET_PAGE_NUMBER) {
 
-            pageNumber = data.getIntExtra(SelectPageDialog.SELECTED_PAGE, 0);
+            mPageNumber = data.getIntExtra(SelectPageDialog.SELECTED_PAGE, 0);
             setUpPageText();
             setUpChapterLabel();
             handleBookmark();
@@ -777,7 +784,7 @@ public class PageFragment extends Fragment {
 
         if (requestCode == GET_CHAPTER_NUMBER) {
 
-            pageNumber = data.getIntExtra(ChaptersDialog.SELECTED_CHAPTER, 0);
+            mPageNumber = data.getIntExtra(ChaptersDialog.SELECTED_CHAPTER, 0);
             setUpPageText();
             setUpChapterLabel();
             handleBookmark();
@@ -838,7 +845,7 @@ public class PageFragment extends Fragment {
                 if (mBookmark.getVisibility() == View.INVISIBLE) {
                     mBookmark.setVisibility(View.VISIBLE);
 
-                    mSettingsPreferences.setBookMarkedPage(pageNumber);
+                    mSettingsPreferences.setBookMarkedPage(mPageNumber);
                     saveSettings();
                 } else {
                     mBookmark.setVisibility(View.INVISIBLE);
@@ -855,7 +862,7 @@ public class PageFragment extends Fragment {
                 return true;
 
             case R.id.menu_select_page:
-                SelectPageDialog newPageDialog = SelectPageDialog.newInstance(pageNumber, mPagesOfBook.size());
+                SelectPageDialog newPageDialog = SelectPageDialog.newInstance(mPageNumber, mPagesOfBook.size());
                 newPageDialog.setTargetFragment(PageFragment.this, GET_PAGE_NUMBER);
 
                 newPageDialog.show(fm, SelectPageDialog.SELECT_PAGE);

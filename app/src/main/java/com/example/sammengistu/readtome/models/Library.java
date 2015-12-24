@@ -25,7 +25,9 @@ public class Library {
         mEPubFileNamesOfBooks.add("geographyofbliss_onechapter.epub");
         mEPubFileNamesOfBooks.add("in_the_wonderful_land_of_hez.epub");
         mEPubFileNamesOfBooks.add("the_planet_mappers.epub");
-        mEPubFileNamesOfBooks.add("the_silver_menace.epub");
+        mEPubFileNamesOfBooks.add("too_fat_to_fight.epub");
+        mEPubFileNamesOfBooks.add("the_story_of_beowulf.epub");
+        mEPubFileNamesOfBooks.add("address.epub");
 
         Book daveDawsonWithEigth = new Book(
             GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(0),mAppContext),
@@ -55,17 +57,35 @@ public class Library {
             mEPubFileNamesOfBooks.get(3),
             mAppContext);
 
-//        Book theSilverMenace = new Book(
-//            getBookTitle(mEPubFileNamesOfBooks.get(4)),
-//            getBookAuthor(mEPubFileNamesOfBooks.get(4)),
-//            R.drawable.things_fall_apart_book_cover,
-//            new EPubFileConverterToBook(appContext,mEPubFileNamesOfBooks.get(4)).getPagesOfTheBook());
+        Book tooFatToFight = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(4),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(4),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(4),mAppContext),
+            mEPubFileNamesOfBooks.get(4),
+            mAppContext);
+
+        Book the_story_of_beowulf = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(5),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(5),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(5),mAppContext),
+            mEPubFileNamesOfBooks.get(5),
+            mAppContext);
+
+        Book address = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(6),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(6),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(6),mAppContext),
+            mEPubFileNamesOfBooks.get(6),
+            mAppContext);
 
         mMyLibrary.add(daveDawsonWithEigth);
         mMyLibrary.add(geographyOfBliss);
         mMyLibrary.add(inTheWonderfulLandOfHez);
         mMyLibrary.add(thePlanetMappers);
-//        mMyLibrary.add(theSilverMenace);
+        mMyLibrary.add(tooFatToFight);
+        mMyLibrary.add(the_story_of_beowulf);
+        mMyLibrary.add(address);
+
     }
 
     public static Library get(Context c) {

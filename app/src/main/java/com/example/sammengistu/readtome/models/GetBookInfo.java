@@ -50,7 +50,7 @@ public class GetBookInfo {
 
                 .getInputStream());
 
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
 
         }
         return coverImage;

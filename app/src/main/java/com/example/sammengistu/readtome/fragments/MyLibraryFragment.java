@@ -28,6 +28,9 @@ public class MyLibraryFragment extends Fragment {
     private Book mGeographyOfBliss;
     private Book mInTheWonderfulLandOfHez;
     private Book mThePlanetMappers;
+    private Book mTooFatToFight;
+    private Book the_story_of_beowulf;
+    private Book mAddress;
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
@@ -38,6 +41,9 @@ public class MyLibraryFragment extends Fragment {
         mGeographyOfBliss = myLibrary.get(1);
         mInTheWonderfulLandOfHez = myLibrary.get(2);
         mThePlanetMappers = myLibrary.get(3);
+        mTooFatToFight = myLibrary.get(4);
+        the_story_of_beowulf = myLibrary.get(5);
+        mAddress = myLibrary.get(6);
 
     }
 
@@ -106,11 +112,51 @@ public class MyLibraryFragment extends Fragment {
             }
         });
 
+        ImageView bookFiveImage = (ImageView) v.findViewById(R.id.book_cover_page_5);
+        bookFiveImage.setImageBitmap(
+            Bitmap.createScaledBitmap(mTooFatToFight.getBookCover(), 120, 180, false)
+        );
+
+        bookFiveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, mTooFatToFight.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        ImageView bookSixImage = (ImageView) v.findViewById(R.id.book_cover_page_6);
+        bookSixImage.setImageBitmap(
+            Bitmap.createScaledBitmap(the_story_of_beowulf.getBookCover(), 120, 180, false)
+        );
+
+        bookSixImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, the_story_of_beowulf.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        ImageView bookSevenImage = (ImageView) v.findViewById(R.id.book_cover_page_7);
+        bookSevenImage.setImageBitmap(
+            Bitmap.createScaledBitmap(mAddress.getBookCover(), 120, 180, false)
+        );
+
+        bookSevenImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, mAddress.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
 
         return v;
     }
-
-
-
-
 }
