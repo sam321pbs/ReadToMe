@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="30dp"
+                android:background="#ffffffff">
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/definition_word_box"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/settings_title_word_box"
+            android:contentDescription="@string/settings_heading_background"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/settings_heading"
+            android:textSize="40sp"
+            android:id="@+id/settings_title"
+            android:layout_marginTop="22dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/instructions_on_the_switch_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:textSize="20sp"
+            android:layout_below="@+id/settings_title_word_box"
+            android:id="@+id/settings_read_one_at_a_time_text_view"/>
+
+    <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/settings_read_by_sentence_mode"
+            android:layout_below="@+id/settings_read_one_at_a_time_text_view"
+            android:background="#ffe8ffb7"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:switchMinWidth="50sp"
+            android:switchPadding="50sp"
+            android:showText="true"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voice_speed_label"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:layout_below="@+id/settings_read_by_sentence_mode"
+            android:id="@+id/settings_voice_speed_text_view"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/settings_voice_speed_number_text_view"
+            android:layout_toRightOf="@+id/settings_voice_speed_text_view"
+            android:textSize="20sp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/settings_read_by_sentence_mode"/>
+
+    <SeekBar
+            android:id="@+id/settings_change_voice_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:max="40"
+            android:progress="20"
+            android:layout_below="@+id/settings_voice_speed_text_view"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_label"
+            android:id="@+id/settings_default_button"
+            android:layout_below="@+id/settings_change_voice_speed"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"/>
+
+</RelativeLayout>

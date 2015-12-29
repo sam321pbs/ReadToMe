@@ -2,66 +2,110 @@ package com.example.sammengistu.readtome.models;
 
 import android.content.Context;
 
-import com.example.sammengistu.readtome.R;
-import com.example.sammengistu.readtome.bookpages.CharlottesWebPages;
-import com.example.sammengistu.readtome.bookpages.CuriousGeorgePages;
-
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+//TODO: Will later be used to get books from the server
 public class Library {
 
     private static Library sLibrary;
 
-    private ArrayList<Book> mMyLibrary;
+    private List<Book> mMyLibrary;
+    private List<String> mEPubFileNamesOfBooks;
     private Context mAppContext;
 
-    public Library (Context appContext){
-        mAppContext = appContext;
+    public Library(Context appContext) {
         mMyLibrary = new ArrayList<>();
+        mEPubFileNamesOfBooks = new ArrayList<>();
 
+        mAppContext = appContext;
 
-        Book curiousGeorge = new Book("Curious George", "H.A.Rey",
-                R.drawable.curious_george_book_cover,
-                new CuriousGeorgePages(mAppContext).getPagesOfTheBook());
+        mEPubFileNamesOfBooks.add("dave_dawson_with_the_eighth.epub");
+        mEPubFileNamesOfBooks.add("geographyofbliss_onechapter.epub");
+        mEPubFileNamesOfBooks.add("in_the_wonderful_land_of_hez.epub");
+        mEPubFileNamesOfBooks.add("the_planet_mappers.epub");
+        mEPubFileNamesOfBooks.add("too_fat_to_fight.epub");
+        mEPubFileNamesOfBooks.add("the_story_of_beowulf.epub");
+        mEPubFileNamesOfBooks.add("address.epub");
 
-        Book charlottesWeb = new Book("Charlottes Web", "E. B. White",
-                R.drawable.charlottes_web_book_cover, new CharlottesWebPages(mAppContext).getPagesOfTheBook(), "Chapter 1");
+        Book daveDawsonWithEigth = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(0),mAppContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(0),mAppContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(0),mAppContext),
+            mEPubFileNamesOfBooks.get(0),
+            mAppContext);
 
+        Book geographyOfBliss = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(1),mAppContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(1),mAppContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(1),mAppContext),
+            mEPubFileNamesOfBooks.get(1),
+            mAppContext);
 
-        mMyLibrary.add(curiousGeorge);
-        mMyLibrary.add(charlottesWeb);
+        Book inTheWonderfulLandOfHez = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(2),mAppContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(2),mAppContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(2),mAppContext),
+            mEPubFileNamesOfBooks.get(2),
+            mAppContext);
+
+        Book thePlanetMappers = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(3),mAppContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(3),mAppContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(3),mAppContext),
+            mEPubFileNamesOfBooks.get(3),
+            mAppContext);
+
+        Book tooFatToFight = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(4),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(4),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(4),mAppContext),
+            mEPubFileNamesOfBooks.get(4),
+            mAppContext);
+
+        Book the_story_of_beowulf = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(5),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(5),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(5),mAppContext),
+            mEPubFileNamesOfBooks.get(5),
+            mAppContext);
+
+        Book address = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(6),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(6),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(6),mAppContext),
+            mEPubFileNamesOfBooks.get(6),
+            mAppContext);
+
+        mMyLibrary.add(daveDawsonWithEigth);
+        mMyLibrary.add(geographyOfBliss);
+        mMyLibrary.add(inTheWonderfulLandOfHez);
+        mMyLibrary.add(thePlanetMappers);
+        mMyLibrary.add(tooFatToFight);
+        mMyLibrary.add(the_story_of_beowulf);
+        mMyLibrary.add(address);
+
     }
 
     public static Library get(Context c) {
-        if (sLibrary == null){
+        if (sLibrary == null) {
             sLibrary = new Library(c.getApplicationContext());
         }
         return sLibrary;
     }
 
-    public Book getBook(UUID bookId){
-        for (Book book : mMyLibrary){
-            if (book.getBookId().equals(bookId)){
+    public Book getBook(UUID bookId) {
+        for (Book book : mMyLibrary) {
+            if (book.getBookId().equals(bookId)) {
                 return book;
             }
         }
         return null;
     }
 
-    public void addBook(Book book){
-        mMyLibrary.add(book);
-    }
-
-    public void deleteBook(Book book){
-        mMyLibrary.remove(book);
-    }
-
-    public ArrayList<Book> getMyLibrary() {
+    public List<Book> getMyLibrary() {
         return mMyLibrary;
     }
 
-    public void setMyLibrary(ArrayList<Book> myLibrary) {
-        mMyLibrary = myLibrary;
-    }
 }

@@ -1,7 +1,41 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.sammengistu.readtome.activities.PagesActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.example.sammengistu.readtome.activities.PagesActivity">
+
+    <item
+            android:id="@+id/menu_bookmark_page"
+            android:title="Bookmark Page"
+            android:orderInCategory="100"
+            app:showAsAction="ifRoom|always"/>
+
+    <item
+            android:id="@+id/menu_select_chapter"
+            android:title="Select Chapter"
+            android:orderInCategory="100"
+            app:showAsAction="ifRoom|always"/>
+
+    <item
+            android:id="@+id/menu_select_page"
+            android:title="Select Page"
+            android:orderInCategory="100"
+            app:showAsAction="ifRoom|always"/>
+
+    <item
+            android:id="@+id/menu_help"
+            android:title="Help"
+            android:orderInCategory="100"
+            app:showAsAction="ifRoom|always"/>
+
+    <item
+            android:id="@+id/menu_setting"
+            android:title="@string/action_settings"
+            android:orderInCategory="100"
+            app:showAsAction="ifRoom|always"/>
+
+    <item
+            android:id="@+id/menu_library"
+            android:title="@string/action_library"
+            android:orderInCategory="100"
+            app:showAsAction="ifRoom|always"/>
 </menu>

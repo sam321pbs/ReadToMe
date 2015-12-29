@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
 
     </style>
@@ -9,10 +9,10 @@
     <style name="PageText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:gravity">left</item>
         <item name="android:paddingTop">3dp</item>
-        <item name="android:layout_marginRight">3dp</item>
+        <item name="android:paddingRight">3dp</item>
 
 
     </style>

@@ -1,32 +1,94 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@drawable/bookshelf_empty">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bookshelf_empty"
+                tools:context=".MainActivity">
 
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
-        android:layout_marginLeft="30dp">
 
-        <TableRow>
-            <ImageView
+    <TableRow
+            android:id="@+id/table_row1_book_images"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="70dp">
+
+        <ImageView
+                android:id="@+id/book_cover_page_1"
+                android:layout_marginLeft="30dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/curious_george_book_cover"
-                android:id="@+id/curious_george_book_cover"/>
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
 
-            <ImageView
+        <ImageView
+                android:id="@+id/book_cover_page_2"
+                android:layout_marginLeft="40dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/charlottes_web_book_cover"
-                android:id="@+id/charlottes_web_book_cover_book_cover"
-                android:layout_marginLeft="25dp"/>
-        </TableRow>
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
+
+        <ImageView
+                android:id="@+id/book_cover_page_3"
+                android:layout_marginLeft="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
+
+    </TableRow>
+
+    <TableRow
+            android:id="@+id/table_row2_book_images"
+            android:layout_below="@+id/table_row1_book_images"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="25dp">
+
+        <ImageView
+                android:id="@+id/book_cover_page_4"
+                android:layout_marginLeft="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
+
+        <ImageView
+                android:id="@+id/book_cover_page_5"
+                android:layout_marginLeft="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
+
+        <ImageView
+                android:id="@+id/book_cover_page_6"
+                android:layout_marginLeft="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
+
+    </TableRow>
+
+    <TableRow
+            android:layout_below="@+id/table_row2_book_images"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="25dp">
+
+        <ImageView
+                android:id="@+id/book_cover_page_7"
+                android:layout_marginLeft="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/things_fall_apart_book_cover"
+                android:contentDescription="@string/book_cover_image"/>
 
 
-    </TableLayout>
+    </TableRow>
 
 </RelativeLayout>

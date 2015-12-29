@@ -1,8 +1,11 @@
 package com.example.sammengistu.readtome.models;
 
-import com.example.sammengistu.readtome.PageOfBook;
+import com.example.sammengistu.readtome.bookpages.EPubFileConverterToBook;
 
-import java.util.ArrayList;
+import android.content.Context;
+import android.graphics.Bitmap;
+
+import java.util.List;
 import java.util.UUID;
 
 public class Book {
@@ -10,41 +13,45 @@ public class Book {
     private String mTitle;
     private String mAuthor;
     private UUID mBookId;
-    private int mBookCover;
-    private ArrayList<PageOfBook> mPagesOfBook;
-    private String mChapter;
+    private Bitmap mBookCover;
+    private String mEPubFileName;
+    private Context mAppContext;
+    private int bookImage;
 
-    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook){
+    public Book(String title, String author, Bitmap bookCover, String epubFileName, Context appContext) {
         mBookCover = bookCover;
         mTitle = title;
         mAuthor = author;
-        mPagesOfBook = pagesOfBook;
+        mEPubFileName = epubFileName;
         mBookId = UUID.randomUUID();
+        mAppContext = appContext;
     }
 
-    public Book(String title, String author, int bookCover, ArrayList<PageOfBook> pagesOfBook, String chapter){
-        this(title, author,bookCover, pagesOfBook);
-        mChapter = chapter;
+    public Book(String title, String author, int bookCover, String epubFileName, Context appContext) {
+        bookImage = bookCover;
+        mTitle = title;
+        mAuthor = author;
+        mEPubFileName = epubFileName;
+        mBookId = UUID.randomUUID();
+        mAppContext = appContext;
     }
 
-    public String getChapter() {
-        return mChapter;
+
+    public int getBookImage() {
+        return bookImage;
     }
 
-    public ArrayList<PageOfBook> getPagesOfBook() {
-        return mPagesOfBook;
+    public String getEPubFileName() {
+        return mEPubFileName;
     }
 
-    public void setPageOfBook(ArrayList<PageOfBook> pageOfBook) {
-        mPagesOfBook = pageOfBook;
+    public List<PageOfBook> getPagesOfBook() {
+        EPubFileConverterToBook book = new EPubFileConverterToBook(mAppContext, mEPubFileName);
+        return book.getPagesOfTheBook();
     }
 
     public UUID getBookId() {
         return mBookId;
-    }
-
-    public void setBookId(UUID bookId) {
-        mBookId = bookId;
     }
 
     public String getTitle() {
@@ -59,15 +66,8 @@ public class Book {
         return mAuthor;
     }
 
-    public void setAuthor(String author) {
-        mAuthor = author;
-    }
-
-    public int getBookCover() {
+    public Bitmap getBookCover() {
         return mBookCover;
     }
 
-    public void setBookCover(int bookCover) {
-        mBookCover = bookCover;
-    }
 }

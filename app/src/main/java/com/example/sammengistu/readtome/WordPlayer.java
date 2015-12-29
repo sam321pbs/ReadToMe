@@ -1,11 +1,20 @@
 package com.example.sammengistu.readtome;
 
+import com.example.sammengistu.readtome.fragments.DefinitionDialog;
+import com.example.sammengistu.readtome.fragments.PageFragment;
+
+import android.app.Activity;
 import android.content.Context;
-import android.media.MediaPlayer;
+import android.graphics.Color;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -13,136 +22,234 @@ import java.util.Locale;
  */
 public class WordPlayer implements TextToSpeech.OnInitListener {
 
-    private static final String TAG = "WordPlayer";
-    private MediaPlayer mWordPlayer;
-    private TextToSpeech tts;
-    private Context mAppContext;
+    private static final int HAS_MORE_THAN_ONE = 0;
+    private static final int FIRST_ITEM = 0;
 
-    public WordPlayer (Context c, TextToSpeech.OnInitListener listener){
-        tts = new TextToSpeech(c, listener);
-        mAppContext = c;
+    private TextToSpeech mTts;
+    private Activity mAppActivity;
+    private float mVoiceSpeed;
+    private boolean mPlay;
+
+
+    /**
+     * Creates a wordPlayer that sets up all the requirements that is need for
+     * WordPlayer to work
+     *
+     * @param c           - context of the activity
+     * @param appActivity - used to run on the mainthread of the activity
+     */
+    public WordPlayer(Context c, Activity appActivity,
+                      int voiceSpeed) {
+        mTts = new TextToSpeech(c, this);
+        mVoiceSpeed = ((float) voiceSpeed / 20);
+        mTts.setSpeechRate(mVoiceSpeed);
+        mAppActivity = appActivity;
+        mPlay = false;
 
     }
 
-    /**
-     * Stops the media player if it is turned on
-     */
-    public void stopAudioFile() {
-        if (mWordPlayer != null) {
-            mWordPlayer.release();
-            mWordPlayer = null;
-        }
-
+    public void stopTtsVoice() {
+        mTts.stop();
     }
 
     /**
-     * Takes in an ArrayList of words
-     * Copies the list of words
-     * Either finds its audio file or uses text to speech to play the word
-     * @param words
+     * Shuts down TextToSpeech
      */
-    public void play(ArrayList<String> words) {
-        stopAudioFile();
+    public void shutDownTTS() {
+        mTts.shutdown();
+    }
 
-        if (words != null && words.size() > 0) {
-            final ArrayList<String> wordsToPlay = new ArrayList<String>(words);
+    /**
+     * Plays the word
+     * 1st checks if the word is in a media player  file if not
+     * uses the TextToSpeech class to play the word
+     * <p/>
+     * It also highlights the text box of the word it is playing
+     *
+     * @param playMe           - List to play
+     * @param highlightedWords - change the text view box color
+     */
+    @SuppressWarnings("deprecation")
+    public void play(List<String> playMe,
+                     List<TextView> highlightedWords, final ImageView playStopButton) {
 
-            String word = wordsToPlay.get(0);
-            wordsToPlay.remove(0);
+        if (mPlay) {
+            if (playMe.size() > HAS_MORE_THAN_ONE) {
+                mTts.setSpeechRate(mVoiceSpeed / 20);
+                final List<String> wordsToPlay = new ArrayList<>(playMe);
+                final List<TextView> highLightedTextView = new ArrayList<>(highlightedWords);
 
-            if (WordAudioFiles.get(mAppContext).isWordInFiles(word)) {
-                Log.i(TAG, "True");
-                mWordPlayer = MediaPlayer.create(mAppContext, WordAudioFiles.get(mAppContext).getWordAudio(word));
+                final TextView textView = highLightedTextView.get(FIRST_ITEM);
 
-                mWordPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                final String getFirst = DefinitionDialog.removePunctuations(wordsToPlay.get(FIRST_ITEM));
+                wordsToPlay.remove(FIRST_ITEM);
+                highLightedTextView.remove(FIRST_ITEM);
+
+                mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                     @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        if (mp == mWordPlayer) {
-                            mWordPlayer.start();
-                        }
+                    public void onStart(String utteranceId) {
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                textView.setBackgroundColor(Color.GREEN);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                textView.setBackgroundColor(Color.YELLOW);
+                            }
+                        });
+                        play(wordsToPlay, highLightedTextView, playStopButton);
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
                     }
                 });
 
-                mWordPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                HashMap<String, String> map = new HashMap<>();
+                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
+
+                mTts.speak(getFirst, TextToSpeech.QUEUE_FLUSH, map);
+
+            } else {
+                mAppActivity.runOnUiThread(new Runnable() {
                     @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        stopAudioFile();
-                        // Recursively call the play() method with one less
-                        // track in the list.
-                        play(wordsToPlay);
+                    public void run() {
+                        playStopButton.setImageResource(R.drawable.play_button_updated);
+                        PageFragment.setPlayOrStopCounter(0);
                     }
                 });
-            } else{
-                Log.i(TAG, "Inside else block of play");
-
-                String wordsToGo = word + " ";
-                int foundNextWordInFile = 0;
-                for (int i = 0; i < wordsToPlay.size(); i++){
-                    Log.i(TAG, "Word at " + i + " is: " + wordsToPlay.get(i));
-                    Log.i(TAG, "Is in file: " + WordAudioFiles.get(mAppContext)
-                            .isWordInFiles(wordsToPlay.get(i)));
-                    if (WordAudioFiles.get(mAppContext).isWordInFiles(wordsToPlay.get(i))){
-                        foundNextWordInFile = i;
-                        break;
-                    } else {
-                        wordsToGo += wordsToPlay.get(i) + " ";
-                        foundNextWordInFile++;
-                    }
-                }
-
-                Log.i(TAG, foundNextWordInFile + "");
-                for (int i = 0; i < foundNextWordInFile; i++){
-                    Log.i(TAG, "Remove word at " + i + " is: " + wordsToPlay.get(0));
-
-                    wordsToPlay.remove(0);
-                }
-
-                Log.i(TAG, " This is the word going: " + wordsToGo);
-                speakOut(wordsToGo);
-
-                do {
-
-                } while (tts.isSpeaking());
-
-                    play(wordsToPlay);
-
             }
+        }
+    }
 
+    @SuppressWarnings("deprecation")
+    public void playSentenceBySentence(List<String> playMe,
+                                       List<TextView> highlightedWords,
+                                       final ImageView playStopButton) {
 
+        if (mPlay) {
+            mTts.setSpeechRate(mVoiceSpeed / 20);
+            if (playMe.size() > HAS_MORE_THAN_ONE) {
+
+                final List<String> wordsToPlay = new ArrayList<>(playMe);
+                final List<TextView> highLightedTextViews = new ArrayList<>(highlightedWords);
+
+                //TextViews to highlight as a sentence
+                final List<TextView> textViewsOfSentence = new ArrayList<>();
+                //Sentence to play
+                StringBuilder sentenceToPlay = new StringBuilder();
+
+                for (int i = 0; i < highLightedTextViews.size(); i++) {
+
+                    if (!PageFragment.endOfSentence(highLightedTextViews.get(i).getText().toString())) {
+
+                        textViewsOfSentence.add(highLightedTextViews.get(0));
+                        sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                        sentenceToPlay.append(" ");
+
+                        highLightedTextViews.remove(FIRST_ITEM);
+                        wordsToPlay.remove(FIRST_ITEM);
+                        i--;
+
+                    } else {
+
+                        textViewsOfSentence.add(highLightedTextViews.get(0));
+                        sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                        sentenceToPlay.append(" ");
+
+                        highLightedTextViews.remove(FIRST_ITEM);
+                        wordsToPlay.remove(FIRST_ITEM);
+                        break;
+                    }
+                }
+
+                mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (TextView textView : textViewsOfSentence) {
+                                    textView.setBackgroundColor(Color.GREEN);
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (TextView textView : textViewsOfSentence) {
+                                    textView.setBackgroundColor(Color.YELLOW);
+                                }
+                            }
+                        });
+
+                        playSentenceBySentence(wordsToPlay, highLightedTextViews, playStopButton);
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
+                    }
+                });
+
+                HashMap<String, String> map = new HashMap<>();
+                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
+
+                mTts.speak(sentenceToPlay.toString(), TextToSpeech.QUEUE_FLUSH, map);
+
+            } else {
+                mAppActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        playStopButton.setImageResource(R.drawable.play_button_updated);
+                        PageFragment.setPlayOrStopCounter(0);
+                    }
+                });
+            }
         }
     }
 
     /**
      * Checks to make sure the Text to speech engine is working properly
      * Then sets up its language
-     * @param status
+     *
+     * @param status - gets the status of the text to speech engine on initialization
      */
     @Override
     public void onInit(int status) {
 
         if (status == TextToSpeech.SUCCESS) {
 
-            int result = tts.setLanguage(Locale.US);
+            int result = mTts.setLanguage(Locale.US);
 
             if (result == TextToSpeech.LANG_MISSING_DATA
-                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
             }
 
         } else {
-            Log.e("TTS", "Initilization Failed!");
+            Log.e("TTS", "Initialization Failed!");
         }
     }
 
-    /**
-     * Uses the text to speech engine to actually play the word that is being
-     * passed in
-     * @param words
-     */
-    @SuppressWarnings("deprecation")
-    private void speakOut(String words) {
-        Log.e("TTS", "Speak");
-        tts.setSpeechRate(0.53f);
-        tts.speak(words, TextToSpeech.QUEUE_FLUSH, null);
+    public void setPlay(boolean play) {
+        mPlay = play;
     }
+
+    public void setVoiceSpeed(float voiceSpeed) {
+        mVoiceSpeed = voiceSpeed;
+    }
+
 }
