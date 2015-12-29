@@ -28,6 +28,11 @@ public class Library {
         mEPubFileNamesOfBooks.add("too_fat_to_fight.epub");
         mEPubFileNamesOfBooks.add("the_story_of_beowulf.epub");
         mEPubFileNamesOfBooks.add("address.epub");
+        mEPubFileNamesOfBooks.add("the_snowball_effect.epub");
+        mEPubFileNamesOfBooks.add("stone.epub");
+        mEPubFileNamesOfBooks.add("famous_givers_and_their_gifts.epub");
+        mEPubFileNamesOfBooks.add("the_adventures_of_tom_sawyer.epub");
+        mEPubFileNamesOfBooks.add("dracula.epub");
 
         Book daveDawsonWithEigth = new Book(
             GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(0),mAppContext),
@@ -78,6 +83,41 @@ public class Library {
             mEPubFileNamesOfBooks.get(6),
             mAppContext);
 
+        Book theSnowBallEffect = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(7),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(7),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(7),mAppContext),
+            mEPubFileNamesOfBooks.get(7),
+            mAppContext);
+//
+        Book stone = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(8),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(8),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(8),mAppContext),
+            mEPubFileNamesOfBooks.get(8),
+            mAppContext);
+//
+        Book famous_givers_and_their_gifts = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(9),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(9),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(9),mAppContext),
+            mEPubFileNamesOfBooks.get(9),
+            mAppContext);
+
+        Book the_adventures_of_tom_sawyer = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(10),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(10),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(10),mAppContext),
+            mEPubFileNamesOfBooks.get(10),
+            mAppContext);
+
+        Book dracula = new Book(
+            GetBookInfo.getBookTitle(mEPubFileNamesOfBooks.get(11),appContext),
+            GetBookInfo.getBookAuthor(mEPubFileNamesOfBooks.get(11),appContext),
+            GetBookInfo.getBookCover(mEPubFileNamesOfBooks.get(11),mAppContext),
+            mEPubFileNamesOfBooks.get(11),
+            mAppContext);
+
         mMyLibrary.add(daveDawsonWithEigth);
         mMyLibrary.add(geographyOfBliss);
         mMyLibrary.add(inTheWonderfulLandOfHez);
@@ -85,6 +125,11 @@ public class Library {
         mMyLibrary.add(tooFatToFight);
         mMyLibrary.add(the_story_of_beowulf);
         mMyLibrary.add(address);
+        mMyLibrary.add(theSnowBallEffect);
+        mMyLibrary.add(stone);
+        mMyLibrary.add(famous_givers_and_their_gifts);
+        mMyLibrary.add(the_adventures_of_tom_sawyer);
+        mMyLibrary.add(dracula);
 
     }
 

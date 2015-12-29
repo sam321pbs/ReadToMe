@@ -31,6 +31,11 @@ public class MyLibraryFragment extends Fragment {
     private Book mTooFatToFight;
     private Book the_story_of_beowulf;
     private Book mAddress;
+    private Book mTheSnowBallEffect;
+    private Book mWunderwelten;
+    private Book famous_givers_and_their_gifts;
+    private Book mThe_adventures_of_tom_sawyer;
+    private Book mDracula;
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
@@ -44,7 +49,11 @@ public class MyLibraryFragment extends Fragment {
         mTooFatToFight = myLibrary.get(4);
         the_story_of_beowulf = myLibrary.get(5);
         mAddress = myLibrary.get(6);
-
+        mTheSnowBallEffect = myLibrary.get(7);
+        mWunderwelten = myLibrary.get(8);
+        famous_givers_and_their_gifts = myLibrary.get(9);
+        mThe_adventures_of_tom_sawyer = myLibrary.get(10);
+        mDracula = myLibrary.get(11);
     }
 
     @Override
@@ -156,6 +165,83 @@ public class MyLibraryFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        ImageView bookEightImage = (ImageView) v.findViewById(R.id.book_cover_page_8);
+        bookEightImage.setImageBitmap(
+            Bitmap.createScaledBitmap(mTheSnowBallEffect.getBookCover(), 120, 180, false)
+        );
+
+        bookEightImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, mTheSnowBallEffect.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        ImageView bookNineImage = (ImageView) v.findViewById(R.id.book_cover_page_9);
+        bookNineImage.setImageBitmap(
+            Bitmap.createScaledBitmap(mWunderwelten.getBookCover(), 120, 180, false)
+        );
+
+        bookNineImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, mWunderwelten.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        ImageView bookTenImage = (ImageView) v.findViewById(R.id.book_cover_page_10);
+        bookTenImage.setImageBitmap(
+            Bitmap.createScaledBitmap(famous_givers_and_their_gifts.getBookCover(), 120, 180, false)
+        );
+
+        bookTenImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, famous_givers_and_their_gifts.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        ImageView bookElevenImage = (ImageView) v.findViewById(R.id.book_cover_page_11);
+        bookElevenImage.setImageBitmap(
+            Bitmap.createScaledBitmap(mThe_adventures_of_tom_sawyer.getBookCover(), 120, 180, false)
+        );
+
+        bookElevenImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, mThe_adventures_of_tom_sawyer.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        ImageView bookTwelveImage = (ImageView) v.findViewById(R.id.book_cover_page_12);
+        bookTwelveImage.setImageBitmap(
+            Bitmap.createScaledBitmap(mDracula.getBookCover(), 120, 180, false)
+        );
+
+        bookTwelveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PagesActivity.class);
+                intent.putExtra(BOOK_ID, mDracula.getBookId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+
 
         return v;
     }

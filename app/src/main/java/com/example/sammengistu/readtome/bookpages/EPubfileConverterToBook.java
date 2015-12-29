@@ -22,18 +22,17 @@ import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.epub.EpubReader;
 
-/**
- * Created by SamMengistu on 12/15/15.
- */
-public class EPubfileConverterToBook implements MakeAPage {
+
+public class EPubFileConverterToBook implements MakeAPage {
     private static final String TAG = "The Planet Mappers";
     public static List<PageOfBook> mPagesOfTheBook = new ArrayList<>();
     private final String SPACE = " ";
-    private int pageNumber = 0; // Keeps track of the page you are on
-    private Book mThePlanetMappersBookEpubLib;
+    private int mPageNumber = 0; // Keeps track of the page you are on
+    private Book mEpubBook;
     private ArrayList<String> mLeftOverWordsFromPrevPage = new ArrayList<>();
     private int mWordCount = 0;
-    private int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
+    boolean mWordMatchEntireLine;
+
 
     private Context mContext;
     private int mChapterTracker;
@@ -45,11 +44,28 @@ public class EPubfileConverterToBook implements MakeAPage {
     private StringBuilder mChapterLabel = new StringBuilder();
     private StringBuilder mPage = new StringBuilder();
 
-    public EPubfileConverterToBook(Context c, String ePubFileName) {
+    private boolean mHaveChapterLabel = false;
+    private int mChapterWordLocation = 0;
+    private boolean mPageBreak = false;
+//    private int mChapterWordLoc = 0;
+    private int entireLineIsApartOfChapterCount = 0;
+    private String mPreviousWord = "";
+
+    /**
+     * Takes an epub file name and finds the file and sets up the class for conversion
+     *
+     * @param c            - context to get access to the file
+     * @param ePubFileName - file name to search for
+     */
+    public EPubFileConverterToBook(Context c, String ePubFileName) {
         mContext = c;
         mEPubFileName = ePubFileName;
     }
 
+    /**
+     * Opens the book file and sets up the eBook
+     * and gets the table of contents from the epub file
+     */
     private void setUpBookInfo() {
         mChapterNames = new ArrayList<>();
 
@@ -67,15 +83,16 @@ public class EPubfileConverterToBook implements MakeAPage {
 
             // Load Book from inputStream
 
-            mThePlanetMappersBookEpubLib = (new EpubReader()).readEpub(epubInputStream);
+            mEpubBook = (new EpubReader()).readEpub(epubInputStream);
 
-            getBookInformation();
+            getTableOfContents(mEpubBook.getTableOfContents().getTocReferences(), 0);
 
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     public List<PageOfBook> getPagesOfTheBook() {
 
@@ -85,18 +102,21 @@ public class EPubfileConverterToBook implements MakeAPage {
 
     private void makeBook() {
 
-        Spine spine = new Spine(mThePlanetMappersBookEpubLib.getTableOfContents());
+        Spine spine = new Spine(mEpubBook.getTableOfContents());
 
         mChapterTracker = 0;
+        int skipLines3 = 0;
+        boolean skipLines = false;
 
-        boolean haveChapterLabel = false;
-        int mChapterLength = 0;
-        boolean pageBreak = false;
 
+//        boolean skipSection = false;
 
         for (SpineReference bookSection : spine.getSpineReferences()) {
 
             Log.i("Section", "-----------------------");
+
+//            skipSection = true;
+
             Resource res = bookSection.getResource();
 
             try {
@@ -107,123 +127,114 @@ public class EPubfileConverterToBook implements MakeAPage {
 
                 int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
 
-
+                //Starts reading line for line of the epub file
                 while ((line = r.readLine()) != null) {
-
-                    int entireLineIsApartOfChapterCount = 0;
 
                     line = Html.fromHtml(line).toString();
 
                     line = line.replace("\n", "").replace("\r", "");
-//                    Log.i("Read it ", line);
+                    if (line.equals("") || line.equals(" ")){
+                        continue;
+                    }
+                    Log.i("Read it ", line);
 
+//                    if (skipSection && !line.equals("")){
+//                        skipSection = false;
+//                        continue;
+//                    }
+
+                    if (skipLines && skipLines3 <= 3 && !line.equals("")) {
+                        Log.i("Skip", "Skip = " + line);
+                        skipLines3++;
+                        continue;
+                    }
+
+                    //Skips the first line of the table of contents so it doesnt confuse it for a chapter
+                    if (mPreviousWord.equals("Contents")) {
+                        Log.i("Contents", "Line = " + line);
+
+                        mPreviousWord = "";
+                        continue;
+                    }
+
+                    /*Resets the chapter tracker when you are at the end of the book so it doesnt throw
+                     arrayIndex out of bounds exception
+                     */
                     if (mChapterTracker == mChapterNames.size()) {
                         mChapterTracker = 0;
                     }
 
                     String[] lineIntoArray = line.split("\\s+");
-                    String[] currentChapterArray = mChapterNames.get(mChapterTracker).split("\\s+");
 
-                    for (int i = 0; i < lineIntoArray.length; i++) {
-
-                        if (mChapterLength == currentChapterArray.length) {
-                            mChapterLength = 0;
-                        }
-
-                        //Remove all special characters so words to get interferred with special characters
-                        if (lineIntoArray[i].replaceAll("[\\-\\+\\.\\^:,]", "")
-                            .equals(currentChapterArray[mChapterLength]
-                                .replaceAll("[\\-\\+\\.\\^:,]", ""))) {
-
-//                            Log.i(TAG, "Found a match = " + lineIntoArray[i]);
-                            mChapterLength++;
-
-                                /*If it detects a chapter label is already set and it finds a the next chapter label
-                                  before word count is full it will empty create the mPage
-                                  Ex. the chapter is less than a mPage long
-                                  */
-                            if (haveChapterLabel) {
-                                addAPage(true);
-
-                                mWordCount = 0;
-
-                                haveChapterLabel = false;
-                                pageBreak = false;
-                            }
-
-                            mChapterLabel.append(lineIntoArray[i]);
-                            entireLineIsApartOfChapterCount++;
-
-                            if (!mChapterLabel.toString().replaceAll("[\\-\\+\\.\\^:,]", "")
-                                .equals(mChapterNames.get(mChapterTracker)
-                                    .replaceAll("[\\-\\+\\.\\^:,]", ""))) {
-                                mChapterLabel.append(" ");
-                            }
-                        }
-
-                        if (mChapterLabel.toString().replaceAll("[\\-\\+\\.\\^:,]", "")
-                            .equals(mChapterNames.get(mChapterTracker)
-                                .replaceAll("[\\-\\+\\.\\^:,]", ""))) {
-//                            Log.i(TAG, "Chapter Label  = " + mChapterLabel.toString());
-//                            Log.i(TAG, "Create first chapter = " + createFirstChapter);
-//
-//                            Log.i(TAG, "ChapterTracker = " + mChapterTracker);
-//                            Log.i("mChapterName", "Length = " + mChapterNames.size());
-
-                            mChapterTracker++;
-
-                            haveChapterLabel = true;
-
-                            mChapterLength = 0;
-
-                            pageBreak = true;
-                        }
+                    if (line.equalsIgnoreCase("Contents")) {
+                        Log.i("Contents", "Line = " + line);
+                        mPreviousWord = line;
+                        skipLines = true;
+                        continue;
                     }
 
+                    if (ifChapterMatchBuildChapterLabel(lineIntoArray)) {
+                        Log.i(TAG, line + "= Line to skip");
+                        continue;
+                    }
 
-                        /*
-                        If found a new chapter it show create a new mPage for the currrent text and
-                        add the chapter label to the next mPage
-                         */
-                    if (pageBreak) {
-                        if (!mPage.toString().isEmpty()) {
+                    //prevents the chapter label from being added to the page text
+                    if (mWordMatchEntireLine) {
+                        mWordMatchEntireLine = false;
+                        continue;
+                    }
+
+                    /*
+                    If found a new chapter it should create a new mPage for the current text and
+                    add the chapter label to the next mPage
+                    */
+                    if (mPageBreak) {
+                        if (!mPage.toString().isEmpty() && mLeftOverWordsFromPrevPage.isEmpty()) {
                             addAPage(false);
                             mWordCount = 0;
+                        } else {
+                            if (!mLeftOverWordsFromPrevPage.isEmpty()) {
+                                StringBuilder stringBuilder = new StringBuilder();
+                                for (String s : mLeftOverWordsFromPrevPage){
+                                    stringBuilder.append(s + " ");
+                                }
+                                Log.i("Left Over", stringBuilder.toString());
+                                addWordsToPage();
+                                addAPage(false);
+                                mWordCount = 0;
+                            }
                         }
-                        pageBreak = false;
+                        mPageBreak = false;
                         continue;
                     }
 
-
-                    if (entireLineIsApartOfChapterCount == lineIntoArray.length) {
-//                        Log.i("Line full", entireLineIsApartOfChapterCount + " ");
-                        continue;
-                    }
 
                     addWordsToPage(lineIntoArray);
 
                     //Finish forLoop to add the remainder of sentence to ArrayList then set Page up
                     if (mWordCount == MAX_NUMBER_OF_WORDS_PER_PAGE) {
 
-                        if (haveChapterLabel) {
+                        if (mHaveChapterLabel) {
 
                             addAPage(true);
 
-//                            Log.i("After", "Page down " + mChapterLabel.toString());
+                            Log.i("After", "Page down " + mChapterLabel.toString());
 
-                            haveChapterLabel = false;
+                            mHaveChapterLabel = false;
                         } else {
 
                             if (!mPage.toString().isEmpty()) {
 
                                 addAPage(false);
                             }
-                            mWordCount = 0;
                         }
-
                         mWordCount = 0;
                     }
+                }
 
+                //If any left over words it will make a page for it
+                if (mPage.length() != 0) {
+                    addAPage(false);
                 }
 
             } catch (IOException e) {
@@ -233,12 +244,146 @@ public class EPubfileConverterToBook implements MakeAPage {
 
     }
 
+    /**
+     * Takes in a line of text and sees if it is part of the table of contents by checking the
+     * first
+     * word of the line and the first word of the chapter. If they match it continues to check the
+     * rest
+     * of the line and builds a chapter label if the match
+     *
+     * @param lineIntoArray - line to check the table of contents against
+     */
+    private boolean ifChapterMatchBuildChapterLabel(String[] lineIntoArray) {
+        String[] currentChapterArray = mChapterNames.get(mChapterTracker).split("\\s+");
+
+        boolean continueToNextLine = false;
+        boolean wordMatch = false;
+        String specialCharacters = "[\\-\\+\\.\\^:]";
+
+        try {
+
+            //Removes special characters so it only checks the words
+            if (lineIntoArray[0].replaceAll(specialCharacters, "")
+                .equalsIgnoreCase(currentChapterArray[mChapterWordLocation].replaceAll(specialCharacters, ""))) {
+
+//                Log.i("Word match", lineIntoArray[0] + " = " + currentChapterArray[0]);
+                for (String aLineIntoArray : lineIntoArray) {
+
+                    String chapterLabelWithOutSpecialCharacters =
+                        mChapterLabel.toString().replaceAll(specialCharacters, "");
+
+                    String chapterNameWithOutSpecialCharacters = mChapterNames.get(mChapterTracker)
+                        .replaceAll(specialCharacters, "");
+
+                    String wordAtIWithoutSpecialCharacters = aLineIntoArray.replaceAll(specialCharacters, "");
+
+
+                    if (mChapterWordLocation == currentChapterArray.length) {
+                        mChapterWordLocation = 0;
+                    }
+
+                    String currentChapterArrayWordAtChapterLengthWithoutSpecialCharacters =
+                        currentChapterArray[mChapterWordLocation].replaceAll(specialCharacters, "");
+
+                    //Remove all special characters so words don't get interfered with special characters
+                    if (wordAtIWithoutSpecialCharacters
+                        .equalsIgnoreCase(currentChapterArrayWordAtChapterLengthWithoutSpecialCharacters)) {
+
+//                        mChapterWordLoc++;
+                        Log.i(TAG, "Found a match = " + aLineIntoArray);
+                        mChapterWordLocation++;
+
+                        /*If it detects a the next chapter label but the page isnt full yet because
+                        the chapter is only a couple lines long it will create a page for it
+                         Ex. the chapter is less than MAX_NUMBER_OF_WORDS_PER_PAGE
+                         */
+                        if (mHaveChapterLabel) {
+                            addAPage(true);
+
+                            mWordCount = 0;
+
+                            mHaveChapterLabel = false;
+                            mPageBreak = false;
+                        }
+
+                        mChapterLabel.append(aLineIntoArray);
+
+
+                        entireLineIsApartOfChapterCount++;
+
+                        chapterLabelWithOutSpecialCharacters =
+                            mChapterLabel.toString().replaceAll("[\\-\\+\\.\\^:]", "");
+
+                        //If the chapter label is more than one word add a space to mChapterLabel
+                        if (!chapterLabelWithOutSpecialCharacters
+                            .equalsIgnoreCase(chapterNameWithOutSpecialCharacters)) {
+                            mChapterLabel.append(" ");
+                        }
+
+                        Log.i("Chapter label ", mChapterLabel.toString());
+
+                        wordMatch = true;
+                    } else {
+                        wordMatch = false;
+                        mChapterLabel = new StringBuilder();
+                    }
+
+                    if (wordMatch && chapterLabelWithOutSpecialCharacters
+                        .equalsIgnoreCase(chapterNameWithOutSpecialCharacters)) {
+                        Log.i(TAG, "Chapter Label  = " + mChapterLabel.toString());
+
+                        Log.i(TAG, "ChapterTracker = " + mChapterTracker);
+
+//                        mChapterWordLoc = 0;
+                        mChapterTracker++;
+
+                        mHaveChapterLabel = true;
+
+                        mChapterWordLocation = 0;
+
+                        mPageBreak = true;
+                        mWordMatchEntireLine = false;
+
+                    }
+
+                }
+            } else {
+                mChapterWordLocation = 0;
+
+//                Log.i("Chapter", "Chapter label else = " + mChapterLabel.toString());
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            continueToNextLine = true;
+        }
+
+        if (wordMatch && !mHaveChapterLabel) {
+            mWordMatchEntireLine = true;
+        }
+
+        if (!wordMatch){
+//            mChapterLabel = new StringBuilder();
+        }
+        return continueToNextLine;
+    }
+
+    /**
+     * Loops throught line being passed in and adds words to the page and builds a page if the page
+     * is
+     * full and adds the words from the previous line if the page was full
+     */
     private void addWordsToPage(String[] lineIntoArray) {
+        int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
+
         //Checks if the previous line had any leftover words before mPage break
         if (!mLeftOverWordsFromPrevPage.isEmpty()) {
             for (String wordFromLastLine : mLeftOverWordsFromPrevPage) {
-                mPage.append(wordFromLastLine + SPACE);
-                mWordCount++;
+                if (mWordCount < MAX_NUMBER_OF_WORDS_PER_PAGE) {
+                    mPage.append(wordFromLastLine + SPACE);
+                    mWordCount++;
+                } else {
+                    addAPage(false);
+                    mWordCount = 0;
+                }
             }
 
             mLeftOverWordsFromPrevPage.clear();
@@ -249,6 +394,7 @@ public class EPubfileConverterToBook implements MakeAPage {
 
 //                            Log.i(TAG, mWordCount + "");
 //                            Log.i(TAG, "Word from array " + aWordFromArray);
+
 
             if (mWordCount < MAX_NUMBER_OF_WORDS_PER_PAGE) {
 
@@ -261,15 +407,36 @@ public class EPubfileConverterToBook implements MakeAPage {
         }
     }
 
+    /**
+     * Empty arraylist
+     */
+    private void addWordsToPage() {
+        //Checks if the previous line had any leftover words before mPage break
+        if (!mLeftOverWordsFromPrevPage.isEmpty()) {
+            for (String wordFromLastLine : mLeftOverWordsFromPrevPage) {
+                mPage.append(wordFromLastLine + SPACE);
+                mWordCount++;
+            }
+
+
+            mLeftOverWordsFromPrevPage.clear();
+        }
+    }
+
+    /**
+     * Creates a page based of whether it has a chapter label
+     *
+     * @param haveAChapter - add a chapter label
+     */
     private void addAPage(boolean haveAChapter) {
         PageOfBook newPage;
 
         if (haveAChapter) {
             newPage = new PageOfBook(mPage.toString(),
-                pageNumber++, mChapterLabel.toString());
+                mPageNumber++, mChapterLabel.toString());
             mChapterLabel = new StringBuilder();
         } else {
-            newPage = new PageOfBook(mPage.toString(), pageNumber++);
+            newPage = new PageOfBook(mPage.toString(), mPageNumber++);
         }
 
         mPagesOfTheBook.add(newPage);
@@ -284,20 +451,11 @@ public class EPubfileConverterToBook implements MakeAPage {
 
     }
 
-    private void getBookInformation() {
-
-//             Log the tale of contents
-
-        logTableOfContents(mThePlanetMappersBookEpubLib.getTableOfContents().getTocReferences(), 0);
-
-
-    }
-
     /**
-     * Recursively Log the Table of Contents
+     * Recursively Log the Table of Contents and add it to mChapterNames
      */
 
-    private void logTableOfContents(List<TOCReference> tocReferences, int depth) {
+    private void getTableOfContents(List<TOCReference> tocReferences, int depth) {
 
         if (tocReferences == null) {
 
@@ -318,7 +476,7 @@ public class EPubfileConverterToBook implements MakeAPage {
 
             Log.d("epublib", tocString.toString());
 
-            logTableOfContents(tocReference.getChildren(), depth + 1);
+            getTableOfContents(tocReference.getChildren(), depth + 1);
 
         }
 
