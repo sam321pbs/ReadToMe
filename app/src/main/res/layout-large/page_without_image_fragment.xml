@@ -25,7 +25,7 @@
     <TableLayout
         android:id="@+id/fragment_page_tableLayout1"
         style="@style/TableLayoutView"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:layout_below="@+id/book_chapter_textView">
 
         <include

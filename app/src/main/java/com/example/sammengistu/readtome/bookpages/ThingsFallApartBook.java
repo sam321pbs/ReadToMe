@@ -57,7 +57,7 @@ public class ThingsFallApartBook implements MakeAPage {
 
             for (wordCount = 0; wordCount < allWordsFromBook.length; wordCount++) {
 
-//                Log.i(TAG, allWordsFromBook[wordCount] + " ");
+//                Log.i(TAG, allWordsFromBook[mWordCount] + " ");
 
                 if (makeTitlePageFirst) {
 
