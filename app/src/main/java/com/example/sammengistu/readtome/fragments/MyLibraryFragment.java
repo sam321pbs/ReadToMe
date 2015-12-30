@@ -4,19 +4,25 @@ package com.example.sammengistu.readtome.fragments;
 import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.activities.PagesActivity;
 import com.example.sammengistu.readtome.models.Book;
+import com.example.sammengistu.readtome.models.GetBookInfo;
 import com.example.sammengistu.readtome.models.Library;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,225 +30,301 @@ import java.util.List;
 public class MyLibraryFragment extends Fragment {
 
     public static final String BOOK_ID = "Book Id";
-    private Book mDaveDawsonWithEigth;
-    private Book mGeographyOfBliss;
-    private Book mInTheWonderfulLandOfHez;
-    private Book mThePlanetMappers;
-    private Book mTooFatToFight;
-    private Book the_story_of_beowulf;
-    private Book mAddress;
-    private Book mTheSnowBallEffect;
-    private Book mWunderwelten;
-    private Book famous_givers_and_their_gifts;
-    private Book mThe_adventures_of_tom_sawyer;
-    private Book mDracula;
+
+    private Button mNextButton;
+    private Button mPrevButton;
+
+    private ImageView mBookOneImage;
+    private ImageView mBookTwoImage;
+    private ImageView mBookThreeImage;
+    private ImageView mBookFourImage;
+    private ImageView mBookFiveImage;
+    private ImageView mBookSixImage;
+    private ImageView mBookSevenImage;
+    private ImageView mBookEightImage;
+    private ImageView mBookNineImage;
+    private ImageView mBookTenImage;
+    private ImageView mBookElevenImage;
+    private ImageView mBookTwelveImage;
+
+    private List<LibraryPage> mLibraryPages;
+
+    private View mMyLibraryView;
+
+    private List<ImageView> mBookImageViews;
+
+    private List<Book> mMyLibraryBooks;
+
+    private int mLibraryPage;
+
+    private boolean mShowErrorToast;
+
+    private ProgressDialog pd = null;
+
+    private List<Bitmap> mBitmaps = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
 
-        List<Book> myLibrary = Library.get(getActivity()).getMyLibrary();
-        mDaveDawsonWithEigth = myLibrary.get(0);
-        mGeographyOfBliss = myLibrary.get(1);
-        mInTheWonderfulLandOfHez = myLibrary.get(2);
-        mThePlanetMappers = myLibrary.get(3);
-        mTooFatToFight = myLibrary.get(4);
-        the_story_of_beowulf = myLibrary.get(5);
-        mAddress = myLibrary.get(6);
-        mTheSnowBallEffect = myLibrary.get(7);
-        mWunderwelten = myLibrary.get(8);
-        famous_givers_and_their_gifts = myLibrary.get(9);
-        mThe_adventures_of_tom_sawyer = myLibrary.get(10);
-        mDracula = myLibrary.get(11);
+        mShowErrorToast = getActivity().getIntent().getBooleanExtra(PageFragment.ERROR_MESSAGE, false);
+
+        mLibraryPage = 0;
+
+        mMyLibraryBooks = Library.get(getActivity()).getMyLibrary();
+        mBookImageViews = new ArrayList<>();
+
+        mLibraryPages = new ArrayList<>();
+
+        setUpLibraryPage();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.my_library, container, false);
+        mMyLibraryView = inflater.inflate(R.layout.my_library, container, false);
 
-        ImageView bookOneImage = (ImageView) v.findViewById(R.id.book_cover_page_1);
-        bookOneImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mDaveDawsonWithEigth.getBookCover(), 120, 180, false));
-
-        bookOneImage.setOnClickListener(new View.OnClickListener() {
+        mPrevButton = (Button) mMyLibraryView.findViewById(R.id.my_library_prev_page);
+        mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mDaveDawsonWithEigth.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+
+
+                if (mLibraryPage > -1 && mLibraryPage - 1 != -1) {
+
+                    mLibraryPage--;
+                    new LoadBookCoversFromEpubFiles().execute();
+                }
             }
         });
 
-        ImageView bookTwoImage = (ImageView) v.findViewById(R.id.book_cover_page_2);
-        bookTwoImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mGeographyOfBliss.getBookCover(), 120, 180, false)
-        );
-
-        bookTwoImage.setOnClickListener(new View.OnClickListener() {
+        mNextButton = (Button) mMyLibraryView.findViewById(R.id.my_library_next_page);
+        mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mGeographyOfBliss.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
 
-        ImageView bookThreeImage = (ImageView) v.findViewById(R.id.book_cover_page_3);
-        bookThreeImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mInTheWonderfulLandOfHez.getBookCover(),120,180,false)
-        );
+                if (mLibraryPage < mLibraryPages.size() && mLibraryPage + 1 != mLibraryPages.size()) {
 
-        bookThreeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mInTheWonderfulLandOfHez.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
+                    mLibraryPage++;
+                    new LoadBookCoversFromEpubFiles().execute();
+                }
 
-        ImageView bookFourImage = (ImageView) v.findViewById(R.id.book_cover_page_4);
-        bookFourImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mThePlanetMappers.getBookCover(), 120, 180, false)
-        );
-
-        bookFourImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mThePlanetMappers.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookFiveImage = (ImageView) v.findViewById(R.id.book_cover_page_5);
-        bookFiveImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mTooFatToFight.getBookCover(), 120, 180, false)
-        );
-
-        bookFiveImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mTooFatToFight.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookSixImage = (ImageView) v.findViewById(R.id.book_cover_page_6);
-        bookSixImage.setImageBitmap(
-            Bitmap.createScaledBitmap(the_story_of_beowulf.getBookCover(), 120, 180, false)
-        );
-
-        bookSixImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, the_story_of_beowulf.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookSevenImage = (ImageView) v.findViewById(R.id.book_cover_page_7);
-        bookSevenImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mAddress.getBookCover(), 120, 180, false)
-        );
-
-        bookSevenImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mAddress.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookEightImage = (ImageView) v.findViewById(R.id.book_cover_page_8);
-        bookEightImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mTheSnowBallEffect.getBookCover(), 120, 180, false)
-        );
-
-        bookEightImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mTheSnowBallEffect.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookNineImage = (ImageView) v.findViewById(R.id.book_cover_page_9);
-        bookNineImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mWunderwelten.getBookCover(), 120, 180, false)
-        );
-
-        bookNineImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mWunderwelten.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookTenImage = (ImageView) v.findViewById(R.id.book_cover_page_10);
-        bookTenImage.setImageBitmap(
-            Bitmap.createScaledBitmap(famous_givers_and_their_gifts.getBookCover(), 120, 180, false)
-        );
-
-        bookTenImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, famous_givers_and_their_gifts.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookElevenImage = (ImageView) v.findViewById(R.id.book_cover_page_11);
-        bookElevenImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mThe_adventures_of_tom_sawyer.getBookCover(), 120, 180, false)
-        );
-
-        bookElevenImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mThe_adventures_of_tom_sawyer.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        ImageView bookTwelveImage = (ImageView) v.findViewById(R.id.book_cover_page_12);
-        bookTwelveImage.setImageBitmap(
-            Bitmap.createScaledBitmap(mDracula.getBookCover(), 120, 180, false)
-        );
-
-        bookTwelveImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PagesActivity.class);
-                intent.putExtra(BOOK_ID, mDracula.getBookId());
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                Log.i("LibraryPage", "LibraryPage  = " + mLibraryPage);
+                Log.i("LibraryPage", "LibraryPage size = " + mLibraryPages.size());
+                Log.i("Library", "Library size = " + mMyLibraryBooks.size());
             }
         });
 
 
+        initializeImageViews();
+        addImageViewsToList();
+        new LoadBookCoversFromEpubFiles().execute();
 
-        return v;
+        if (mShowErrorToast) {
+            Toast.makeText(getActivity(), "Error loading book", Toast.LENGTH_SHORT).show();
+        }
+
+        return mMyLibraryView;
+    }
+
+    private void initializeImageViews() {
+        mBookOneImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_1);
+        mBookTwoImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_2);
+        mBookThreeImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_3);
+        mBookFourImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_4);
+        mBookFiveImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_5);
+        mBookSixImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_6);
+        mBookSevenImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_7);
+        mBookEightImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_8);
+        mBookNineImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_9);
+        mBookTenImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_10);
+        mBookElevenImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_11);
+        mBookTwelveImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_12);
+    }
+
+    private void addImageViewsToList() {
+
+        mBookImageViews.add(mBookOneImage);
+        mBookImageViews.add(mBookTwoImage);
+        mBookImageViews.add(mBookThreeImage);
+        mBookImageViews.add(mBookFourImage);
+        mBookImageViews.add(mBookFiveImage);
+        mBookImageViews.add(mBookSixImage);
+        mBookImageViews.add(mBookSevenImage);
+        mBookImageViews.add(mBookEightImage);
+        mBookImageViews.add(mBookNineImage);
+        mBookImageViews.add(mBookTenImage);
+        mBookImageViews.add(mBookElevenImage);
+        mBookImageViews.add(mBookTwelveImage);
+    }
+
+    /**
+     * Sets the images of each image view in the library view with the appropritate book cover
+     * along with the proper onClickListener
+     *
+     * setUpBookImageViews() must be called before so ensure mBitMaps has the correct book covers a
+     * if you run out of books it sets the book cover to a trasparent
+     * image with an empty onClickListener()
+     */
+    private void setImages() {
+
+        int libraryBookCounter = mLibraryPages.get(mLibraryPage).getStartNumber();
+        int bookCoverCounter = 0;
+
+        for (ImageView currentImageView : mBookImageViews) {
+
+            Log.i("Counter", "Counter 1 = " + libraryBookCounter);
+            Log.i("Counter", "Counter 2 = " + bookCoverCounter);
+
+            if (libraryBookCounter < mMyLibraryBooks.size()) {
+                final Book currentBook = mMyLibraryBooks.get(
+                    libraryBookCounter);
+
+                currentImageView.setImageBitmap(mBitmaps.get(bookCoverCounter));
+                currentImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), PagesActivity.class);
+                        intent.putExtra(BOOK_ID, currentBook.getBookId());
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                });
+                libraryBookCounter++;
+                bookCoverCounter++;
+
+            } else {
+                currentImageView.setImageResource(android.R.color.transparent);
+                currentImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Gets the book cover from the the epub file
+     */
+    private void setUpBookImageViews() {
+
+        mBitmaps.clear();
+
+        int libraryBookCounter = mLibraryPages.get(mLibraryPage).getStartNumber();
+
+        for (int i = 0; i < 12; i++) {
+
+            Log.i("Counter", libraryBookCounter + "");
+
+            Book currentBook = mMyLibraryBooks.get(
+                libraryBookCounter);
+
+            mBitmaps.add(Bitmap.createScaledBitmap(GetBookInfo.getBookCover(
+                currentBook.getEPubFileName(), getActivity()), 120, 180, false));
+
+            //If you run out of books break out of loop
+            if (libraryBookCounter != mMyLibraryBooks.size() - 1) {
+                libraryBookCounter++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Creates pages for the library
+     * As your swiping between the library pages it tells you which book from the library
+     * to start on.
+     * startBookNumber is the book in the library to start filling the image views with
+     */
+    private void setUpLibraryPage() {
+        int startBookNumber = 0;
+        int endBookNumber = 0;
+        int MAX_NUMBER_OF_BOOKS_PER_PAGE = 12;
+
+        LibraryPage firstPage = new LibraryPage(0);
+        mLibraryPages.add(firstPage);
+
+        LibraryPage libraryPage;
+
+        boolean makeEndPage = false;
+
+        int iHolder;
+
+        for (iHolder = 1; iHolder < mMyLibraryBooks.size(); iHolder++) {
+
+            if (iHolder % MAX_NUMBER_OF_BOOKS_PER_PAGE == 0) {
+
+                if (makeEndPage) {
+                    endBookNumber = startBookNumber - 1;
+                }
+
+                if (endBookNumber != 0) {
+                    libraryPage = new LibraryPage(startBookNumber);
+                    mLibraryPages.add(libraryPage);
+
+                    Log.i("LibraryPage", "Start page = " + startBookNumber);
+                    Log.i("LibraryPage", "End page = " + endBookNumber);
+                }
+
+                startBookNumber = iHolder;
+
+                if (!makeEndPage) {
+                    makeEndPage = true;
+                }
+            }
+        }
+
+        libraryPage = new LibraryPage(startBookNumber);
+        mLibraryPages.add(libraryPage);
+
+        Log.i("LibraryPage", "Start page = " + startBookNumber);
+        Log.i("LibraryPage", "End page = " + endBookNumber);
+    }
+
+    /**
+     * Used to tell you where to start loading books from the library
+     */
+    private class LibraryPage {
+        private int mStartNumber;
+
+        public LibraryPage(int startNumber) {
+            mStartNumber = startNumber;
+        }
+
+        public int getStartNumber() {
+            return mStartNumber;
+        }
+    }
+
+    /**
+     * Loads books that are needed for the page
+     * Helps prevent running out of memory by loading the books that are needed to fill the page
+     */
+    private class LoadBookCoversFromEpubFiles extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPostExecute(String result) {
+            setImages();
+            if (pd != null) {
+                pd.dismiss();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            setUpBookImageViews();
+            return "";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // Show the ProgressDialog on this thread
+            pd = ProgressDialog.show(getActivity(), "Loading Books", "Loading...", true, false);
+        }
     }
 }

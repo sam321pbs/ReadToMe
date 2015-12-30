@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +52,7 @@ public class GetBookInfo {
                 .getInputStream());
 
         } catch (IOException | NullPointerException e) {
+            Log.i("BookCover", "BookCover was null");
 
         }
         return coverImage;

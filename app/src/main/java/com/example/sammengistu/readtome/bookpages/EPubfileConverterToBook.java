@@ -24,7 +24,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 
 
 public class EPubFileConverterToBook implements MakeAPage {
-    private static final String TAG = "The Planet Mappers";
+    private static final String TAG = EPubFileConverterToBook.class.getName();
     public static List<PageOfBook> mPagesOfTheBook = new ArrayList<>();
     private final String SPACE = " ";
     private int mPageNumber = 0; // Keeps track of the page you are on
@@ -32,7 +32,6 @@ public class EPubFileConverterToBook implements MakeAPage {
     private ArrayList<String> mLeftOverWordsFromPrevPage = new ArrayList<>();
     private int mWordCount = 0;
     boolean mWordMatchEntireLine;
-
 
     private Context mContext;
     private int mChapterTracker;
@@ -47,8 +46,7 @@ public class EPubFileConverterToBook implements MakeAPage {
     private boolean mHaveChapterLabel = false;
     private int mChapterWordLocation = 0;
     private boolean mPageBreak = false;
-//    private int mChapterWordLoc = 0;
-    private int entireLineIsApartOfChapterCount = 0;
+
     private String mPreviousWord = "";
 
     /**
@@ -113,7 +111,7 @@ public class EPubFileConverterToBook implements MakeAPage {
 
         for (SpineReference bookSection : spine.getSpineReferences()) {
 
-            Log.i("Section", "-----------------------");
+//            Log.i("Section", "-----------------------");
 
 //            skipSection = true;
 
@@ -137,11 +135,6 @@ public class EPubFileConverterToBook implements MakeAPage {
                         continue;
                     }
                     Log.i("Read it ", line);
-
-//                    if (skipSection && !line.equals("")){
-//                        skipSection = false;
-//                        continue;
-//                    }
 
                     if (skipLines && skipLines3 <= 3 && !line.equals("")) {
                         Log.i("Skip", "Skip = " + line);
@@ -241,7 +234,6 @@ public class EPubFileConverterToBook implements MakeAPage {
                 Log.i("Exception", e.toString());
             }
         }
-
     }
 
     /**
@@ -262,6 +254,9 @@ public class EPubFileConverterToBook implements MakeAPage {
 
         try {
 
+            if (lineIntoArray[0].equals("THE GORILLA")){
+                Log.i(TAG, "The");
+            }
             //Removes special characters so it only checks the words
             if (lineIntoArray[0].replaceAll(specialCharacters, "")
                 .equalsIgnoreCase(currentChapterArray[mChapterWordLocation].replaceAll(specialCharacters, ""))) {
@@ -308,9 +303,6 @@ public class EPubFileConverterToBook implements MakeAPage {
 
                         mChapterLabel.append(aLineIntoArray);
 
-
-                        entireLineIsApartOfChapterCount++;
-
                         chapterLabelWithOutSpecialCharacters =
                             mChapterLabel.toString().replaceAll("[\\-\\+\\.\\^:]", "");
 
@@ -324,8 +316,10 @@ public class EPubFileConverterToBook implements MakeAPage {
 
                         wordMatch = true;
                     } else {
+                        mChapterWordLocation = 0;
                         wordMatch = false;
                         mChapterLabel = new StringBuilder();
+                        break;
                     }
 
                     if (wordMatch && chapterLabelWithOutSpecialCharacters
@@ -360,9 +354,6 @@ public class EPubFileConverterToBook implements MakeAPage {
             mWordMatchEntireLine = true;
         }
 
-        if (!wordMatch){
-//            mChapterLabel = new StringBuilder();
-        }
         return continueToNextLine;
     }
 

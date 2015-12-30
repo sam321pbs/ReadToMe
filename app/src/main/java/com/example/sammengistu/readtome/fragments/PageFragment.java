@@ -8,6 +8,7 @@ import com.example.sammengistu.readtome.WordLinkedWithDef;
 import com.example.sammengistu.readtome.WordPlayer;
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;
 import com.example.sammengistu.readtome.models.Book;
+import com.example.sammengistu.readtome.models.GetBookInfo;
 import com.example.sammengistu.readtome.models.Library;
 import com.example.sammengistu.readtome.models.PageOfBook;
 
@@ -46,6 +47,7 @@ import java.util.UUID;
 public class PageFragment extends Fragment {
 
     private static final String TAG = "PageFragment";
+    public static final String ERROR_MESSAGE = "error message";
     private static final int GET_SETTINGS = 3;
     private static final int GET_PAGE_NUMBER = 4;
 
@@ -102,11 +104,20 @@ public class PageFragment extends Fragment {
         mWordPlayer = new WordPlayer(getActivity(), getActivity(),
             voiceSpeed);
 
-        if (mPageNumber == -1) {
-            mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
-        } else {
-            mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
+        try {
+            if (mPageNumber == -1) {
+                mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
+            } else {
+                mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
+            }
+        } catch (IndexOutOfBoundsException e){
+            Log.i(TAG, "Error Loading book");
+
+            Intent intent = new Intent(getActivity(), MyLibraryActivity.class);
+            intent.putExtra(ERROR_MESSAGE, true);
+            startActivity(intent);
         }
+
 
         mTts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
             @Override
@@ -637,7 +648,8 @@ public class PageFragment extends Fragment {
                 if (i == 8 && j == 4) {
                         TextView textView = (TextView) row.getChildAt(j);
 
-                        textView.setText(mCurrentBook.getTitle());
+                        textView.setText(GetBookInfo.getBookTitle(
+                            mCurrentBook.getEPubFileName(), getActivity()));
                     }
 
                 if (i == 9 && j == 4){
@@ -650,13 +662,12 @@ public class PageFragment extends Fragment {
 
                     TextView textView = (TextView) row.getChildAt(j);
 
-                    String author = mCurrentBook.getAuthor();
+                    String author = GetBookInfo.getBookAuthor(
+                        mCurrentBook.getEPubFileName(), getActivity());
                     textView.setText(author.substring(1, author.length()-2));
-
 
                 }
             }
-
         }
     }
 
