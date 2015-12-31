@@ -34,7 +34,6 @@
             android:id="@+id/action_command_page_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12"
             android:textSize="27sp"/>
 
     <ImageView

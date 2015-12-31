@@ -13,6 +13,7 @@ import com.example.sammengistu.readtome.models.Library;
 import com.example.sammengistu.readtome.models.PageOfBook;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -70,16 +71,18 @@ public class PageFragment extends Fragment {
     private TextToSpeech mTts;
     private WordPlayer mWordPlayer;
     private boolean mOnClickHighLightSentenceMode;
-    private int voiceSpeed;
-    private static int playOrStopCounter;
+    private int mVoiceSpeed;
+    private static int sPlayOrStopCounter;
     private SettingsPreferences mSettingsPreferences;
     private ReadToMeJSONSerializer mReadToMeJSONSerializer;
-    private boolean dictionaryReady;
+    private boolean mDictionaryReady;
     private Dictionary1Loader mDictionaryLoader;
     private Book mCurrentBook;
+    private SetUpBookAsync mSetUpBookAsync;
 
-    public ImageView playButton;
+    public ImageView mPlayButton;
 
+    private ProgressDialog mProgressDialogSettingUpBook = null;
 
     @Override
     public void onCreate(Bundle savedInstnaceState) {
@@ -94,29 +97,17 @@ public class PageFragment extends Fragment {
 
         instantiateLists();
 
-        voiceSpeed = mSettingsPreferences.getVoiceSpeed();
+        mVoiceSpeed = mSettingsPreferences.getVoiceSpeed();
         mOnClickHighLightSentenceMode = mSettingsPreferences.isReadSentenceMode();
 
-        playOrStopCounter = 0; // will change if it is in play mode or stop mode
+        sPlayOrStopCounter = 0; // will change if it is in play mode or stop mode
 
-        setUpBook();
+        mSetUpBookAsync = new SetUpBookAsync();
+
+        mSetUpBookAsync.execute();
 
         mWordPlayer = new WordPlayer(getActivity(), getActivity(),
-            voiceSpeed);
-
-        try {
-            if (mPageNumber == -1) {
-                mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
-            } else {
-                mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
-            }
-        } catch (IndexOutOfBoundsException e){
-            Log.i(TAG, "Error Loading book");
-
-            Intent intent = new Intent(getActivity(), MyLibraryActivity.class);
-            intent.putExtra(ERROR_MESSAGE, true);
-            startActivity(intent);
-        }
+            mVoiceSpeed);
 
 
         mTts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
@@ -151,6 +142,24 @@ public class PageFragment extends Fragment {
         mPageNumber = mSettingsPreferences.getBookMarkedPage();
 
         setUpChapters();
+
+        try {
+            if (mPageNumber == -1) {
+                mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
+            } else {
+                mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
+            }
+        } catch (IndexOutOfBoundsException e) {
+            Log.i(TAG, "Error Loading book");
+
+            stopAsyncTasks();
+
+            Intent intent = new Intent(getActivity(), MyLibraryActivity.class);
+            intent.putExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER,
+                getActivity().getIntent().getIntExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER, 0));
+            intent.putExtra(ERROR_MESSAGE, true);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -169,7 +178,7 @@ public class PageFragment extends Fragment {
 
         View blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
         mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textView);
-        setUpChapterLabel();
+//        setUpChapterLabel();
 
         setTableLayouts(blankPage);
 
@@ -212,39 +221,39 @@ public class PageFragment extends Fragment {
 
         );
 
-        playButton = (ImageView) blankPage.findViewById(R.id.play_button);
-        playButton.setOnClickListener(new View.OnClickListener()
+        mPlayButton = (ImageView) blankPage.findViewById(R.id.play_button);
+        mPlayButton.setOnClickListener(new View.OnClickListener()
 
-                                      {
-                                          @Override
-                                          public void onClick(View v) {
+                                       {
+                                           @Override
+                                           public void onClick(View v) {
 
-                                              playOrStopCounter++;
+                                               sPlayOrStopCounter++;
 
-                                              if (playOrStopCounter == 1) {
-                                                  mWordPlayer.setPlay(true);
+                                               if (sPlayOrStopCounter == 1) {
+                                                   mWordPlayer.setPlay(true);
 
-                                                  playButton.setImageResource(R.drawable.added_stop_button);
-                                                  mWordPlayer.setVoiceSpeed(voiceSpeed);
+                                                   mPlayButton.setImageResource(R.drawable.added_stop_button);
+                                                   mWordPlayer.setVoiceSpeed(mVoiceSpeed);
 
-                                                  findHighlightedWords();
-                                                  if (mOnClickHighLightSentenceMode) {
-                                                      mWordPlayer.playSentenceBySentence(mWordsToSpeechBank,
-                                                          mHighlightedTextViews, playButton);
-                                                  } else {
-                                                      mWordPlayer.play(mWordsToSpeechBank,
-                                                          mHighlightedTextViews, playButton);
-                                                  }
-                                              } else {
+                                                   findHighlightedWords();
+                                                   if (mOnClickHighLightSentenceMode) {
+                                                       mWordPlayer.playSentenceBySentence(mWordsToSpeechBank,
+                                                           mHighlightedTextViews, mPlayButton);
+                                                   } else {
+                                                       mWordPlayer.play(mWordsToSpeechBank,
+                                                           mHighlightedTextViews, mPlayButton);
+                                                   }
+                                               } else {
 
-                                                  stopReadingAndResetPlayButton();
-                                              }
+                                                   stopReadingAndResetPlayButton();
+                                               }
 
-                                              mWordsToSpeechBank.clear();
-                                              mHighlightedTextViews.clear();
+                                               mWordsToSpeechBank.clear();
+                                               mHighlightedTextViews.clear();
 
-                                          }
-                                      }
+                                           }
+                                       }
 
         );
 
@@ -282,7 +291,7 @@ public class PageFragment extends Fragment {
                                            }
         );
 
-        setUpPageText();
+//        setUpPageText();
 
         return blankPage;
     }
@@ -334,12 +343,12 @@ public class PageFragment extends Fragment {
 
         mWordPlayer.stopTtsVoice();
         mWordPlayer.setPlay(false);
-        playButton.setImageResource(R.drawable.play_button_updated);
-        playOrStopCounter = 0;
+        mPlayButton.setImageResource(R.drawable.play_button_updated);
+        sPlayOrStopCounter = 0;
     }
 
     public static void setPlayOrStopCounter(int playOrStopCounters) {
-        playOrStopCounter = playOrStopCounters;
+        sPlayOrStopCounter = playOrStopCounters;
     }
 
     /**
@@ -646,13 +655,13 @@ public class PageFragment extends Fragment {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
             for (int j = 0; j < row.getChildCount(); j++) {
                 if (i == 8 && j == 4) {
-                        TextView textView = (TextView) row.getChildAt(j);
+                    TextView textView = (TextView) row.getChildAt(j);
 
-                        textView.setText(GetBookInfo.getBookTitle(
-                            mCurrentBook.getEPubFileName(), getActivity()));
-                    }
+                    textView.setText(GetBookInfo.getBookTitle(
+                        mCurrentBook.getEPubFileName(), getActivity()));
+                }
 
-                if (i == 9 && j == 4){
+                if (i == 9 && j == 4) {
 
                     TextView textView = (TextView) row.getChildAt(j);
 
@@ -664,7 +673,7 @@ public class PageFragment extends Fragment {
 
                     String author = GetBookInfo.getBookAuthor(
                         mCurrentBook.getEPubFileName(), getActivity());
-                    textView.setText(author.substring(1, author.length()-2));
+                    textView.setText(author.substring(1, author.length() - 2));
 
                 }
             }
@@ -676,7 +685,7 @@ public class PageFragment extends Fragment {
      * If the dictionary is ready it will let you get the definition
      */
     private void showDictionaryDialog(TextView currentWordTextView) {
-        if (dictionaryReady) {
+        if (mDictionaryReady) {
             String newWord = DefinitionDialog.removePunctuations(currentWordTextView.getText()
                 .toString().replaceAll("\\s+", ""));
 
@@ -771,12 +780,12 @@ public class PageFragment extends Fragment {
 
         if (requestCode == GET_SETTINGS || requestCode == Activity.RESULT_OK) {
 
-            voiceSpeed = data.getIntExtra(SettingsDialog.VOICE_SPEED, 20);
+            mVoiceSpeed = data.getIntExtra(SettingsDialog.VOICE_SPEED, 20);
 
             mOnClickHighLightSentenceMode = data.getBooleanExtra(
                 SettingsDialog.SENTENCE_BY_SENTENCE_MODE, true);
 
-            mSettingsPreferences.setVoiceSpeed(voiceSpeed);
+            mSettingsPreferences.setVoiceSpeed(mVoiceSpeed);
             mSettingsPreferences.setReadSentenceMode(mOnClickHighLightSentenceMode);
 
 
@@ -813,7 +822,7 @@ public class PageFragment extends Fragment {
 
             //this method will be running on UI thread
 
-            dictionaryReady = false;
+            mDictionaryReady = false;
             Toast.makeText(getActivity(), "Dictionary is being set up", Toast.LENGTH_LONG).show();
         }
 
@@ -832,7 +841,7 @@ public class PageFragment extends Fragment {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            dictionaryReady = true;
+            mDictionaryReady = true;
 
             //this method will be running on UI thread
             Toast.makeText(getActivity(), "Dictionary is ready", Toast.LENGTH_LONG).show();
@@ -865,7 +874,7 @@ public class PageFragment extends Fragment {
 
             case R.id.menu_setting:
                 SettingsDialog dialog = SettingsDialog.newInstance(
-                    voiceSpeed, mOnClickHighLightSentenceMode);
+                    mVoiceSpeed, mOnClickHighLightSentenceMode);
                 dialog.setTargetFragment(PageFragment.this, GET_SETTINGS);
 
                 dialog.show(fm, SettingsDialog.SETTINGS);
@@ -897,8 +906,15 @@ public class PageFragment extends Fragment {
             case R.id.menu_library:
                 mChaptersOfTheBookName.clear();
                 mChaptersOfTheBookPageNum.clear();
+                mTableLayouts.clear();
+                mHighlightedTextViews.clear();
+//                mDictionaryOne.clear();
                 mPagesOfBook.clear();
+
+
                 Intent intent = new Intent(getActivity(), MyLibraryActivity.class);
+                intent.putExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER,
+                    getActivity().getIntent().getIntExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER, 0));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
 
@@ -925,6 +941,10 @@ public class PageFragment extends Fragment {
 //        if (mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING)) {
 //            mDictionaryLoader.cancel(true);
 //        }
+
+        if (mSetUpBookAsync.getStatus().equals(AsyncTask.Status.RUNNING)) {
+            mSetUpBookAsync.cancel(true);
+        }
     }
 
     @Override
@@ -941,5 +961,37 @@ public class PageFragment extends Fragment {
         mWordPlayer.shutDownTTS();
         Log.i(TAG, "Destroyed");
         super.onDestroy();
+    }
+
+    /**
+     * Loads the book and when its ready it displays it to the user
+     */
+    private class SetUpBookAsync extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            setUpChapterLabel();
+            setUpPageText();
+
+            handlePageTurn();
+
+            if (mProgressDialogSettingUpBook != null) {
+                mProgressDialogSettingUpBook.dismiss();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            setUpBook();
+            return "";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // Show the ProgressDialog on this thread
+            mProgressDialogSettingUpBook = ProgressDialog.show(
+                getActivity(), "Setting up your book", "Seting up...", true, false);
+        }
     }
 }

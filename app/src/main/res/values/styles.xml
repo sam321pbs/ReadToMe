@@ -26,4 +26,18 @@
         <item name="android:layout_marginLeft">20dp</item>
     </style>
 
+    <style name="BookCoverImageLayout">
+        <item name="android:layout_marginLeft">30dp</item>
+
+        <item name="android:layout_width">120dp</item>
+        <item name="android:layout_height">180dp</item>
+    </style>
+
+    <style name="BookCoverTextLayout">
+        <item name="android:textSize">25sp</item>
+        <item name="android:layout_marginLeft">30dp</item>
+        <item name="android:layout_width">120dp</item>
+        <item name="android:layout_height">180dp</item>
+    </style>
+
 </resources>

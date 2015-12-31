@@ -284,7 +284,6 @@ public class EPubFileConverterToBook implements MakeAPage {
                     if (wordAtIWithoutSpecialCharacters
                         .equalsIgnoreCase(currentChapterArrayWordAtChapterLengthWithoutSpecialCharacters)) {
 
-//                        mChapterWordLoc++;
                         Log.i(TAG, "Found a match = " + aLineIntoArray);
                         mChapterWordLocation++;
 
