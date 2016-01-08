@@ -66,23 +66,22 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      * <p/>
      * It also highlights the text box of the word it is playing
      *
-     * @param playMe           - List to play
      * @param highlightedWords - change the text view box color
      */
     @SuppressWarnings("deprecation")
-    public void play(List<String> playMe,
-                     List<TextView> highlightedWords, final ImageView playStopButton) {
+    public void play(List<TextView> highlightedWords, final ImageView playStopButton) {
 
         if (mPlay) {
-            if (playMe.size() > HAS_MORE_THAN_ONE) {
+            if (highlightedWords.size() > HAS_MORE_THAN_ONE) {
                 mTts.setSpeechRate(mVoiceSpeed / 20);
-                final List<String> wordsToPlay = new ArrayList<>(playMe);
+
                 final List<TextView> highLightedTextView = new ArrayList<>(highlightedWords);
 
                 final TextView textView = highLightedTextView.get(FIRST_ITEM);
 
-                final String getFirst = DefinitionDialog.removePunctuations(wordsToPlay.get(FIRST_ITEM));
-                wordsToPlay.remove(FIRST_ITEM);
+                final String getFirstWord = DefinitionDialog.removePunctuations(
+                    highlightedWords.get(FIRST_ITEM).getText().toString());
+
                 highLightedTextView.remove(FIRST_ITEM);
 
                 mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
@@ -104,7 +103,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                                 textView.setBackgroundColor(Color.YELLOW);
                             }
                         });
-                        play(wordsToPlay, highLightedTextView, playStopButton);
+                        play(highLightedTextView, playStopButton);
                     }
 
                     @Override
@@ -116,7 +115,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 HashMap<String, String> map = new HashMap<>();
                 map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
 
-                mTts.speak(getFirst, TextToSpeech.QUEUE_FLUSH, map);
+                mTts.speak(getFirstWord, TextToSpeech.QUEUE_FLUSH, map);
 
             } else {
                 mAppActivity.runOnUiThread(new Runnable() {
@@ -131,15 +130,13 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     }
 
     @SuppressWarnings("deprecation")
-    public void playSentenceBySentence(List<String> playMe,
-                                       List<TextView> highlightedWords,
+    public void playSentenceBySentence(List<TextView> highlightedWords,
                                        final ImageView playStopButton) {
 
         if (mPlay) {
             mTts.setSpeechRate(mVoiceSpeed / 20);
-            if (playMe.size() > HAS_MORE_THAN_ONE) {
+            if (highlightedWords.size() > HAS_MORE_THAN_ONE) {
 
-                final List<String> wordsToPlay = new ArrayList<>(playMe);
                 final List<TextView> highLightedTextViews = new ArrayList<>(highlightedWords);
 
                 //TextViews to highlight as a sentence
@@ -149,24 +146,29 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
                 for (int i = 0; i < highLightedTextViews.size(); i++) {
 
-                    if (!PageFragment.endOfSentence(highLightedTextViews.get(i).getText().toString())) {
+                    String currentWord = highLightedTextViews.get(i).getText().toString();
+
+                    if (!PageFragment.endOfSentence(currentWord)
+                        || PageFragment.isItAFamilyName(currentWord)) {
 
                         textViewsOfSentence.add(highLightedTextViews.get(0));
-                        sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                        //Remove single quotes from word
+                        String cleanedWord = highLightedTextViews.get(i)
+                            .getText().toString().replaceAll("'", "");
+                        sentenceToPlay.append(cleanedWord);
                         sentenceToPlay.append(" ");
 
                         highLightedTextViews.remove(FIRST_ITEM);
-                        wordsToPlay.remove(FIRST_ITEM);
                         i--;
 
                     } else {
 
                         textViewsOfSentence.add(highLightedTextViews.get(0));
-                        sentenceToPlay.append(highLightedTextViews.get(i).getText().toString());
+                        sentenceToPlay.append(highLightedTextViews.get(i)
+                            .getText().toString().replaceAll("'", ""));
                         sentenceToPlay.append(" ");
 
                         highLightedTextViews.remove(FIRST_ITEM);
-                        wordsToPlay.remove(FIRST_ITEM);
                         break;
                     }
                 }
@@ -195,7 +197,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                             }
                         });
 
-                        playSentenceBySentence(wordsToPlay, highLightedTextViews, playStopButton);
+                        playSentenceBySentence(highLightedTextViews, playStopButton);
                     }
 
                     @Override

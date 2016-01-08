@@ -1,12 +1,13 @@
 package com.example.sammengistu.readtome.models;
 
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.util.Log;
+import com.example.sammengistu.readtome.R;
 
+import android.content.Context;
+import android.os.Environment;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,19 +19,21 @@ public class Library {
     private List<Book> mMyLibrary;
     private Context mAppContext;
 
+    /**
+     * Gets all the epub files from the assests folder and saves it as a book
+     *
+     * @param appContext - used to get access to the files
+     */
     public Library(Context appContext) {
         mMyLibrary = new ArrayList<>();
 
         mAppContext = appContext;
-
         try {
-            for (String name: getEpubBooksFromFolder()){
-                String cleanedName = name.replaceAll(" ", "");
+            for (File epubFile : getEpubBooksFromFolder()) {
+                String cleanedName = epubFile.getName();
 
-                if (cleanedName.contains(".epub")) {
-                    Log.i("Test", name);
-                    Book book = new Book(cleanedName, appContext);
-
+                if (cleanedName.contains(mAppContext.getString(R.string.epub_name))) {
+                    Book book = new Book(epubFile, appContext);
                     mMyLibrary.add(book);
                 }
             }
@@ -39,10 +42,32 @@ public class Library {
         }
     }
 
-    private List<String> getEpubBooksFromFolder() throws IOException {
-        AssetManager assetManager = mAppContext.getAssets();
-        String[] files = assetManager.list("");
-        return Arrays.asList(files);
+    /**
+     * Goes into the proper directory folder and grabs all file names
+     *
+     * @return - list of all the file names
+     * @throws IOException - error loading the file names
+     */
+    private List<File> getEpubBooksFromFolder() throws IOException {
+
+        List<File> epubBookFiles = new ArrayList<>();
+
+        File epubDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
+            mAppContext.getString(R.string.directory_name));
+
+        if (!epubDirectory.exists()) {
+            epubDirectory.mkdir();
+        } else {
+
+            File[] files = epubDirectory.listFiles();
+
+            for (File file : files) {
+                if (!file.getName().substring(0, 1).equals(".")) {
+                    epubBookFiles.add(file);
+                }
+            }
+        }
+        return epubBookFiles;
     }
 
     public static Library get(Context c) {

@@ -7,18 +7,18 @@ import com.example.sammengistu.readtome.models.Book;
 import com.example.sammengistu.readtome.models.GetBookInfo;
 import com.example.sammengistu.readtome.models.Library;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,9 +33,6 @@ public class MyLibraryFragment extends Fragment {
 
     public static final String BOOK_ID = "Book Id";
     public static final String LIBRARY_PAGE_NUMBER = "Library page number";
-
-    private Button mNextButton;
-    private Button mPrevButton;
 
     private ImageView mBookOneImage;
     private ImageView mBookTwoImage;
@@ -80,8 +77,6 @@ public class MyLibraryFragment extends Fragment {
 
     private List<Bitmap> mBitmaps = new ArrayList<>();
 
-    private Book mCurrentBook;
-
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
@@ -98,7 +93,6 @@ public class MyLibraryFragment extends Fragment {
         mLibraryPages = new ArrayList<>();
 
         setUpLibraryPage();
-
     }
 
     @Override
@@ -107,8 +101,8 @@ public class MyLibraryFragment extends Fragment {
 
         mMyLibraryView = inflater.inflate(R.layout.my_library, container, false);
 
-        mPrevButton = (Button) mMyLibraryView.findViewById(R.id.my_library_prev_page);
-        mPrevButton.setOnClickListener(new View.OnClickListener() {
+        ImageView prevButton = (ImageView) mMyLibraryView.findViewById(R.id.my_library_prev_page);
+        prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -121,8 +115,8 @@ public class MyLibraryFragment extends Fragment {
             }
         });
 
-        mNextButton = (Button) mMyLibraryView.findViewById(R.id.my_library_next_page);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
+        ImageView nextButton = (ImageView) mMyLibraryView.findViewById(R.id.my_library_next_page);
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -131,10 +125,6 @@ public class MyLibraryFragment extends Fragment {
                     mLibraryPage++;
                     new LoadBookCoversFromEpubFiles().execute();
                 }
-
-                Log.i("LibraryPage", "LibraryPage  = " + mLibraryPage);
-                Log.i("LibraryPage", "LibraryPage size = " + mLibraryPages.size());
-                Log.i("Library", "Library size = " + mMyLibraryBooks.size());
             }
         });
 
@@ -146,7 +136,7 @@ public class MyLibraryFragment extends Fragment {
         new LoadBookCoversFromEpubFiles().execute();
 
         if (mShowErrorToast) {
-            Toast.makeText(getActivity(), "Error loading book", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.error_loading_book, Toast.LENGTH_SHORT).show();
         }
 
         return mMyLibraryView;
@@ -167,7 +157,7 @@ public class MyLibraryFragment extends Fragment {
         mBookTwelveImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_12);
     }
 
-    private void initializeTextViews(){
+    private void initializeTextViews() {
         mBookCover1Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_1_textview);
         mBookCover2Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_2_textview);
         mBookCover3Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_3_textview);
@@ -215,27 +205,19 @@ public class MyLibraryFragment extends Fragment {
     }
 
     /**
-     * Sets the images of each image view in the library view with the appropritate book cover
+     * Sets the images of each image view in the library with the appropriate book cover
      * along with the proper onClickListener
      *
-     * setUpBookImageViews() must be called before so ensure mBitMaps has the correct book covers a
-     * if you run out of books it sets the book cover to a trasparent
+     * setUpBookImageViews() must be called before to ensure mBitMaps has the correct book covers.
+     * If you run out of books it sets the book cover to a transparent
      * image with an empty onClickListener()
+     *
+     * If a book doesn't have a book cover it will show its title in a text view
      */
     private void setImages() {
 
         int libraryBookCounter = mLibraryPages.get(mLibraryPage).getStartNumber();
         int bookCoverCounter = 0;
-
-
-        for (Bitmap bitmap: mBitmaps){
-            bookCoverCounter++;
-            if (bitmap == null){
-                Log.i("Bitmap", "NUull = " + bookCoverCounter);
-            }
-        }
-
-        bookCoverCounter = 0;
 
         for (int i = 0; i < mBookImageViews.size(); i++) {
             ImageView currentImageView = mBookImageViews.get(i);
@@ -243,27 +225,22 @@ public class MyLibraryFragment extends Fragment {
 
             currentTextView.setText("");
 
-//            Log.i("Counter", "Counter 1 = " + libraryBookCounter);
-//            Log.i("Counter", "Counter 2 = " + bookCoverCounter);
-
             if (libraryBookCounter < mMyLibraryBooks.size()) {
                 final Book currentBook = mMyLibraryBooks.get(
                     libraryBookCounter);
 
-//                Log.i("Current book", "Current book = " + GetBookInfo
-//                    .getBookTitle(currentBook.getEPubFileName(), getActivity()));
-
-                if (mBitmaps.get(bookCoverCounter) == null){
+                if (mBitmaps.get(bookCoverCounter) == null) {
 
                     currentTextView.setVisibility(View.VISIBLE);
                     currentImageView.setVisibility(View.INVISIBLE);
 
                     currentTextView.setTextColor(Color.BLACK);
-                    currentTextView.setBackgroundColor(Color.parseColor("#0725a0"));
+                    currentTextView.setBackgroundColor(Color.parseColor(
+                        getActivity().getString(R.string.book_cover_backgroung_color)));
                     currentTextView.setText(
 
                         GetBookInfo.getBookTitle(
-                            currentBook.getEPubFileName(), getActivity())
+                            currentBook.getEPubFile())
                     );
                 } else {
                     currentTextView.setVisibility(View.INVISIBLE);
@@ -315,8 +292,6 @@ public class MyLibraryFragment extends Fragment {
         }
     }
 
-
-
     /**
      * Gets the book cover from the the epub file
      */
@@ -326,39 +301,53 @@ public class MyLibraryFragment extends Fragment {
 
         int libraryBookCounter = mLibraryPages.get(mLibraryPage).getStartNumber();
 
-        for (int i = 0; i < 12; i++) {
+        if (mMyLibraryBooks.size() != 0) {
+            for (int i = 0; i < 12; i++) {
 
-            Log.i("Counter", libraryBookCounter + "");
+                Book currentBook = mMyLibraryBooks.get(
+                    libraryBookCounter);
 
-            Book currentBook = mMyLibraryBooks.get(
-                libraryBookCounter);
+                Bitmap bitmap = null;
 
-            Bitmap bitmap = null;
+                try {
+                    bitmap = GetBookInfo.getBookCover(
+                        currentBook.getEPubFile());
 
-            try {
-                 bitmap = GetBookInfo.getBookCover(
-                    currentBook.getEPubFileName(), getActivity());
+                    mBitmaps.add(Bitmap.createScaledBitmap(bitmap, 120, 180, false));
 
-                mBitmaps.add(Bitmap.createScaledBitmap(bitmap, 120, 180, false));
+                } catch (NullPointerException e) {
+                    mBitmaps.add(bitmap);
+                }
 
-            } catch (NullPointerException e ){
-
-                mBitmaps.add(bitmap);
-                Log.i("Bitmap", "Null");
+                //If you run out of books break out of loop
+                if (libraryBookCounter != mMyLibraryBooks.size() - 1) {
+                    libraryBookCounter++;
+                } else {
+                    break;
+                }
             }
+        } else {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.error_title)
+                        .setMessage(R.string.error_connected_to_computer_or_no_books)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
 
-            //If you run out of books break out of loop
-            if (libraryBookCounter != mMyLibraryBooks.size() - 1) {
-                libraryBookCounter++;
-            } else {
-                break;
-            }
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+                }
+            });
         }
     }
 
     /**
      * Creates pages for the library
-     * As your swiping between the library pages it tells you which book from the library
+     * As your clicking between the library pages it tells you which book from the library
      * to start on.
      * startBookNumber is the book in the library to start filling the image views with
      */
@@ -385,11 +374,9 @@ public class MyLibraryFragment extends Fragment {
                 }
 
                 if (endBookNumber != 0) {
+
                     libraryPage = new LibraryPage(startBookNumber);
                     mLibraryPages.add(libraryPage);
-
-                    Log.i("LibraryPage", "Start page = " + startBookNumber);
-                    Log.i("LibraryPage", "End page = " + endBookNumber);
                 }
 
                 startBookNumber = iHolder;
@@ -402,9 +389,6 @@ public class MyLibraryFragment extends Fragment {
 
         libraryPage = new LibraryPage(startBookNumber);
         mLibraryPages.add(libraryPage);
-
-        Log.i("LibraryPage", "Start page = " + startBookNumber);
-        Log.i("LibraryPage", "End page = " + endBookNumber);
     }
 
     /**
@@ -445,7 +429,9 @@ public class MyLibraryFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             // Show the ProgressDialog on this thread
-            mProgressDialogLoadingBookCovers = ProgressDialog.show(getActivity(), "Loading Books", "Loading...", true, false);
+            mProgressDialogLoadingBookCovers = ProgressDialog.show(
+                getActivity(), getActivity().getString(R.string.loading_title),
+                getActivity().getString(R.string.loading_message), true, false);
         }
     }
 }

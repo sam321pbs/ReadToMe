@@ -13,14 +13,7 @@
         android:layout_marginTop="20dp"
         android:id="@+id/book_chapter_textView"/>
 
-    <ImageView
-        android:id="@+id/page_without_picture_bookmark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/bookmark"
-        android:layout_marginRight="20dp"
-        android:contentDescription="@string/bookmark_on_page_desciption"/>
+
 
     <TableLayout
         android:id="@+id/fragment_page_tableLayout1"
@@ -40,6 +33,15 @@
         <include
             layout="@layout/words_row"/>
     </TableLayout>
+
+    <ImageView
+            android:id="@+id/page_without_picture_bookmark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/bookmark"
+            android:layout_marginRight="20dp"
+            android:contentDescription="@string/bookmark_on_page_desciption"/>
 
     <TableLayout
         android:id="@+id/fragment_page_tableLayout3"

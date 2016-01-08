@@ -1,12 +1,11 @@
 package com.example.sammengistu.readtome.models;
 
-import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import nl.siegmann.epublib.epub.EpubReader;
 
@@ -17,17 +16,15 @@ public class GetBookInfo {
 
     private static nl.siegmann.epublib.domain.Book mCurrentBook;
 
-    private static void setUpFile(String epubFileName, Context appContext) {
-        AssetManager assetManager = appContext.getAssets();
+
+    private static void setUpFile(File epubFile) {
 
         // find InputStream for book
 
-        InputStream epubInputStream;
+        FileInputStream epubInputStream;
 
         try {
-            epubInputStream = assetManager
-
-                .open(epubFileName);
+            epubInputStream = new FileInputStream(epubFile);
 
 
             // Load Book from inputStream
@@ -38,32 +35,25 @@ public class GetBookInfo {
         }
     }
 
-    public static Bitmap getBookCover(String epubFileName, Context appContext)
-         {
+    public static Bitmap getBookCover(File epubFile) {
 
-        setUpFile(epubFileName, appContext);
+        setUpFile(epubFile);
 
-        //TODO: make standard image
         Bitmap coverImage = null;
 
+        try {
+            coverImage = BitmapFactory.decodeStream(mCurrentBook.getCoverImage()
 
-             try {
-                 coverImage = BitmapFactory.decodeStream(mCurrentBook.getCoverImage()
-
-                     .getInputStream());
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-
-
-//        Log.i("BookCover", "BookCover was null");
-
+                .getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return coverImage;
     }
 
-    public static String getBookAuthor(String epubFileName, Context appContext) {
-        setUpFile(epubFileName, appContext);
+    public static String getBookAuthor(File epubFile) {
+        setUpFile(epubFile);
 
         String author = "";
 
@@ -72,8 +62,8 @@ public class GetBookInfo {
         return author;
     }
 
-    public static String getBookTitle(String epubFileName, Context appContext) {
-        setUpFile(epubFileName, appContext);
+    public static String getBookTitle(File epubFile) {
+        setUpFile(epubFile);
 
         String title = "";
 

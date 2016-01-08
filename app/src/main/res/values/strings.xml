@@ -37,4 +37,23 @@
     <string name="book_cover_image">Book Image box</string>
     <string name="bookmark_on_page_desciption">Bookmark</string>
     <string name="action_library">Go to library</string>
+    <string name="directory_name">epubfiles</string>
+    <string name="epub_name">.epub</string>
+    <string name="error_loading_book">Error loading book</string>
+    <string name="book_cover_backgroung_color">#0725a0</string>
+    <string name="error_title">Error</string>
+    <string name="error_connected_to_computer_or_no_books">If device is connected to computer,
+        please disconnect and restart the app. If not, you have no books yet, but don\'t worry books
+        are coming soon!!
+    </string>
+    <string name="loading_title">Loading Books</string>
+    <string name="loading_message">Loading...</string>
+    <string name="contents">Contents</string>
+    <string name="first_page_by">"By: "</string>
+    <string name="dictionary_being_set_up">Sorry, the dictionary is being set up</string>
+    <string name="settings_saved">Settings saved</string>
+    <string name="dictionary_being_set_up_first">Dictionary is being set up</string>
+    <string name="dictionary_ready">Dictionary is ready</string>
+    <string name="progress_setting_up_title">Setting up your book</string>
+    <string name="progress_setting_up_message">Setting up...</string>
 </resources>

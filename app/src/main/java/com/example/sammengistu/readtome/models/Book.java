@@ -3,56 +3,30 @@ package com.example.sammengistu.readtome.models;
 import com.example.sammengistu.readtome.bookpages.EPubFileConverterToBook;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
 public class Book {
 
     private String mTitle;
-    private String mAuthor;
     private UUID mBookId;
-    private Bitmap mBookCover;
-    private String mEPubFileName;
     private Context mAppContext;
-    private int bookImage;
+    private File mEPubFile;
 
-    public Book ( String epubFileName, Context appContext){
-        mEPubFileName = epubFileName;
+    public Book (File epubFile, Context appContext){
+        mEPubFile = epubFile;
         mBookId = UUID.randomUUID();
         mAppContext = appContext;
     }
 
-    public Book(String title, String author, Bitmap bookCover, String epubFileName, Context appContext) {
-        mBookCover = bookCover;
-        mTitle = title;
-        mAuthor = author;
-        mEPubFileName = epubFileName;
-        mBookId = UUID.randomUUID();
-        mAppContext = appContext;
-    }
-
-    public Book(String title, String author, int bookCover, String epubFileName, Context appContext) {
-        bookImage = bookCover;
-        mTitle = title;
-        mAuthor = author;
-        mEPubFileName = epubFileName;
-        mBookId = UUID.randomUUID();
-        mAppContext = appContext;
-    }
-
-
-    public int getBookImage() {
-        return bookImage;
-    }
-
-    public String getEPubFileName() {
-        return mEPubFileName;
+    public File getEPubFile() {
+        return mEPubFile;
     }
 
     public List<PageOfBook> getPagesOfBook() {
-        EPubFileConverterToBook book = new EPubFileConverterToBook(mAppContext, mEPubFileName);
+        EPubFileConverterToBook book = new EPubFileConverterToBook(mAppContext, mEPubFile);
         return book.getPagesOfTheBook();
     }
 
@@ -66,14 +40,6 @@ public class Book {
 
     public void setTitle(String title) {
         mTitle = title;
-    }
-
-    public String getAuthor() {
-        return mAuthor;
-    }
-
-    public Bitmap getBookCover() {
-        return mBookCover;
     }
 
 }

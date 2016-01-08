@@ -1,19 +1,19 @@
 package com.example.sammengistu.readtome.test;
 
-import android.content.Context;
-import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
-
 import com.example.sammengistu.readtome.WordLinkedWithDef;
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;
 import com.robotium.solo.Solo;
+
+import android.content.Context;
+import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 /**
  * Created by SamMengistu on 9/18/15.
  */
 public class TestReadFromFile extends ActivityInstrumentationTestCase2<MyLibraryActivity> {
 
-    private Solo solo;
+    private Solo mSolo;
     MyLibraryActivity mMyLibraryActivity;
 
     private Context mContext;
@@ -28,14 +28,14 @@ public class TestReadFromFile extends ActivityInstrumentationTestCase2<MyLibrary
     public void setUp() throws Exception {
         mMyLibraryActivity = getActivity();
         mContext = getInstrumentation().getTargetContext();
-        solo = new Solo(getInstrumentation(), getActivity());
+        mSolo = new Solo(getInstrumentation(), getActivity());
         super.setUp();
     }
 
 
     @Override
     public void tearDown() throws Exception {
-        solo.finishOpenedActivities();
+        mSolo.finishOpenedActivities();
     }
 
     /**

@@ -3,7 +3,6 @@ package com.example.sammengistu.readtome.fragments;
 
 import com.example.sammengistu.readtome.R;
 import com.example.sammengistu.readtome.ReadToMeJSONSerializer;
-import com.example.sammengistu.readtome.SettingsPreferences;
 import com.example.sammengistu.readtome.WordLinkedWithDef;
 import com.example.sammengistu.readtome.WordPlayer;
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;
@@ -36,8 +35,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -51,13 +52,15 @@ public class PageFragment extends Fragment {
     public static final String ERROR_MESSAGE = "error message";
     private static final int GET_SETTINGS = 3;
     private static final int GET_PAGE_NUMBER = 4;
+    private final String VOICE_SPEED = "+voice speed+";
+    private final String SPEECH_MODE = "+Speech mode+";
+    private final int TRUE_SPEECH_MODE = 999999;
 
     private static final String FILENAME = "readtome.json";
     private static final int GET_CHAPTER_NUMBER = 2;
 
     private List<PageOfBook> mPagesOfBook;
     private List<TableLayout> mTableLayouts;
-    private List<String> mWordsToSpeechBank;
     private List<TextView> mHighlightedTextViews;
     private List<WordLinkedWithDef> mDictionaryOne;
     private List<String> mChaptersOfTheBookName;
@@ -73,12 +76,15 @@ public class PageFragment extends Fragment {
     private boolean mOnClickHighLightSentenceMode;
     private int mVoiceSpeed;
     private static int sPlayOrStopCounter;
-    private SettingsPreferences mSettingsPreferences;
     private ReadToMeJSONSerializer mReadToMeJSONSerializer;
     private boolean mDictionaryReady;
     private Dictionary1Loader mDictionaryLoader;
     private Book mCurrentBook;
     private SetUpBookAsync mSetUpBookAsync;
+    private String mAuthor;
+    private String mTitle;
+    private Map<String, Object> mAllBookMarksAndSettings;
+    private int mBookMarkPageNumber;
 
     public ImageView mPlayButton;
 
@@ -94,13 +100,25 @@ public class PageFragment extends Fragment {
 //        loadDictionary();
 
         loadUpSettings();
-
         instantiateLists();
 
-        mVoiceSpeed = mSettingsPreferences.getVoiceSpeed();
-        mOnClickHighLightSentenceMode = mSettingsPreferences.isReadSentenceMode();
+        if (mAllBookMarksAndSettings.containsKey(VOICE_SPEED)){
+            mVoiceSpeed = (Integer) mAllBookMarksAndSettings.get(VOICE_SPEED);
+        } else {
+            mVoiceSpeed = 20;
+        }
 
-        sPlayOrStopCounter = 0; // will change if it is in play mode or stop mode
+        if (mAllBookMarksAndSettings.containsKey(SPEECH_MODE)){
+            if (mAllBookMarksAndSettings.get(SPEECH_MODE) instanceof Integer){
+
+                int speechMode = (Integer)mAllBookMarksAndSettings.get(SPEECH_MODE);
+                mOnClickHighLightSentenceMode = speechMode == TRUE_SPEECH_MODE;
+            }
+        } else {
+            mOnClickHighLightSentenceMode = true;
+        }
+
+        sPlayOrStopCounter = 0; // Will change if it is on play mode or stop mode
 
         mSetUpBookAsync = new SetUpBookAsync();
 
@@ -108,7 +126,6 @@ public class PageFragment extends Fragment {
 
         mWordPlayer = new WordPlayer(getActivity(), getActivity(),
             mVoiceSpeed);
-
 
         mTts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
             @Override
@@ -119,7 +136,7 @@ public class PageFragment extends Fragment {
 
                     if (result == TextToSpeech.LANG_MISSING_DATA
                         || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("TTS", "This Language is not supported");
+                        Log.e("TTS", "Initilization Failed!");
                     }
 
                 } else {
@@ -127,39 +144,6 @@ public class PageFragment extends Fragment {
                 }
             }
         });
-    }
-
-    /**
-     * Loads up the book that was selected
-     */
-    private void setUpBook() {
-        UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
-
-        mCurrentBook = Library.get(getActivity()).getBook(bookId);
-
-        mPagesOfBook = mCurrentBook.getPagesOfBook();
-
-        mPageNumber = mSettingsPreferences.getBookMarkedPage();
-
-        setUpChapters();
-
-        try {
-            if (mPageNumber == -1) {
-                mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
-            } else {
-                mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
-            }
-        } catch (IndexOutOfBoundsException e) {
-            Log.i(TAG, "Error Loading book");
-
-            stopAsyncTasks();
-
-            Intent intent = new Intent(getActivity(), MyLibraryActivity.class);
-            intent.putExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER,
-                getActivity().getIntent().getIntExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER, 0));
-            intent.putExtra(ERROR_MESSAGE, true);
-            startActivity(intent);
-        }
     }
 
     /**
@@ -171,14 +155,8 @@ public class PageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-        Log.i(TAG, mSettingsPreferences.getBookMarkedPage() + " - Bookmarked page  " +
-            mSettingsPreferences.isReadSentenceMode() + " - readmode   " +
-            mSettingsPreferences.getVoiceSpeed() + " - voice speed");
-
         View blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
         mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textView);
-//        setUpChapterLabel();
 
         setTableLayouts(blankPage);
 
@@ -193,7 +171,6 @@ public class PageFragment extends Fragment {
                                                 mPageNumber = mPagesOfBook.size() - 1;
                                             }
                                             handlePageTurn();
-                                            mWordsToSpeechBank.clear();
                                             mHighlightedTextViews.clear();
                                         }
                                     }
@@ -214,7 +191,6 @@ public class PageFragment extends Fragment {
                                                   mPageNumber = -1;
                                               }
                                               handlePageTurn();
-                                              mWordsToSpeechBank.clear();
                                               mHighlightedTextViews.clear();
                                           }
                                       }
@@ -238,10 +214,10 @@ public class PageFragment extends Fragment {
 
                                                    findHighlightedWords();
                                                    if (mOnClickHighLightSentenceMode) {
-                                                       mWordPlayer.playSentenceBySentence(mWordsToSpeechBank,
+                                                       mWordPlayer.playSentenceBySentence(
                                                            mHighlightedTextViews, mPlayButton);
                                                    } else {
-                                                       mWordPlayer.play(mWordsToSpeechBank,
+                                                       mWordPlayer.play(
                                                            mHighlightedTextViews, mPlayButton);
                                                    }
                                                } else {
@@ -249,9 +225,7 @@ public class PageFragment extends Fragment {
                                                    stopReadingAndResetPlayButton();
                                                }
 
-                                               mWordsToSpeechBank.clear();
                                                mHighlightedTextViews.clear();
-
                                            }
                                        }
 
@@ -284,16 +258,55 @@ public class PageFragment extends Fragment {
                                                @Override
                                                public void onClick(View v) {
                                                    setUpPageText();
-                                                   mWordsToSpeechBank.clear();
                                                    mHighlightedTextViews.clear();
                                                }
 
                                            }
         );
 
-//        setUpPageText();
-
         return blankPage;
+    }
+
+    /**
+     * Loads up the book that was selected
+     * If there is an error it will send you back to the library
+     */
+    private void setUpBook() {
+        UUID bookId = (UUID) getActivity().getIntent().getSerializableExtra(MyLibraryFragment.BOOK_ID);
+
+        mCurrentBook = Library.get(getActivity()).getBook(bookId);
+
+        mPagesOfBook = mCurrentBook.getPagesOfBook();
+
+        try {
+            mPageNumber = (Integer) mAllBookMarksAndSettings.get(mCurrentBook.getEPubFile().getName());
+
+        } catch (NullPointerException e ){
+            mPageNumber = -1;
+        }
+
+        mBookMarkPageNumber = mPageNumber;
+
+        try {
+            if (mPageNumber == -1) {
+                mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
+            } else {
+                mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
+            }
+        } catch (IndexOutOfBoundsException e) {
+
+            stopAsyncTasks();
+
+            Intent intent = new Intent(getActivity(), MyLibraryActivity.class);
+            intent.putExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER,
+                getActivity().getIntent().getIntExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER, 0));
+            intent.putExtra(ERROR_MESSAGE, true);
+            startActivity(intent);
+        }
+
+        setUpChapters();
+
+        getTitleAndAuthor();
     }
 
     private void loadDictionary() {
@@ -303,10 +316,7 @@ public class PageFragment extends Fragment {
 
     /**
      * Goes through all the pages of the book and decides whether the page is a chapter and if it
-     * is
-     * it saves the page number to be used in the chapter dialog
-     *
-     * TODO: getChapterLabels from here and add as name of chapter
+     * is, it saves the page number to be used in the chapter dialog
      */
     private void setUpChapters() {
 
@@ -321,21 +331,17 @@ public class PageFragment extends Fragment {
 
     private void instantiateLists() {
         mTableLayouts = new ArrayList<>();
-        mWordsToSpeechBank = new ArrayList<>();
         mHighlightedTextViews = new ArrayList<>();
         mChaptersOfTheBookName = new ArrayList<>();
         mChaptersOfTheBookPageNum = new ArrayList<>();
     }
 
     private void loadUpSettings() {
-        try {
-            mSettingsPreferences = mReadToMeJSONSerializer.loadSettings();
-            Log.i(TAG, "Success loading");
-        } catch (Exception e) {
 
-            Log.i(TAG, e.getMessage());
-            Log.i(TAG, " Error loading Settings");
-            mSettingsPreferences = new SettingsPreferences();
+        try {
+            mAllBookMarksAndSettings = mReadToMeJSONSerializer.loadBookMarks();
+        } catch (Exception e){
+            mAllBookMarksAndSettings = new HashMap<>();
         }
     }
 
@@ -491,7 +497,7 @@ public class PageFragment extends Fragment {
 
     }
 
-    private boolean isItAFamilyName(String word) {
+    public static boolean isItAFamilyName(String word) {
 
         return word.equals("Mrs.") ||
             word.equals("Mr.") ||
@@ -511,7 +517,7 @@ public class PageFragment extends Fragment {
     }
 
     private void handleBookmark() {
-        if (mPageNumber == mSettingsPreferences.getBookMarkedPage()) {
+        if (mPageNumber == mBookMarkPageNumber) {
             mBookmark.setVisibility(View.VISIBLE);
         } else {
             mBookmark.setVisibility(View.INVISIBLE);
@@ -537,9 +543,15 @@ public class PageFragment extends Fragment {
      */
     private void setUpChapterLabel() {
         if (mPageNumber != -1) {
-            if (!mPagesOfBook.get(mPageNumber).getChapterOfBook().equals("None")) {
+            if (!mPagesOfBook.get(mPageNumber).getChapterOfBook().equals(
+                PageOfBook.PAGE_HAS_NO_CHAPTER)) {
+
                 mChapterTextView.setVisibility(View.VISIBLE);
-                mChapterTextView.setText(mPagesOfBook.get(mPageNumber).getChapterOfBook());
+                String chapterLabel = mPagesOfBook.get(mPageNumber).getChapterOfBook();
+                if (chapterLabel.length() > 60){
+                    chapterLabel = chapterLabel.substring(0, 59) + "...";
+                }
+                mChapterTextView.setText(chapterLabel);
                 mChapterTextView.setTextColor(Color.BLACK);
             } else {
                 mChapterTextView.setVisibility(View.INVISIBLE);
@@ -638,6 +650,14 @@ public class PageFragment extends Fragment {
         }
     }
 
+    private void getTitleAndAuthor(){
+        mTitle = GetBookInfo.getBookTitle(
+            mCurrentBook.getEPubFile());
+
+        mAuthor = GetBookInfo.getBookAuthor(
+            mCurrentBook.getEPubFile());
+    }
+
     /**
      * This is used to set up the title page/page zero
      */
@@ -657,23 +677,20 @@ public class PageFragment extends Fragment {
                 if (i == 8 && j == 4) {
                     TextView textView = (TextView) row.getChildAt(j);
 
-                    textView.setText(GetBookInfo.getBookTitle(
-                        mCurrentBook.getEPubFileName(), getActivity()));
+                    textView.setText(mTitle);
                 }
 
                 if (i == 9 && j == 4) {
 
                     TextView textView = (TextView) row.getChildAt(j);
 
-                    textView.setText("By: ");
+                    textView.setText(R.string.first_page_by);
                 }
                 if (i == 10 && j == 4) {
 
                     TextView textView = (TextView) row.getChildAt(j);
 
-                    String author = GetBookInfo.getBookAuthor(
-                        mCurrentBook.getEPubFileName(), getActivity());
-                    textView.setText(author.substring(1, author.length() - 2));
+                    textView.setText(mAuthor.substring(1, mAuthor.length() - 2));
 
                 }
             }
@@ -704,7 +721,7 @@ public class PageFragment extends Fragment {
 
         } else {
             Toast.makeText(getActivity(),
-                "Sorry, the dictionary is being set up", Toast.LENGTH_LONG).show();
+                R.string.dictionary_being_set_up, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -767,9 +784,7 @@ public class PageFragment extends Fragment {
                 ColorDrawable textBackGroundColor = (ColorDrawable) word.getBackground();
                 int backgroundColor = textBackGroundColor.getColor();
                 if (backgroundColor == Color.YELLOW) {
-                    mWordsToSpeechBank.add(word.getText() + "");
                     mHighlightedTextViews.add(word);
-                    Log.i(TAG, word.getText() + "");
                 }
             }
         }
@@ -785,12 +800,17 @@ public class PageFragment extends Fragment {
             mOnClickHighLightSentenceMode = data.getBooleanExtra(
                 SettingsDialog.SENTENCE_BY_SENTENCE_MODE, true);
 
-            mSettingsPreferences.setVoiceSpeed(mVoiceSpeed);
-            mSettingsPreferences.setReadSentenceMode(mOnClickHighLightSentenceMode);
+            mAllBookMarksAndSettings.put(VOICE_SPEED, mVoiceSpeed);
 
+            if (mOnClickHighLightSentenceMode){
+                mAllBookMarksAndSettings.put(SPEECH_MODE, TRUE_SPEECH_MODE);
+            } else {
+                int FALSE_SPEECH_MODE = 88888;
+                mAllBookMarksAndSettings.put(SPEECH_MODE, FALSE_SPEECH_MODE);
+            }
 
             saveSettings();
-            Toast.makeText(getActivity(), "Settings saved"
+            Toast.makeText(getActivity(), R.string.settings_saved
                 , Toast.LENGTH_LONG).show();
 
         }
@@ -823,14 +843,16 @@ public class PageFragment extends Fragment {
             //this method will be running on UI thread
 
             mDictionaryReady = false;
-            Toast.makeText(getActivity(), "Dictionary is being set up", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),
+                R.string.dictionary_being_set_up_first, Toast.LENGTH_LONG).show();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
 
-            //this method will be running on background thread so don't update UI frome here
-            //do your long running http tasks here,you dont want to pass argument and u can access the parent class' variable url over here
+            //this method will be running on background thread so don't update UI from here
+            //do your long running http tasks here,you dont want
+            // to pass argument and u can access the parent class' variable url over here
 
             mDictionaryOne = WordLinkedWithDef.linkWordsWithDefinitions(getActivity(), 0, 4677);
 
@@ -844,7 +866,7 @@ public class PageFragment extends Fragment {
             mDictionaryReady = true;
 
             //this method will be running on UI thread
-            Toast.makeText(getActivity(), "Dictionary is ready", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.dictionary_ready, Toast.LENGTH_LONG).show();
         }
 
     }
@@ -865,11 +887,13 @@ public class PageFragment extends Fragment {
                 if (mBookmark.getVisibility() == View.INVISIBLE) {
                     mBookmark.setVisibility(View.VISIBLE);
 
-                    mSettingsPreferences.setBookMarkedPage(mPageNumber);
+                    mBookMarkPageNumber = mPageNumber;
+                    mAllBookMarksAndSettings.put(mCurrentBook.getEPubFile().getName(), mPageNumber);
                     saveSettings();
                 } else {
                     mBookmark.setVisibility(View.INVISIBLE);
                 }
+
                 return true;
 
             case R.id.menu_setting:
@@ -928,11 +952,9 @@ public class PageFragment extends Fragment {
 
     public boolean saveSettings() {
         try {
-            mReadToMeJSONSerializer.savePreferences(mSettingsPreferences);
-            Log.d(TAG, "Settings saved");
+            mReadToMeJSONSerializer.saveBookMarks(mAllBookMarksAndSettings);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Error saving settings", e);
             return false;
         }
     }
@@ -959,7 +981,6 @@ public class PageFragment extends Fragment {
         mTts.shutdown();
         stopAsyncTasks();
         mWordPlayer.shutDownTTS();
-        Log.i(TAG, "Destroyed");
         super.onDestroy();
     }
 
@@ -971,14 +992,14 @@ public class PageFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
 
+            if (mProgressDialogSettingUpBook != null) {
+                mProgressDialogSettingUpBook.dismiss();
+            }
+
             setUpChapterLabel();
             setUpPageText();
 
             handlePageTurn();
-
-            if (mProgressDialogSettingUpBook != null) {
-                mProgressDialogSettingUpBook.dismiss();
-            }
         }
 
         @Override
@@ -991,7 +1012,8 @@ public class PageFragment extends Fragment {
         protected void onPreExecute() {
             // Show the ProgressDialog on this thread
             mProgressDialogSettingUpBook = ProgressDialog.show(
-                getActivity(), "Setting up your book", "Seting up...", true, false);
+                getActivity(), getActivity().getString(R.string.progress_setting_up_title),
+                getActivity().getString(R.string.progress_setting_up_message), true, false);
         }
     }
 }

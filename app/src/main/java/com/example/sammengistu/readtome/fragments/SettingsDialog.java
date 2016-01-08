@@ -29,17 +29,17 @@ public class SettingsDialog extends DialogFragment {
     private static final String MODE = "Mode";
     private static final String VOICE_SETTINGS_SPEED = "Voice speed settings";
     private static final String TAG = "SettingsDialog";
-    private boolean readSentenceBySentence;
-    private int voiceSpeed;
+    private boolean mReadSentenceBySentence;
+    private int mVoiceSpeed;
     private TextView mVoiceSpeedNumberTextView;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-
-        readSentenceBySentence = getArguments().getBoolean(MODE);
-        voiceSpeed = getArguments().getInt(VOICE_SETTINGS_SPEED);
+        mReadSentenceBySentence = getArguments().getBoolean(MODE);
+        mVoiceSpeed = getArguments().getInt(VOICE_SETTINGS_SPEED);
+        Log.i(TAG, "Read sentence mode = " + mReadSentenceBySentence);
 
         final View settingsView = getActivity().getLayoutInflater()
                 .inflate(R.layout.fragment_settings, null);
@@ -57,28 +57,30 @@ public class SettingsDialog extends DialogFragment {
 
         mVoiceSpeedNumberTextView = (TextView)settingsView
             .findViewById(R.id.settings_voice_speed_number_text_view);
-        String voiceSpeedForView = voiceSpeed + "";
+        String voiceSpeedForView = mVoiceSpeed + "";
         mVoiceSpeedNumberTextView.setText(voiceSpeedForView);
         mVoiceSpeedNumberTextView.setTextColor(Color.BLACK);
 
-        final Switch mReadSentenceBySentence = (Switch)settingsView
+        final Switch readSentenceBySentenceSwitch = (Switch)settingsView
             .findViewById(R.id.settings_read_by_sentence_mode);
-        mReadSentenceBySentence.setChecked(readSentenceBySentence);
-        mReadSentenceBySentence.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+        readSentenceBySentenceSwitch.setChecked(mReadSentenceBySentence);
+
+        readSentenceBySentenceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                readSentenceBySentence = isChecked;
+                mReadSentenceBySentence = isChecked;
             }
         });
 
 
-        final SeekBar mVoiceSpeed = (SeekBar)settingsView
+        final SeekBar voiceSpeed = (SeekBar)settingsView
             .findViewById(R.id.settings_change_voice_speed);
-        mVoiceSpeed.setProgress(voiceSpeed);
-        mVoiceSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        voiceSpeed.setProgress(mVoiceSpeed);
+        voiceSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                voiceSpeed = progress;
+                mVoiceSpeed = progress;
                 String progressForView = progress + "";
                 mVoiceSpeedNumberTextView.setText(progressForView);
                 mVoiceSpeedNumberTextView.setTextColor(Color.BLACK);
@@ -99,8 +101,8 @@ public class SettingsDialog extends DialogFragment {
         mDefaultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mReadSentenceBySentence.setChecked(true);
-                mVoiceSpeed.setProgress(DEFAULT_NORMAL_SPEED);
+                readSentenceBySentenceSwitch.setChecked(true);
+                voiceSpeed.setProgress(DEFAULT_NORMAL_SPEED);
             }
         });
 
@@ -122,11 +124,11 @@ public class SettingsDialog extends DialogFragment {
         }
 
         Intent intent = new Intent();
-        intent.putExtra(VOICE_SPEED, voiceSpeed);
-        intent.putExtra(SENTENCE_BY_SENTENCE_MODE, readSentenceBySentence);
+        intent.putExtra(VOICE_SPEED, mVoiceSpeed);
+        intent.putExtra(SENTENCE_BY_SENTENCE_MODE, mReadSentenceBySentence);
 
-        Log.i(TAG, "MODE " + readSentenceBySentence);
-        Log.i(TAG, "Speed is :" + voiceSpeed);
+        Log.i(TAG, "MODE " + mReadSentenceBySentence);
+        Log.i(TAG, "Speed is :" + mVoiceSpeed);
 
         getTargetFragment()
                 .onActivityResult(getTargetRequestCode(), resultCode, intent);
