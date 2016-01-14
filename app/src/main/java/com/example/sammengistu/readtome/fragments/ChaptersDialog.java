@@ -100,7 +100,6 @@ public class ChaptersDialog extends DialogFragment {
     public static ChaptersDialog newInstance(List<String> chapterPageLabel,
                                              List<Integer> chaptersPageNum) {
         Bundle args = new Bundle();
-        //TODO: Change to String arrayList
         args.putStringArrayList(CHAPTER_LABEL, (ArrayList<String>) chapterPageLabel);
         args.putIntegerArrayList(CHAPTER_PAGE_NUMBER, (ArrayList<Integer>) chaptersPageNum);
 

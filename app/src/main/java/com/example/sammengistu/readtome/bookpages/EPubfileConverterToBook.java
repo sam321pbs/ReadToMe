@@ -120,6 +120,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                 //Starts reading line for line from the epub file
                 while ((line = r.readLine()) != null) {
 
+                    String lineInHtml = line;
                     line = Html.fromHtml(line).toString();
 
                     line = line.replace("\n", "").replace("\r", "");
@@ -155,7 +156,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                      */
                     if (mChapterTracker != mChapterNames.size()) {
                         if (ifChapterMatchBuildChapterLabel(lineIntoArray)) {
-                            continue;
+                             continue;
                         }
                     }
 
@@ -334,13 +335,10 @@ public class EPubFileConverterToBook implements MakeAPage {
         //Adds words from line to the mPage and the left over words to the arrayList
         for (String aWordFromArray : lineIntoArray) {
 
-//                            Log.i(TAG, mWordCount + "");
-//                            Log.i(TAG, "Word from array " + aWordFromArray);
-
-
             if (mWordCount < MAX_NUMBER_OF_WORDS_PER_PAGE) {
 
-                mPage.append(aWordFromArray + SPACE);
+                String wordFromArrayPlusSpace = aWordFromArray + SPACE;
+                mPage.append(wordFromArrayPlusSpace);
                 mWordCount++;
             } else {
 
@@ -358,7 +356,8 @@ public class EPubFileConverterToBook implements MakeAPage {
         if (!mLeftOverWordsFromPrevPage.isEmpty()) {
             for (String wordFromLastLine : mLeftOverWordsFromPrevPage) {
                 if (mWordCount < MAX_NUMBER_OF_WORDS_PER_PAGE) {
-                    mPage.append(wordFromLastLine + SPACE);
+                    String wordFromLastLinePlusSpace = wordFromLastLine + SPACE;
+                    mPage.append(wordFromLastLinePlusSpace);
                     mWordCount++;
                 } else {
                     addAPage(false);
@@ -423,6 +422,5 @@ public class EPubFileConverterToBook implements MakeAPage {
             getTableOfContents(tocReference.getChildren(), depth + 1);
 
         }
-
     }
 }

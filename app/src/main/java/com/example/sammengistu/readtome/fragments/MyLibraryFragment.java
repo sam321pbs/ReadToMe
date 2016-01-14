@@ -77,10 +77,14 @@ public class MyLibraryFragment extends Fragment {
 
     private List<Bitmap> mBitmaps = new ArrayList<>();
 
+    private boolean showErrorDialog;
+
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
+
+        showErrorDialog = false;
 
         mShowErrorToast = getActivity().getIntent().getBooleanExtra(PageFragment.ERROR_MESSAGE, false);
 
@@ -327,21 +331,7 @@ public class MyLibraryFragment extends Fragment {
                 }
             }
         } else {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error_title)
-                        .setMessage(R.string.error_connected_to_computer_or_no_books)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-                }
-            });
+            showErrorDialog = true;
         }
     }
 
@@ -417,6 +407,22 @@ public class MyLibraryFragment extends Fragment {
             setImages();
             if (mProgressDialogLoadingBookCovers != null) {
                 mProgressDialogLoadingBookCovers.dismiss();
+            }
+
+            if (showErrorDialog) {
+
+                new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.error_title)
+                    .setMessage(R.string.error_connected_to_computer_or_no_books)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+                showErrorDialog = false;
             }
         }
 

@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public class Book {
 
-    private String mTitle;
     private UUID mBookId;
     private Context mAppContext;
     private File mEPubFile;
@@ -33,13 +32,4 @@ public class Book {
     public UUID getBookId() {
         return mBookId;
     }
-
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public void setTitle(String title) {
-        mTitle = title;
-    }
-
 }

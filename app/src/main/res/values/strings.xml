@@ -1,11 +1,8 @@
 <resources>
     <string name="app_name">Read To Me</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_pages">Pages</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="instructions_on_the_switch_button">If this button is on, it will read to you a sentence at a time. If it is off, it will read to you one word at a time</string>
@@ -47,7 +44,7 @@
         are coming soon!!
     </string>
     <string name="loading_title">Loading Books</string>
-    <string name="loading_message">Loading...</string>
+    <string name="loading_message">Loading…</string>
     <string name="contents">Contents</string>
     <string name="first_page_by">"By: "</string>
     <string name="dictionary_being_set_up">Sorry, the dictionary is being set up</string>
@@ -55,5 +52,5 @@
     <string name="dictionary_being_set_up_first">Dictionary is being set up</string>
     <string name="dictionary_ready">Dictionary is ready</string>
     <string name="progress_setting_up_title">Setting up your book</string>
-    <string name="progress_setting_up_message">Setting up...</string>
+    <string name="progress_setting_up_message">Setting up…</string>
 </resources>

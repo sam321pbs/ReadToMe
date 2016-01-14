@@ -4,6 +4,7 @@ import com.example.sammengistu.readtome.R;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class Library {
     private Context mAppContext;
 
     /**
-     * Gets all the epub files from the assests folder and saves it as a book
+     * Gets all the epub files from the epubfiles folder and saves it as a book
      *
      * @param appContext - used to get access to the files
      */
@@ -43,7 +44,7 @@ public class Library {
     }
 
     /**
-     * Goes into the proper directory folder and grabs all file names
+     * Goes into the proper directory folder and grabs all files
      *
      * @return - list of all the file names
      * @throws IOException - error loading the file names
@@ -52,8 +53,16 @@ public class Library {
 
         List<File> epubBookFiles = new ArrayList<>();
 
+        //File to public directory
         File epubDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
             mAppContext.getString(R.string.directory_name));
+
+        //Private directory TODO
+        File epubDirectoryPrivate = mAppContext.getDir(mAppContext.getString(R.string.directory_name)
+            , Context.MODE_PRIVATE); //Creating an internal dir
+
+        Log.i("Private d", epubDirectoryPrivate.getAbsolutePath());
+
 
         if (!epubDirectory.exists()) {
             epubDirectory.mkdir();
@@ -62,11 +71,16 @@ public class Library {
             File[] files = epubDirectory.listFiles();
 
             for (File file : files) {
-                if (!file.getName().substring(0, 1).equals(".")) {
-                    epubBookFiles.add(file);
+                try {
+                    if (!file.getName().substring(0, 1).equals(".")) {
+                        epubBookFiles.add(file);
+                    }
+                } catch (Exception e){
+
                 }
             }
         }
+
         return epubBookFiles;
     }
 
