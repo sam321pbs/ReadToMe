@@ -53,4 +53,7 @@
     <string name="dictionary_ready">Dictionary is ready</string>
     <string name="progress_setting_up_title">Setting up your book</string>
     <string name="progress_setting_up_message">Setting up…</string>
+    <string name="contents_with_period">Contents.</string>
+    <string name="table_of_content">Table of contents</string>
+    <string name="table_of_contents">Table of content</string>
 </resources>

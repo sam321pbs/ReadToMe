@@ -55,8 +55,9 @@ public class EPubFileConverterToBook implements MakeAPage {
 
     /**
      * Takes an epub file name and finds the file and sets up the class for conversion
+     *
      * @param appContext - get context for resource name
-     * @param ePubFile - file to open
+     * @param ePubFile   - file to open
      */
     public EPubFileConverterToBook(Context appContext, File ePubFile) {
         mAppContext = appContext;
@@ -69,7 +70,6 @@ public class EPubFileConverterToBook implements MakeAPage {
      */
     private void setUpBookInfo() {
         mChapterNames = new ArrayList<>();
-
 
         FileInputStream epubInputStream;
 
@@ -113,51 +113,94 @@ public class EPubFileConverterToBook implements MakeAPage {
                 BufferedReader r = new BufferedReader(new InputStreamReader(is));
                 String line;
 
-                int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
-
                 Log.i("Section", mPageNumber + "");
+
+                boolean sectionChange = true;
 
                 //Starts reading line for line from the epub file
                 while ((line = r.readLine()) != null) {
 
-                    String lineInHtml = line;
                     line = Html.fromHtml(line).toString();
-
-                    line = line.replace("\n", "").replace("\r", "");
 
                     if (line.equals("") || line.equals(" ")) {
                         continue;
                     }
 
+                    if (sectionChange){
+
+                        line = line.replace("\n", " ").replace("\r", "");
+
+                    } else {
+                        line = line.replace("\n", "").replace("\r", "");
+                    }
+
+                    Log.i("read", line);
+
                     //Skip the next couple of lines of the books table of content
                     //So it doesn't get confused for it being a chapter label
-                    if (skipLines && skipNextThreeLines <= 3 && !line.equals("")) {
+                    if (skipLines && skipNextThreeLines <= 4 && !line.equals("")) {
                         skipNextThreeLines++;
                         continue;
                     }
 
                     //Skips the table of contents in the epub file
-                    if (mPreviousWord.equals(mAppContext.getString(R.string.contents))) {
+                    if (mPreviousWord.equals(mAppContext.getString(R.string.contents))
+                        || mPreviousWord.equalsIgnoreCase(
+                        mAppContext.getString(R.string.contents_with_period))
+                        || mPreviousWord.equalsIgnoreCase(
+                        mAppContext.getString(R.string.table_of_content))
+                        || mPreviousWord.equalsIgnoreCase(
+                        mAppContext.getString(R.string.table_of_contents))) {
+
                         mPreviousWord = "";
                         continue;
                     }
 
-                    if (line.equalsIgnoreCase(mAppContext.getString(R.string.contents))) {
+                    if (line.equalsIgnoreCase(mAppContext.getString(R.string.contents))
+                        || line.equalsIgnoreCase(mAppContext.getString(R.string.contents_with_period))
+                        || line.equalsIgnoreCase(mAppContext.getString(R.string.table_of_content))
+                        || line.equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents))) {
                         mPreviousWord = line;
                         skipLines = true;
                         continue;
                     }
 
-                    String[] lineIntoArray = line.split("\\s+");
+                    String[] lineIntoArray;
+
+                    boolean continueToNextLine = false;
 
                      /*
                     Resets the chapter tracker when you are at the end of the book so it doesnt throw
                      arrayIndex out of bounds exception
                      */
                     if (mChapterTracker != mChapterNames.size()) {
-                        if (ifChapterMatchBuildChapterLabel(lineIntoArray)) {
-                             continue;
+
+                        if (sectionChange && doesLineContainChapterLabel(line)){
+
+                            Log.i("section", line);
+                            sectionChange = false;
+                            lineIntoArray = removeChapterLabel(line).split("\\s+");
+
+                            mChapterLabel = new StringBuilder(mChapterNames.get(mChapterTracker));
+
+                            mChapterTracker++;
+
+                            mHaveChapterLabel = true;
+
+                            mPageBreak = true;
+
+                        } else {
+
+                            lineIntoArray = line.split("\\s+");
+
+                            continueToNextLine = true;
+
+                            if (ifChapterMatchBuildChapterLabel(lineIntoArray)) {
+                                continue;
+                            }
                         }
+                    } else {
+                        lineIntoArray = line.split("\\s+");
                     }
 
                     //Prevents the chapter label from being added to the page text
@@ -181,41 +224,61 @@ public class EPubFileConverterToBook implements MakeAPage {
                             }
                         }
                         mPageBreak = false;
-                        continue;
+                        if (continueToNextLine) {
+                            continue;
+                        }
                     }
 
                     addWordsToPage(lineIntoArray);
 
-                    //Finish forLoop to add the remainder of sentence to ArrayList then set Page up
-                    if (mWordCount == MAX_NUMBER_OF_WORDS_PER_PAGE) {
-
-                        if (mHaveChapterLabel) {
-
-                            addAPage(true);
-                            mHaveChapterLabel = false;
-                        } else {
-
-                            if (!mPage.toString().isEmpty()) {
-
-                                addAPage(false);
-                            }
-                        }
-                    }
+                    completePage();
                 }
 
-                //If any left over words it will make a page for it
-                if (mPage.length() != 0) {
-                    addAPage(false);
-                }
-                if (!mLeftOverWordsFromPrevPage.isEmpty()){
-                    addWordsToPage();
-                    addAPage(false);
-                }
+                completeEndOfBook();
 
             } catch (IOException e) {
                 Log.i("Exception", e.toString());
             }
         }
+    }
+
+    private void completeEndOfBook(){
+        //If any left over words it will make a page for it
+        if (mPage.length() != 0) {
+            addAPage(false);
+        }
+        if (!mLeftOverWordsFromPrevPage.isEmpty()) {
+            addWordsToPage();
+            addAPage(false);
+        }
+    }
+
+    private void completePage(){
+
+        int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
+
+        //Finish forLoop to add the remainder of sentence to ArrayList then set Page up
+        if (mWordCount == MAX_NUMBER_OF_WORDS_PER_PAGE) {
+
+            if (mHaveChapterLabel) {
+
+                addAPage(true);
+                mHaveChapterLabel = false;
+            } else {
+
+                if (!mPage.toString().isEmpty()) {
+
+                    addAPage(false);
+                }
+            }
+        }
+    }
+
+    private boolean isTableOfContentsFromBook() {
+        return mPreviousWord.equals(mAppContext.getString(R.string.contents))
+            || mPreviousWord.equalsIgnoreCase(mAppContext.getString(R.string.contents_with_period))
+            || mPreviousWord.equalsIgnoreCase(mAppContext.getString(R.string.table_of_content))
+            || mPreviousWord.equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents));
     }
 
     /**
@@ -295,7 +358,8 @@ public class EPubFileConverterToBook implements MakeAPage {
                     }
 
                     if (wordMatch && chapterLabelWithOutSpecialCharacters
-                        .equalsIgnoreCase(chapterNameWithOutSpecialCharacters)) {
+                        .equalsIgnoreCase(chapterNameWithOutSpecialCharacters) &&
+                        !isTableOfContentsFromBook()) {
 
                         mChapterTracker++;
 
@@ -305,6 +369,7 @@ public class EPubFileConverterToBook implements MakeAPage {
 
                         mPageBreak = true;
                         mWordMatchEntireLine = false;
+
                     }
                 }
             } else {
@@ -330,7 +395,7 @@ public class EPubFileConverterToBook implements MakeAPage {
     private void addWordsToPage(String[] lineIntoArray) {
         int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
 
-       addWordsToPage();
+        addWordsToPage();
 
         //Adds words from line to the mPage and the left over words to the arrayList
         for (String aWordFromArray : lineIntoArray) {
@@ -363,7 +428,6 @@ public class EPubFileConverterToBook implements MakeAPage {
                     addAPage(false);
                 }
             }
-
             mLeftOverWordsFromPrevPage.clear();
         }
     }
@@ -414,13 +478,83 @@ public class EPubFileConverterToBook implements MakeAPage {
 
             tocString.append(tocReference.getTitle());
 
-            if (!tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.contents))) {
+            if (!tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.contents)) &&
+                !tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.contents_with_period)) &&
+                !tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.table_of_content)) &&
+                !tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents))) {
 
                 mChapterNames.add(tocString.toString());
+                Log.i("Chapter", tocString.toString());
             }
 
             getTableOfContents(tocReference.getChildren(), depth + 1);
 
         }
+    }
+
+    /**
+     * Takes out the chapter label from the line
+     * @param line - line to remove chapter label from
+     * @return - new string without chapter label in it
+     */
+    private String removeChapterLabel(String line){
+
+        String [] lineSplit = line.split("\\s+");
+
+        String[] currentChapterArray = mChapterNames.get(mChapterTracker).split("\\s+");
+
+        List<String> wordsWithoutChapterLabel = new ArrayList<>();
+
+        int counter = 0;
+
+        for (String aLineSplit : lineSplit) {
+
+            if (counter == currentChapterArray.length){
+
+                wordsWithoutChapterLabel.add(aLineSplit);
+                continue;
+            }
+
+            if (!aLineSplit.equalsIgnoreCase(currentChapterArray[counter])) {
+                wordsWithoutChapterLabel.add(aLineSplit);
+
+            } else {
+                counter++;
+            }
+        }
+
+        StringBuilder newLine = new StringBuilder();
+        for (String word : wordsWithoutChapterLabel){
+            newLine.append(word + " ");
+        }
+
+        return newLine.toString();
+    }
+
+    /**
+     * Sees if the line contains a chapter label
+     * @param line - line to check if a chapter label is in it
+     * @return - either does or does not contain chapter label
+     */
+    private boolean doesLineContainChapterLabel (String line) {
+
+        String [] lineSplit = line.split("\\s+");
+
+        String[] currentChapterArray = mChapterNames.get(mChapterTracker).split("\\s+");
+
+        int counter = 0;
+
+        for (String aLineSplit : lineSplit) {
+
+            if (aLineSplit.equalsIgnoreCase(currentChapterArray[counter])) {
+                counter++;
+            }
+
+            if (counter == currentChapterArray.length) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

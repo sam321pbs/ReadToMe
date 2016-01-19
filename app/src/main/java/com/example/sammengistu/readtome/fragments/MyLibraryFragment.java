@@ -239,10 +239,14 @@ public class MyLibraryFragment extends Fragment {
                     currentImageView.setVisibility(View.INVISIBLE);
 
                     currentTextView.setTextColor(Color.BLACK);
-                    currentTextView.setBackgroundColor(Color.parseColor(
-                        getActivity().getString(R.string.book_cover_backgroung_color)));
-                    currentTextView.setText(
+                    try {
+                        currentTextView.setBackgroundColor(Color.parseColor(
+                            getActivity().getString(R.string.book_cover_backgroung_color)));
+                    } catch (NullPointerException e){
 
+                    }
+
+                    currentTextView.setText(
                         GetBookInfo.getBookTitle(
                             currentBook.getEPubFile())
                     );
@@ -406,7 +410,12 @@ public class MyLibraryFragment extends Fragment {
         protected void onPostExecute(String result) {
             setImages();
             if (mProgressDialogLoadingBookCovers != null) {
-                mProgressDialogLoadingBookCovers.dismiss();
+                try {
+                    mProgressDialogLoadingBookCovers.dismiss();
+                } catch (IllegalArgumentException e) {
+
+                }
+
             }
 
             if (showErrorDialog) {

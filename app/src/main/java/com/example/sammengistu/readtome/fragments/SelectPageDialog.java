@@ -68,7 +68,8 @@ public class SelectPageDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                         if (isNumeric(selectedPageNumber[0])) {
-                            if (Integer.parseInt(selectedPageNumber[0]) > max || Integer.parseInt(selectedPageNumber[0]) < 0) {
+                            if (Integer.parseInt(selectedPageNumber[0]) > max - 1 ||
+                                Integer.parseInt(selectedPageNumber[0]) < 0) {
                                 Toast.makeText(getActivity(), "Invalid Page Number",
                                         Toast.LENGTH_SHORT).show();
 
@@ -109,8 +110,7 @@ public class SelectPageDialog extends DialogFragment {
 
     public static boolean isNumeric(String str)
     {
-        try
-        {
+        try {
             int number = Integer.parseInt(str);
         }
         catch(NumberFormatException nfe)

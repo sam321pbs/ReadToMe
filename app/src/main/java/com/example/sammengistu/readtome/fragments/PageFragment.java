@@ -97,7 +97,7 @@ public class PageFragment extends Fragment {
 
         mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
 
-//        loadDictionary();
+        loadDictionary();
 
         loadUpSettings();
         instantiateLists();
@@ -960,9 +960,9 @@ public class PageFragment extends Fragment {
     }
 
     private void stopAsyncTasks() {
-//        if (mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING)) {
-//            mDictionaryLoader.cancel(true);
-//        }
+        if (mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING)) {
+            mDictionaryLoader.cancel(true);
+        }
 
         if (mSetUpBookAsync.getStatus().equals(AsyncTask.Status.RUNNING)) {
             mSetUpBookAsync.cancel(true);

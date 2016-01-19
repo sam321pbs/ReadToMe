@@ -71,7 +71,7 @@ public class TestTableOfContentsSenseAndSensibility extends
             }
         }
 
-        assertEquals(mChapterNamesSenseAndSensibility.get(0), "Sense and Sensibility");
+        assertEquals(mChapterNamesSenseAndSensibility.get(0), "SENSE AND SENSIBILITY");
         assertEquals(mChapterNamesSenseAndSensibility.get(1), "(1811)");
         assertEquals(mChapterNamesSenseAndSensibility.get(2), "CHAPTER 1");
         assertEquals(mChapterNamesSenseAndSensibility.get(3), "CHAPTER 2");
@@ -138,7 +138,6 @@ public class TestTableOfContentsSenseAndSensibility extends
 
         assertEquals(actualsb.toString(), twohundredWords.toString());
     }
-
 }
 
 

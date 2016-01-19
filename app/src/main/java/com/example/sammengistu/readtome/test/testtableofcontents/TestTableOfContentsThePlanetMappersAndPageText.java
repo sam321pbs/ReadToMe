@@ -2,11 +2,14 @@ package com.example.sammengistu.readtome.test.testtableofcontents;
 
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;
 import com.example.sammengistu.readtome.bookpages.EPubFileConverterToBook;
+import com.example.sammengistu.readtome.models.Book;
+import com.example.sammengistu.readtome.models.Library;
 import com.example.sammengistu.readtome.models.PageOfBook;
 import com.robotium.solo.Solo;
 
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +48,16 @@ public class TestTableOfContentsThePlanetMappersAndPageText extends ActivityInst
         mMyLibraryActivity = getActivity();
         mContext = getInstrumentation().getTargetContext();
         mSolo = new Solo(getInstrumentation(), getActivity());
-//        mEPubBookThePlanetMappers = new EPubFileConverterToBook(mContext, "the_planet_mappers.epub");
+        Library library = new Library(getActivity());
+        List<Book> allBooks = library.getMyLibrary();
+
+        for (Book book : allBooks){
+            Log.i("Test", "File name = " + book.getEPubFile().getName());
+            if (book.getEPubFile().getName().equals("the_planet_mappers.epub")){
+                mEPubBookThePlanetMappers = new EPubFileConverterToBook(mContext,
+                    book.getEPubFile());
+            }
+        }
 
         super.setUp();
     }
@@ -69,7 +81,7 @@ public class TestTableOfContentsThePlanetMappersAndPageText extends ActivityInst
         }
 
         assertEquals(mChapterNamesThePlanetMappers.get(0), "The Planet Mappers");
-        assertEquals(mChapterNamesThePlanetMappers.get(1), "THE PLANET MAPPERS");
+        assertEquals(mChapterNamesThePlanetMappers.get(1), "The Planet Mappers");
         assertEquals(mChapterNamesThePlanetMappers.get(2), "1");
         assertEquals(mChapterNamesThePlanetMappers.get(3), "2");
         assertEquals(mChapterNamesThePlanetMappers.get(4), "3");
