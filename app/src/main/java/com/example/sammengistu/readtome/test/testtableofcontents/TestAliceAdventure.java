@@ -41,6 +41,10 @@ public class TestAliceAdventure extends
         "said the Duck: 'it's generally a frog or a worm. The question is, what did the archbishop find?' The Mouse did not notice this question, but hurriedly went on, '\"—found it advisable to go with Edgar Atheling to meet William and offer him the crown. William's conduct " +
         "at first was moderate. But the insolence of his Normans—\" How are you getting on now, my dear?' it continued, turning to Alice as it spoke.";
 
+    private String mPageBeforeChapter = "come back again, and we won't talk about cats or dogs either, if you don't like them!' When the Mouse heard this, it turned round and swam slowly back to her: its face was quite pale (with passion, Alice thought)," +
+        " and it said in a low trembling voice, 'Let us get to the shore, and then I'll tell you my history, and you'll understand why it is I hate cats and dogs.' " +
+        "It was high time to go, for the pool was getting quite crowded with the birds and animals that had fallen into it: there were a Duck and a Dodo, a Lory and an Eaglet, and several other curious creatures. Alice led the way, and the whole party swam to the shore.";
+
     public TestAliceAdventure() {
         super(MyLibraryActivity.class);
     }
@@ -114,6 +118,37 @@ public class TestAliceAdventure extends
         String [] actualArray = mBookText.split(" ");
 
         for (int i = 0; i < 199; i++){
+            twohundredWords.append(pageTextArrays[i] + " ");
+            actualsb.append(actualArray[i] + " ");
+        }
+
+        assertEquals(actualsb.toString(), twohundredWords.toString());
+    }
+
+    public void testPageBefore() throws Exception {
+        mPageOfBooksAliceAdventure = mEPubBookAliceAdventure.getPagesOfTheBook();
+
+        int countPages = 0;
+        boolean temp = false;
+
+        for (int i = 0; i < mPageOfBooksAliceAdventure.size(); i ++){
+
+            if (mPageOfBooksAliceAdventure.get(i).getChapterOfBook()
+                .equals("CHAPTER III. A Caucus-Race and a Long Tale") || temp){
+
+                countPages = i - 1;
+                break;
+            }
+        }
+
+        StringBuilder twohundredWords = new StringBuilder(
+            );
+        StringBuilder actualsb = new StringBuilder();
+
+        String pageTextArrays [] = mPageOfBooksAliceAdventure.get(countPages).getPageText().split(" ");
+        String [] actualArray = mPageBeforeChapter.split(" ");
+
+        for (int i = pageTextArrays.length; i > 120; i--){
             twohundredWords.append(pageTextArrays[i] + " ");
             actualsb.append(actualArray[i] + " ");
         }

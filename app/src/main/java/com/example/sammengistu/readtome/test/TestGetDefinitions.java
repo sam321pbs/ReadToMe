@@ -36,7 +36,7 @@ public class TestGetDefinitions extends ActivityInstrumentationTestCase2<MyLibra
         mMyLibraryActivity = getActivity();
         mContext = getInstrumentation().getTargetContext();
         solo = new Solo(getInstrumentation(), getActivity());
-        mWordLinkedWithDefs = WordLinkedWithDef.linkWordsWithDefinitions(mContext, 0 , 10);
+//        mWordLinkedWithDefs = WordLinkedWithDef.linkWordsWithDefinitions(mContext, 0 , 10);
         super.setUp();
     }
 
@@ -55,65 +55,65 @@ public class TestGetDefinitions extends ActivityInstrumentationTestCase2<MyLibra
      * /things/ - Plural form of thing.
      * @throws Exception
      */
-    public void testFindWordThings() throws Exception {
-
-        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
-                "things");
-
-        assertEquals(wordLinkedWithDef.getWord(), "things");
-
-    }
-    public void testFindDefintionThings() throws Exception {
-
-        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
-                "things");
-
-        assertEquals(wordLinkedWithDef.getDefinition(), "- Plural form of thing.");
-    }
-
-
-    /**
-     * /and/ - Together with or along with; in addition to; as well as. Used to connect words, phrases, or clauses that have the same grammatical function in a construction.
-     * Test and
-     * @throws Exception
-     */
-    public void testFindWordAnd() throws Exception {
-
-        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
-                "and");
-
-        assertEquals(wordLinkedWithDef.getWord(), "and");
-
-    }
-    public void testFindDefintionAnd() throws Exception {
-
-        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
-                "and");
-
-        assertEquals(wordLinkedWithDef.getDefinition(),
-                "- Together with or along with; in addition to; as well as. Used to connect words, phrases, or clauses that have the same grammatical function in a construction.");
-    }
-
-    /**
-     * /first/ - The ordinal number matching the number one in a series.
-     * Test first
-     * @throws Exception
-     */
-    public void testFindWordFirst() throws Exception {
-
-        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
-                "first");
-
-        assertEquals(wordLinkedWithDef.getWord(), "first");
-
-    }
-    public void testFindDefintionFirst() throws Exception {
-
-        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
-                "first");
-
-        assertEquals(wordLinkedWithDef.getDefinition(),
-                "- The ordinal number matching the number one in a series.");
-    }
+//    public void testFindWordThings() throws Exception {
+//
+//        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
+//                "things");
+//
+//        assertEquals(wordLinkedWithDef.getWord(), "things");
+//
+//    }
+//    public void testFindDefintionThings() throws Exception {
+//
+//        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
+//                "things");
+//
+//        assertEquals(wordLinkedWithDef.getDefinition(), "- Plural form of thing.");
+//    }
+//
+//
+//    /**
+//     * /and/ - Together with or along with; in addition to; as well as. Used to connect words, phrases, or clauses that have the same grammatical function in a construction.
+//     * Test and
+//     * @throws Exception
+//     */
+//    public void testFindWordAnd() throws Exception {
+//
+//        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
+//                "and");
+//
+//        assertEquals(wordLinkedWithDef.getWord(), "and");
+//
+//    }
+//    public void testFindDefintionAnd() throws Exception {
+//
+//        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
+//                "and");
+//
+//        assertEquals(wordLinkedWithDef.getDefinition(),
+//                "- Together with or along with; in addition to; as well as. Used to connect words, phrases, or clauses that have the same grammatical function in a construction.");
+//    }
+//
+//    /**
+//     * /first/ - The ordinal number matching the number one in a series.
+//     * Test first
+//     * @throws Exception
+//     */
+//    public void testFindWordFirst() throws Exception {
+//
+//        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
+//                "first");
+//
+//        assertEquals(wordLinkedWithDef.getWord(), "first");
+//
+//    }
+//    public void testFindDefintionFirst() throws Exception {
+//
+//        WordLinkedWithDef wordLinkedWithDef = WordLinkedWithDef.findDefinition(mWordLinkedWithDefs,
+//                "first");
+//
+//        assertEquals(wordLinkedWithDef.getDefinition(),
+//                "- The ordinal number matching the number one in a series.");
+//    }
 
 }

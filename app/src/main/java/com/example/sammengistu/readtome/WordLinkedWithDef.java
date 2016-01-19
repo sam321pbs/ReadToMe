@@ -12,14 +12,23 @@ import java.util.List;
 
 public class WordLinkedWithDef {
 
-    public static List<WordLinkedWithDef> mWordsAndDef;
+    public List<WordLinkedWithDef> mWordsAndDef;
 
     private String mWord;
     private String mDefinition;
+    private boolean mStopLoop;
+
+    public WordLinkedWithDef(){
+        mStopLoop = false;
+    }
 
     public WordLinkedWithDef(String word, String definition) {
         mWord = word;
         mDefinition = definition;
+    }
+
+    public void setmStopLoop(boolean stopLoop) {
+        mStopLoop = stopLoop;
     }
 
     /**
@@ -30,7 +39,7 @@ public class WordLinkedWithDef {
      * @param end      - Where to stop reading the file
      * @return - List of WordLinkedWithDefinitions
      */
-    public static List<WordLinkedWithDef> linkWordsWithDefinitions(Context context, int start,
+    public List<WordLinkedWithDef> linkWordsWithDefinitions(Context context, int start,
                                                                    int end) {
         mWordsAndDef = new ArrayList<>();
 
@@ -39,8 +48,12 @@ public class WordLinkedWithDef {
             //Gets the entire line from the file
             String entireLine;
 
+            if (mStopLoop){
+                break;
+            }
+
             try {
-                entireLine = WordLinkedWithDef.readLine(i, context);
+                entireLine = readLine(i, context);
             } catch (IOException e) {
                 entireLine = "";
             }
@@ -88,7 +101,7 @@ public class WordLinkedWithDef {
      * @param context - to get access to the file
      * @return - the string of the specified line
      */
-    public static String readLine(int line, Context context) throws IOException {
+    public String readLine(int line, Context context) throws IOException {
 
         InputStream in = context.getResources().openRawResource(R.raw.dictionary_words_and_def);
         BufferedReader r = new BufferedReader(new InputStreamReader(in));
@@ -121,11 +134,12 @@ public class WordLinkedWithDef {
      * @param findWord           - word they are looking for
      * @return - returns the definion
      */
-    public static WordLinkedWithDef findDefinition(
+    public WordLinkedWithDef findDefinition(
         List<WordLinkedWithDef> wordLinkedWithDefs,
         String findWord) {
 
-        WordLinkedWithDef found = new WordLinkedWithDef("There was an error", "Sorry");
+        WordLinkedWithDef found = new WordLinkedWithDef("There was an error",
+            "Sorry, couldn't find that word");
 
         for (WordLinkedWithDef word : wordLinkedWithDefs) {
             if (findWord.equalsIgnoreCase(word.getWord())) {
@@ -138,13 +152,13 @@ public class WordLinkedWithDef {
     /**
      * Searches the file for the word and defintions
      */
-    public static String findDefFromFile(String word, Context context) {
+    public String findDefFromFile(String word, Context context) {
 
         for (int i = 0; i < 4677; i++) {
             String entireLine = "";
 
             try {
-                entireLine = WordLinkedWithDef.readLine(i, context);
+                entireLine = readLine(i, context);
             } catch (IOException e) {
                 entireLine = "";
             }

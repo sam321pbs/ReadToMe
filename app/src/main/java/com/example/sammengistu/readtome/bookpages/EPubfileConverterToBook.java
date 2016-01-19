@@ -113,8 +113,6 @@ public class EPubFileConverterToBook implements MakeAPage {
                 BufferedReader r = new BufferedReader(new InputStreamReader(is));
                 String line;
 
-                Log.i("Section", mPageNumber + "");
-
                 boolean sectionChange = true;
 
                 //Starts reading line for line from the epub file
@@ -126,15 +124,13 @@ public class EPubFileConverterToBook implements MakeAPage {
                         continue;
                     }
 
-                    if (sectionChange){
+                    if (sectionChange) {
 
                         line = line.replace("\n", " ").replace("\r", "");
 
                     } else {
                         line = line.replace("\n", "").replace("\r", "");
                     }
-
-                    Log.i("read", line);
 
                     //Skip the next couple of lines of the books table of content
                     //So it doesn't get confused for it being a chapter label
@@ -175,9 +171,8 @@ public class EPubFileConverterToBook implements MakeAPage {
                      */
                     if (mChapterTracker != mChapterNames.size()) {
 
-                        if (sectionChange && doesLineContainChapterLabel(line)){
+                        if (sectionChange && doesLineContainChapterLabel(line)) {
 
-                            Log.i("section", line);
                             sectionChange = false;
                             lineIntoArray = removeChapterLabel(line).split("\\s+");
 
@@ -242,7 +237,7 @@ public class EPubFileConverterToBook implements MakeAPage {
         }
     }
 
-    private void completeEndOfBook(){
+    private void completeEndOfBook() {
         //If any left over words it will make a page for it
         if (mPage.length() != 0) {
             addAPage(false);
@@ -253,7 +248,7 @@ public class EPubFileConverterToBook implements MakeAPage {
         }
     }
 
-    private void completePage(){
+    private void completePage() {
 
         int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
 
@@ -419,7 +414,9 @@ public class EPubFileConverterToBook implements MakeAPage {
         int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
         //Checks if the previous line had any leftover words before mPage break
         if (!mLeftOverWordsFromPrevPage.isEmpty()) {
+
             for (String wordFromLastLine : mLeftOverWordsFromPrevPage) {
+
                 if (mWordCount < MAX_NUMBER_OF_WORDS_PER_PAGE) {
                     String wordFromLastLinePlusSpace = wordFromLastLine + SPACE;
                     mPage.append(wordFromLastLinePlusSpace);
@@ -494,12 +491,13 @@ public class EPubFileConverterToBook implements MakeAPage {
 
     /**
      * Takes out the chapter label from the line
+     *
      * @param line - line to remove chapter label from
      * @return - new string without chapter label in it
      */
-    private String removeChapterLabel(String line){
+    private String removeChapterLabel(String line) {
 
-        String [] lineSplit = line.split("\\s+");
+        String[] lineSplit = line.split("\\s+");
 
         String[] currentChapterArray = mChapterNames.get(mChapterTracker).split("\\s+");
 
@@ -509,7 +507,7 @@ public class EPubFileConverterToBook implements MakeAPage {
 
         for (String aLineSplit : lineSplit) {
 
-            if (counter == currentChapterArray.length){
+            if (counter == currentChapterArray.length) {
 
                 wordsWithoutChapterLabel.add(aLineSplit);
                 continue;
@@ -524,7 +522,7 @@ public class EPubFileConverterToBook implements MakeAPage {
         }
 
         StringBuilder newLine = new StringBuilder();
-        for (String word : wordsWithoutChapterLabel){
+        for (String word : wordsWithoutChapterLabel) {
             newLine.append(word + " ");
         }
 
@@ -533,12 +531,13 @@ public class EPubFileConverterToBook implements MakeAPage {
 
     /**
      * Sees if the line contains a chapter label
+     *
      * @param line - line to check if a chapter label is in it
      * @return - either does or does not contain chapter label
      */
-    private boolean doesLineContainChapterLabel (String line) {
+    private boolean doesLineContainChapterLabel(String line) {
 
-        String [] lineSplit = line.split("\\s+");
+        String[] lineSplit = line.split("\\s+");
 
         String[] currentChapterArray = mChapterNames.get(mChapterTracker).split("\\s+");
 

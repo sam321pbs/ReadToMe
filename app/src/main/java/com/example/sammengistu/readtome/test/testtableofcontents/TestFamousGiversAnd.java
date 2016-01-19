@@ -28,7 +28,7 @@ public class TestFamousGiversAnd extends
     private Context mContext;
 
 
-    private String mBookText = "\"It is a good thing to be famous, provided that the fame has been honestly won. It is a good thing to be rich when the image and superscription of" +
+    private String mBookText = " \"It is a good thing to be famous, provided that the fame has been honestly won. It is a good thing to be rich when the image and superscription of" +
         " God is recognized on every coin. But the sweetest thing in the world is to be loved. The tears that were shed over the coffin of Charles Pratt welled up out of loving hearts.... I count " +
         "his death to have been the sorest bereavement Brooklyn has ever suffered; for he was yet in his vigorous prime, with large plans and possibilities yet to be accomplished. " +
         "\"Charles Pratt belonged to the only true nobility in America,—the men who do not inherit a great name, but make one for themselves.\" Thus wrote the Rev. Dr. Theodore L." +
@@ -75,17 +75,16 @@ public class TestFamousGiversAnd extends
             }
         }
 
-        assertEquals(mChapterNamesFamousGiversAnd.get(0), "E-text prepared by Shaun Pinder, Martin Pettit, and the Online Distributed Proofreading Team" +
-            " (http://www.pgdp.net) from page images generously made available by Internet Archive (https://archive.org)");
-        assertEquals(mChapterNamesFamousGiversAnd.get(1), "Mrs. Bolton's Famous Books.");
-        assertEquals(mChapterNamesFamousGiversAnd.get(2), "FAMOUS GIVERS AND THEIR GIFTS");
-        assertEquals(mChapterNamesFamousGiversAnd.get(3), "PREFACE.");
-        assertEquals(mChapterNamesFamousGiversAnd.get(4), "JOHN LOWELL, Jr., AND HIS FREE LECTURES.");
-        assertEquals(mChapterNamesFamousGiversAnd.get(5), "STEPHEN GIRARD AND HIS COLLEGE FOR ORPHANS.");
-        assertEquals(mChapterNamesFamousGiversAnd.get(6), "ANDREW CARNEGIE AND HIS LIBRARIES.");
-        assertEquals(mChapterNamesFamousGiversAnd.get(7), "THOMAS HOLLOWAY: HIS SANATORIUM AND COLLEGE.");
-        assertEquals(mChapterNamesFamousGiversAnd.get(8), "CHARLES PRATT AND HIS INSTITUTE.");
-        assertEquals(mChapterNamesFamousGiversAnd.get(9), "THOMAS GUY AND HIS HOSPITAL.");
+
+        assertEquals(mChapterNamesFamousGiversAnd.get(0), "Mrs. Bolton's Famous Books.");
+        assertEquals(mChapterNamesFamousGiversAnd.get(1), "FAMOUS GIVERS AND THEIR GIFTS");
+        assertEquals(mChapterNamesFamousGiversAnd.get(2), "PREFACE.");
+        assertEquals(mChapterNamesFamousGiversAnd.get(3), "JOHN LOWELL, Jr., AND HIS FREE LECTURES.");
+        assertEquals(mChapterNamesFamousGiversAnd.get(4), "STEPHEN GIRARD AND HIS COLLEGE FOR ORPHANS.");
+        assertEquals(mChapterNamesFamousGiversAnd.get(5), "ANDREW CARNEGIE AND HIS LIBRARIES.");
+        assertEquals(mChapterNamesFamousGiversAnd.get(6), "THOMAS HOLLOWAY: HIS SANATORIUM AND COLLEGE.");
+        assertEquals(mChapterNamesFamousGiversAnd.get(7), "CHARLES PRATT AND HIS INSTITUTE.");
+        assertEquals(mChapterNamesFamousGiversAnd.get(8), "THOMAS GUY AND HIS HOSPITAL.");
     }
 
     public void testTwoPages() throws Exception {
@@ -113,7 +112,7 @@ public class TestFamousGiversAnd extends
         String pageTextArrays[] = pageTextsb.toString().split(" ");
         String[] actualArray = mBookText.split(" ");
 
-        for (int i = 0; i < 199; i++) {
+        for (int i = 0; i < 200; i++) {
             twohundredWords.append(pageTextArrays[i] + " ");
             actualsb.append(actualArray[i] + " ");
         }
@@ -121,37 +120,4 @@ public class TestFamousGiversAnd extends
         assertEquals(actualsb.toString(), twohundredWords.toString());
     }
 
-    //TODO: test page before chapter
-//    public void testPageBeforeChapter() throws Exception {
-//
-//        mPageOfBooksFamousGiversAnd = mEPubBookFamousGiversAnd.getPagesOfTheBook();
-//        StringBuilder pageTextsb = new StringBuilder();
-//
-//        int pageTracker = 0;
-//
-//        for (PageOfBook pageOfBook : mPageOfBooksFamousGiversAnd) {
-//            pageTracker++;
-//            if (pageOfBook.getChapterOfBook()
-//                .equals("CHARLES PRATT AND HIS INSTITUTE.")) {
-//                break;
-//            }
-//        }
-//
-//        for (int i = 0; i < 0; i++){
-//
-//        }
-//
-//        StringBuilder thirtyWords = new StringBuilder();
-//        StringBuilder actualsb = new StringBuilder();
-//
-//        String pageTextArrays[] = pageTextsb.toString().split(" ");
-//        String[] actualArray = mBookText.split(" ");
-//
-//        for (int i = 0; i < 30; i++) {
-//            thirtyWords.append(pageTextArrays[i] + " ");
-//            actualsb.append(actualArray[i] + " ");
-//        }
-//
-//        assertEquals(actualsb.toString(), thirtyWords.toString());
-//    }
 }

@@ -85,6 +85,7 @@ public class PageFragment extends Fragment {
     private String mTitle;
     private Map<String, Object> mAllBookMarksAndSettings;
     private int mBookMarkPageNumber;
+    private WordLinkedWithDef mWordLinkedWithDef;
 
     public ImageView mPlayButton;
 
@@ -95,9 +96,9 @@ public class PageFragment extends Fragment {
         super.onCreate(savedInstnaceState);
         setHasOptionsMenu(true);
 
-        mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
+        mWordLinkedWithDef = new WordLinkedWithDef();
 
-        loadDictionary();
+        mReadToMeJSONSerializer = new ReadToMeJSONSerializer(getActivity(), FILENAME);
 
         loadUpSettings();
         instantiateLists();
@@ -172,6 +173,8 @@ public class PageFragment extends Fragment {
                                             }
                                             handlePageTurn();
                                             mHighlightedTextViews.clear();
+
+                                            Log.i("Page", mPagesOfBook.get(mPageNumber).getPageText());
                                         }
                                     }
 
@@ -597,7 +600,14 @@ public class PageFragment extends Fragment {
             @Override
             public boolean onLongClick(View v) {
 
-                showDictionaryDialog((TextView) v);
+                if (v instanceof TextView){
+                    TextView textView = (TextView) v;
+
+                    if (!textView.getText().equals("")){
+                        showDictionaryDialog((TextView) v);
+                    }
+                }
+
                 return true;
             }
         };
@@ -706,7 +716,7 @@ public class PageFragment extends Fragment {
             String newWord = DefinitionDialog.removePunctuations(currentWordTextView.getText()
                 .toString().replaceAll("\\s+", ""));
 
-            WordLinkedWithDef findDef = WordLinkedWithDef.findDefinition(
+            WordLinkedWithDef findDef = mWordLinkedWithDef.findDefinition(
                 mDictionaryOne,
                 DefinitionDialog.removePunctuations(newWord.toLowerCase()));
 
@@ -854,7 +864,7 @@ public class PageFragment extends Fragment {
             //do your long running http tasks here,you dont want
             // to pass argument and u can access the parent class' variable url over here
 
-            mDictionaryOne = WordLinkedWithDef.linkWordsWithDefinitions(getActivity(), 0, 4677);
+            mDictionaryOne = mWordLinkedWithDef.linkWordsWithDefinitions(getActivity(), 0, 4677);
 
             return null;
         }
@@ -868,7 +878,6 @@ public class PageFragment extends Fragment {
             //this method will be running on UI thread
             Toast.makeText(getActivity(), R.string.dictionary_ready, Toast.LENGTH_LONG).show();
         }
-
     }
 
 
@@ -932,9 +941,11 @@ public class PageFragment extends Fragment {
                 mChaptersOfTheBookPageNum.clear();
                 mTableLayouts.clear();
                 mHighlightedTextViews.clear();
-//                mDictionaryOne.clear();
                 mPagesOfBook.clear();
 
+                mWordLinkedWithDef.setmStopLoop(true);
+
+                stopAsyncTasks();
 
                 Intent intent = new Intent(getActivity(), MyLibraryActivity.class);
                 intent.putExtra(MyLibraryFragment.LIBRARY_PAGE_NUMBER,
@@ -960,6 +971,7 @@ public class PageFragment extends Fragment {
     }
 
     private void stopAsyncTasks() {
+
         if (mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING)) {
             mDictionaryLoader.cancel(true);
         }
@@ -973,6 +985,7 @@ public class PageFragment extends Fragment {
     public void onPause() {
         super.onPause();
         saveSettings();
+        stopAsyncTasks();
         stopReadingAndResetPlayButton();
     }
 
@@ -1000,6 +1013,8 @@ public class PageFragment extends Fragment {
             setUpPageText();
 
             handlePageTurn();
+
+            loadDictionary();
         }
 
         @Override

@@ -4,7 +4,6 @@ import com.example.sammengistu.readtome.R;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,11 +56,9 @@ public class Library {
         File epubDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
             mAppContext.getString(R.string.directory_name));
 
-        //Private directory TODO
+        //TODO : Private directory
         File epubDirectoryPrivate = mAppContext.getDir(mAppContext.getString(R.string.directory_name)
             , Context.MODE_PRIVATE); //Creating an internal dir
-
-        Log.i("Private d", epubDirectoryPrivate.getAbsolutePath());
 
 
         if (!epubDirectory.exists()) {

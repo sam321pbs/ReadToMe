@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -24,12 +23,7 @@ public class DefinitionDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         String findWord = getArguments().getString(FIND_WORD_DEFINITION);
-        Log.i(TAG, findWord);
         String definitionOfWord = getArguments().getString(DEFINITION);
-        Log.i(TAG, definitionOfWord);
-
-        Log.i(TAG, "word is " + findWord);
-
 
         char[] array = new char[0];
         if (findWord != null) {
@@ -40,15 +34,15 @@ public class DefinitionDialog extends DialogFragment {
         View v = getActivity().getLayoutInflater()
             .inflate(R.layout.definition_dialog, null);
 
-        TextView word = (TextView) v.findViewById(R.id.dialog_word_title);
-        word.setTextColor(Color.BLACK);
+        TextView wordTextView = (TextView) v.findViewById(R.id.dialog_word_title);
+        wordTextView.setTextColor(Color.BLACK);
 
         TextView definitionView = (TextView) v.findViewById(R.id.dialog_word_defintion_box);
         definitionView.setTextColor(Color.BLACK);
 
         String cleanedUpWord = updatedLetter +
             (findWord != null ? findWord.substring(1) : "Error");
-        word.setText(cleanedUpWord);
+        wordTextView.setText(cleanedUpWord);
 
         definitionView.setText(definitionOfWord);
 
