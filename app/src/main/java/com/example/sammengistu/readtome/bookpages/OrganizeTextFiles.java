@@ -13,9 +13,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThingsFallApartBook implements MakeAPage {
+/**
+ * This class will later be used to get text files
+ */
+public class OrganizeTextFiles implements MakeAPage {
 
-    private static final String TAG = "Things fall apart book";
+    private static final String TAG = "OrganizeTextFiles";
     public static List<PageOfBook> mPagesOfTheBook = new ArrayList<>();
     private final String SPACE = " ";
     private int wordCount; // Keeps track of where in the book you are
@@ -23,7 +26,7 @@ public class ThingsFallApartBook implements MakeAPage {
 
     private Context mContext;
 
-    public ThingsFallApartBook(Context c) {
+    public OrganizeTextFiles(Context c) {
         mContext = c;
     }
 
@@ -36,7 +39,7 @@ public class ThingsFallApartBook implements MakeAPage {
 
         try {
             //opens file to read
-            BufferedReader thingsFallApartFile = new BufferedReader(new InputStreamReader(
+            BufferedReader textFile = new BufferedReader(new InputStreamReader(
                 mContext.getResources().openRawResource(
                     R.raw.things_fall_apart_story) // Text file to be read
             ));
@@ -45,7 +48,7 @@ public class ThingsFallApartBook implements MakeAPage {
             StringBuilder stringOfAllWordsFromBook = new StringBuilder();
 
             //adds words from file into a string by reading one line at a time
-            while ((inputString = thingsFallApartFile.readLine()) != null) {
+            while ((inputString = textFile.readLine()) != null) {
                 stringOfAllWordsFromBook.append(inputString).append("\n");
             }
 
@@ -56,8 +59,6 @@ public class ThingsFallApartBook implements MakeAPage {
             boolean makePageTwo = false;
 
             for (wordCount = 0; wordCount < allWordsFromBook.length; wordCount++) {
-
-//                Log.i(TAG, allWordsFromBook[mWordCount] + " ");
 
                 if (makeTitlePageFirst) {
 

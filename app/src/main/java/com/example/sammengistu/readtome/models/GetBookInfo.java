@@ -9,9 +9,6 @@ import java.io.IOException;
 
 import nl.siegmann.epublib.epub.EpubReader;
 
-/**
- * Created by SamMengistu on 12/23/15.
- */
 public class GetBookInfo {
 
     private static nl.siegmann.epublib.domain.Book mCurrentBook;

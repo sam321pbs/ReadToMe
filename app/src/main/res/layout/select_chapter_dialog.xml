@@ -28,6 +28,6 @@
         android:layout_marginTop="15dp"
         android:layout_below="@+id/image_box">
 
-
     </ListView>
+
 </RelativeLayout>

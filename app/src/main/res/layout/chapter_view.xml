@@ -10,7 +10,6 @@
         android:id="@+id/chapter_number"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
-        android:text="Chapter 1"
         android:textSize="30sp"/>
 
 </RelativeLayout>

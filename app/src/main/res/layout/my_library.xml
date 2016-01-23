@@ -2,13 +2,13 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bookshelf_empty"
+                android:background="@drawable/bookshelf_empty_three_rows"
                 tools:context=".MainActivity">
 
     <TableRow
             android:id="@+id/table_row1_book_images"
             style="@style/BookTableRows"
-            android:layout_marginTop="70dp">
+            android:layout_marginTop="100dp">
 
         <ImageView
                 android:id="@+id/book_cover_page_1"
@@ -33,7 +33,7 @@
     <TableRow
             android:id="@+id/table_row1_book_textViews"
             style="@style/BookTableRows"
-            android:layout_marginTop="70dp">
+            android:layout_marginTop="100dp">
 
         <TextView
                 android:id="@+id/book_cover_page_1_textview"
@@ -53,7 +53,7 @@
             android:id="@+id/table_row2_book_images"
             android:layout_below="@+id/table_row1_book_images"
             style="@style/BookTableRows"
-            android:layout_marginTop="25dp">
+            android:layout_marginTop="55dp">
 
         <ImageView
                 android:id="@+id/book_cover_page_4"
@@ -79,8 +79,7 @@
             android:id="@+id/table_row2_book_textviews"
             android:layout_below="@+id/table_row1_book_textViews"
             style="@style/BookTableRows"
-            android:layout_marginTop="25dp">
-
+            android:layout_marginTop="55dp">
 
         <TextView
                 android:id="@+id/book_cover_page_4_textview"
@@ -102,7 +101,7 @@
             android:id="@+id/table_row3_book_images"
             android:layout_below="@+id/table_row2_book_images"
             style="@style/BookTableRows"
-            android:layout_marginTop="25dp">
+            android:layout_marginTop="50dp">
 
         <ImageView
                 android:id="@+id/book_cover_page_7"
@@ -127,7 +126,7 @@
             android:id="@+id/table_row3_book_textviews"
             android:layout_below="@+id/table_row2_book_textviews"
             style="@style/BookTableRows"
-            android:layout_marginTop="25dp">
+            android:layout_marginTop="50dp">
 
 
         <TextView
@@ -142,53 +141,6 @@
 
         <TextView
                 android:id="@+id/book_cover_page_9_textview"
-                style="@style/BookCoverTextLayout"/>
-
-
-    </TableRow>
-
-    <TableRow
-            android:layout_below="@+id/table_row3_book_images"
-            style="@style/BookTableRows"
-            android:layout_marginTop="32dp">
-
-        <ImageView
-                android:id="@+id/book_cover_page_10"
-                style="@style/BookCoverImageLayout"
-                />
-
-
-        <ImageView
-                android:id="@+id/book_cover_page_11"
-                style="@style/BookCoverImageLayout"
-                />
-
-
-        <ImageView
-                android:id="@+id/book_cover_page_12"
-                style="@style/BookCoverImageLayout"
-                />
-
-
-    </TableRow>
-
-    <TableRow
-            android:layout_below="@+id/table_row3_book_textviews"
-            style="@style/BookTableRows"
-            android:layout_marginTop="32dp">
-
-        <TextView
-                android:id="@+id/book_cover_page_10_textview"
-                style="@style/BookCoverTextLayout"/>
-
-
-        <TextView
-                android:id="@+id/book_cover_page_11_textview"
-                style="@style/BookCoverTextLayout"/>
-
-
-        <TextView
-                android:id="@+id/book_cover_page_12_textview"
                 style="@style/BookCoverTextLayout"/>
 
 

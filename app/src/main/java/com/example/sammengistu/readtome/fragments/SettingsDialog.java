@@ -39,7 +39,6 @@ public class SettingsDialog extends DialogFragment {
 
         mReadSentenceBySentence = getArguments().getBoolean(MODE);
         mVoiceSpeed = getArguments().getInt(VOICE_SETTINGS_SPEED);
-        Log.i(TAG, "Read sentence mode = " + mReadSentenceBySentence);
 
         final View settingsView = getActivity().getLayoutInflater()
                 .inflate(R.layout.fragment_settings, null);
@@ -127,9 +126,6 @@ public class SettingsDialog extends DialogFragment {
         intent.putExtra(VOICE_SPEED, mVoiceSpeed);
         intent.putExtra(SENTENCE_BY_SENTENCE_MODE, mReadSentenceBySentence);
 
-        Log.i(TAG, "MODE " + mReadSentenceBySentence);
-        Log.i(TAG, "Speed is :" + mVoiceSpeed);
-
         getTargetFragment()
                 .onActivityResult(getTargetRequestCode(), resultCode, intent);
     }
@@ -138,9 +134,6 @@ public class SettingsDialog extends DialogFragment {
         Bundle args = new Bundle();
         args.putBoolean(MODE, mode);
         args.putInt(VOICE_SETTINGS_SPEED, newVoiceSpeed);
-
-        Log.i(TAG, "MODE " + mode);
-        Log.i(TAG, "Speed is :" + newVoiceSpeed);
 
         SettingsDialog settingsDialog = new SettingsDialog();
         settingsDialog.setArguments(args);

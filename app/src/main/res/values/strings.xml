@@ -56,4 +56,8 @@
     <string name="contents_with_period">Contents.</string>
     <string name="table_of_content">Table of contents</string>
     <string name="table_of_contents">Table of content</string>
+    <string name="help">Help</string>
+    <string name="select_page">Select Page</string>
+    <string name="select_chapter">Select Chapter</string>
+    <string name="bookmark_page">Bookmark Page</string>
 </resources>

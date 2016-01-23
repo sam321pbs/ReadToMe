@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -32,24 +31,6 @@ public class ReadToMeJSONSerializer {
         mFileName = fileName;
     }
 
-    public void savePreferences(SettingsPreferences settingsPreferences) throws JSONException, IOException {
-        //Builds an array in JSON
-        JSONObject jsonObject = settingsPreferences.preferenceToPageToJSON();
-
-        //Write the file to disk
-        Writer writer = null;
-        try {
-            OutputStream out = mContext
-                .openFileOutput(mFileName, Context.MODE_PRIVATE);
-            writer = new OutputStreamWriter(out);
-            writer.write(jsonObject.toString());
-            Log.i("JSONSERIALIZER ", "Save -- Voice speed - " + settingsPreferences.getVoiceSpeed());
-        } finally {
-            if (writer != null)
-                writer.close();
-        }
-    }
-
     public void saveBookMarks(Map<String, Object> bookMarks) throws JSONException, IOException {
         //Builds an array in JSON
         JSONObject jsonObject = new JSONObject(bookMarks);
@@ -61,7 +42,7 @@ public class ReadToMeJSONSerializer {
                 .openFileOutput(mFileName, Context.MODE_PRIVATE);
             writer = new OutputStreamWriter(out);
             writer.write(jsonObject.toString());
-            Log.i("BookMarks", "SAved");
+
         } finally {
             if (writer != null)
                 writer.close();
@@ -89,13 +70,12 @@ public class ReadToMeJSONSerializer {
 
         }
         catch (FileNotFoundException e){
-            //Ignore this one; it happens when starting fresh
+            //Ignore this
         }
         finally {
             if(reader != null){
                 reader.close();
             }
-
         }
         return bookMarks;
     }
@@ -103,7 +83,7 @@ public class ReadToMeJSONSerializer {
 
 
     public static Map<String, Object> jsonToMap(JSONObject json) throws JSONException {
-        Map<String, Object> retMap = new HashMap<String, Object>();
+        Map<String, Object> retMap = new HashMap<>();
 
         if(json != JSONObject.NULL) {
             retMap = toMap(json);
@@ -112,7 +92,7 @@ public class ReadToMeJSONSerializer {
     }
 
     public static Map<String, Object> toMap(JSONObject object) throws JSONException {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
 
         Iterator<String> keysItr = object.keys();
         while(keysItr.hasNext()) {
@@ -132,7 +112,7 @@ public class ReadToMeJSONSerializer {
     }
 
     public static List<Object> toList(JSONArray array) throws JSONException {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         for(int i = 0; i < array.length(); i++) {
             Object value = array.get(i);
             if(value instanceof JSONArray) {
@@ -145,39 +125,5 @@ public class ReadToMeJSONSerializer {
             list.add(value);
         }
         return list;
-    }
-
-    public SettingsPreferences loadSettings () throws IOException, JSONException {
-        SettingsPreferences settingsPreferences = new SettingsPreferences(true, 20);
-        BufferedReader reader = null;
-        try {
-            //Open and read the file into a StringBuilder
-            InputStream in = mContext.openFileInput(mFileName);
-            reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder jsonString = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null){
-                //Line breaks are omitted and irrelevant
-                jsonString.append(line);
-            }
-            // Parse the JSON using JSONTokener
-            JSONObject array = (JSONObject) new JSONTokener(jsonString.toString())
-                    .nextValue();
-            //Build the Array from JSONObjects
-            for (int i = 0; i < array.length(); i++){
-                settingsPreferences = new SettingsPreferences(array);
-
-            }
-        }
-        catch (FileNotFoundException e){
-            //Ignore this one; it happens when starting fresh
-        }
-        finally {
-            if(reader != null){
-                reader.close();
-            }
-        }
-        Log.i("JSONSERIALIZER ", "Load -- Voice speed - " + settingsPreferences.getVoiceSpeed());
-        return settingsPreferences;
     }
 }

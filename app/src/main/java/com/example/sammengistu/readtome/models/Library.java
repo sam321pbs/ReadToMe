@@ -57,9 +57,9 @@ public class Library {
             mAppContext.getString(R.string.directory_name));
 
         //TODO : Private directory
+        //This directory should be used so the user cant access the actual file itself
         File epubDirectoryPrivate = mAppContext.getDir(mAppContext.getString(R.string.directory_name)
             , Context.MODE_PRIVATE); //Creating an internal dir
-
 
         if (!epubDirectory.exists()) {
             epubDirectory.mkdir();

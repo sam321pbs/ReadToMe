@@ -6,7 +6,6 @@ import com.example.sammengistu.readtome.models.PageOfBook;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,6 +28,7 @@ import nl.siegmann.epublib.epub.EpubReader;
  */
 public class EPubFileConverterToBook implements MakeAPage {
     private static final String TAG = EPubFileConverterToBook.class.getName();
+    private final int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
     public static List<PageOfBook> mPagesOfTheBook = new ArrayList<>();
     private final String SPACE = " ";
     private int mPageNumber = 0; // Keeps track of the page you are on
@@ -94,6 +94,9 @@ public class EPubFileConverterToBook implements MakeAPage {
         return mPagesOfTheBook;
     }
 
+    /**
+     *
+     */
     private void makeBook() {
 
         Spine spine = new Spine(mEpubBook.getTableOfContents());
@@ -102,10 +105,11 @@ public class EPubFileConverterToBook implements MakeAPage {
         int skipNextThreeLines = 0;
         boolean skipLines = false;
 
-
         for (SpineReference bookSection : spine.getSpineReferences()) {
 
             Resource res = bookSection.getResource();
+
+            boolean sectionChange = true;
 
             try {
 
@@ -113,9 +117,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                 BufferedReader r = new BufferedReader(new InputStreamReader(is));
                 String line;
 
-                boolean sectionChange = true;
-
-                //Starts reading line for line from the epub file
+                //Starts reading line for line from the section
                 while ((line = r.readLine()) != null) {
 
                     line = Html.fromHtml(line).toString();
@@ -140,22 +142,14 @@ public class EPubFileConverterToBook implements MakeAPage {
                     }
 
                     //Skips the table of contents in the epub file
-                    if (mPreviousWord.equals(mAppContext.getString(R.string.contents))
-                        || mPreviousWord.equalsIgnoreCase(
-                        mAppContext.getString(R.string.contents_with_period))
-                        || mPreviousWord.equalsIgnoreCase(
-                        mAppContext.getString(R.string.table_of_content))
-                        || mPreviousWord.equalsIgnoreCase(
-                        mAppContext.getString(R.string.table_of_contents))) {
+                    if (doesLineContainContents(mPreviousWord)) {
 
                         mPreviousWord = "";
                         continue;
                     }
 
-                    if (line.equalsIgnoreCase(mAppContext.getString(R.string.contents))
-                        || line.equalsIgnoreCase(mAppContext.getString(R.string.contents_with_period))
-                        || line.equalsIgnoreCase(mAppContext.getString(R.string.table_of_content))
-                        || line.equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents))) {
+                    if (doesLineContainContents(line)) {
+
                         mPreviousWord = line;
                         skipLines = true;
                         continue;
@@ -177,11 +171,8 @@ public class EPubFileConverterToBook implements MakeAPage {
                             lineIntoArray = removeChapterLabel(line).split("\\s+");
 
                             mChapterLabel = new StringBuilder(mChapterNames.get(mChapterTracker));
-
                             mChapterTracker++;
-
                             mHaveChapterLabel = true;
-
                             mPageBreak = true;
 
                         } else {
@@ -232,9 +223,19 @@ public class EPubFileConverterToBook implements MakeAPage {
                 completeEndOfBook();
 
             } catch (IOException e) {
-                Log.i("Exception", e.toString());
             }
         }
+    }
+
+    private boolean doesLineContainContents(String line){
+
+        return line.equalsIgnoreCase(mAppContext.getString(R.string.contents))
+            || line.equalsIgnoreCase(
+            mAppContext.getString(R.string.contents_with_period))
+            || line.equalsIgnoreCase(
+            mAppContext.getString(R.string.table_of_content))
+            || line.equalsIgnoreCase(
+            mAppContext.getString(R.string.table_of_contents));
     }
 
     private void completeEndOfBook() {
@@ -249,8 +250,6 @@ public class EPubFileConverterToBook implements MakeAPage {
     }
 
     private void completePage() {
-
-        int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
 
         //Finish forLoop to add the remainder of sentence to ArrayList then set Page up
         if (mWordCount == MAX_NUMBER_OF_WORDS_PER_PAGE) {
@@ -297,7 +296,8 @@ public class EPubFileConverterToBook implements MakeAPage {
 
             //Removes special characters so it only checks the words
             if (lineIntoArray[0].replaceAll(specialCharacters, "")
-                .equalsIgnoreCase(currentChapterArray[mChapterWordLocation].replaceAll(specialCharacters, ""))) {
+                .equalsIgnoreCase(currentChapterArray[mChapterWordLocation]
+                    .replaceAll(specialCharacters, ""))) {
 
                 for (String aLineIntoArray : lineIntoArray) {
 
@@ -322,7 +322,7 @@ public class EPubFileConverterToBook implements MakeAPage {
 
                         mChapterWordLocation++;
 
-                        /*If it detects a the next chapter label but the page isnt full yet because
+                        /*If it detects a the next chapter label but the page isn't full yet because
                         the chapter is only a couple lines long it will create a page for it
                          Ex. the chapter is less than MAX_NUMBER_OF_WORDS_PER_PAGE
                          */
@@ -357,14 +357,10 @@ public class EPubFileConverterToBook implements MakeAPage {
                         !isTableOfContentsFromBook()) {
 
                         mChapterTracker++;
-
                         mHaveChapterLabel = true;
-
                         mChapterWordLocation = 0;
-
                         mPageBreak = true;
                         mWordMatchEntireLine = false;
-
                     }
                 }
             } else {
@@ -388,7 +384,6 @@ public class EPubFileConverterToBook implements MakeAPage {
      * full and adds the words from the previous line if the page was full
      */
     private void addWordsToPage(String[] lineIntoArray) {
-        int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
 
         addWordsToPage();
 
@@ -397,9 +392,7 @@ public class EPubFileConverterToBook implements MakeAPage {
 
             if (mWordCount < MAX_NUMBER_OF_WORDS_PER_PAGE) {
 
-                String wordFromArrayPlusSpace = aWordFromArray + SPACE;
-                mPage.append(wordFromArrayPlusSpace);
-                mWordCount++;
+                updatePage(aWordFromArray);
             } else {
 
                 mLeftOverWordsFromPrevPage.add(aWordFromArray);
@@ -411,17 +404,15 @@ public class EPubFileConverterToBook implements MakeAPage {
      * Empty arraylist
      */
     private void addWordsToPage() {
-        int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
         //Checks if the previous line had any leftover words before mPage break
         if (!mLeftOverWordsFromPrevPage.isEmpty()) {
 
-            for (String wordFromLastLine : mLeftOverWordsFromPrevPage) {
+            for (int i = 0; i < mLeftOverWordsFromPrevPage.size(); i++) {
 
                 if (mWordCount < MAX_NUMBER_OF_WORDS_PER_PAGE) {
-                    String wordFromLastLinePlusSpace = wordFromLastLine + SPACE;
-                    mPage.append(wordFromLastLinePlusSpace);
-                    mWordCount++;
+                    updatePage(mLeftOverWordsFromPrevPage.get(i));
                 } else {
+                    i--;
                     addAPage(false);
                 }
             }
@@ -429,12 +420,18 @@ public class EPubFileConverterToBook implements MakeAPage {
         }
     }
 
+    private void updatePage(String wordFromLastLine){
+        String wordFromLastLinePlusSpace = wordFromLastLine + SPACE;
+        mPage.append(wordFromLastLinePlusSpace);
+        mWordCount++;
+    }
     /**
      * Creates a page based of whether it has a chapter label
      *
      * @param haveAChapter - add a chapter label
      */
     private void addAPage(boolean haveAChapter) {
+
         PageOfBook newPage;
 
         if (haveAChapter) {
@@ -448,9 +445,7 @@ public class EPubFileConverterToBook implements MakeAPage {
         mPagesOfTheBook.add(newPage);
         mPage = new StringBuilder();
         mWordCount = 0;
-
     }
-
 
     private void addPages() {
         setUpBookInfo();
@@ -458,7 +453,7 @@ public class EPubFileConverterToBook implements MakeAPage {
     }
 
     /**
-     * Recursively Log the Table of Contents and add it to mChapterNames
+     * Get the Table of Contents and add it to mChapterNames
      */
 
     private void getTableOfContents(List<TOCReference> tocReferences, int depth) {
@@ -481,7 +476,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                 !tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents))) {
 
                 mChapterNames.add(tocString.toString());
-                Log.i("Chapter", tocString.toString());
+
             }
 
             getTableOfContents(tocReference.getChildren(), depth + 1);

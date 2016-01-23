@@ -123,7 +123,7 @@ public class WordLinkedWithDef {
         } finally {
             r.close();
         }
-        return "didnt work";
+        return "Error";
     }
 
     /**
@@ -138,7 +138,7 @@ public class WordLinkedWithDef {
         List<WordLinkedWithDef> wordLinkedWithDefs,
         String findWord) {
 
-        WordLinkedWithDef found = new WordLinkedWithDef("There was an error",
+        WordLinkedWithDef found = new WordLinkedWithDef("Error",
             "Sorry, couldn't find that word");
 
         for (WordLinkedWithDef word : wordLinkedWithDefs) {
@@ -148,55 +148,6 @@ public class WordLinkedWithDef {
         }
         return found;
     }
-
-    /**
-     * Searches the file for the word and defintions
-     */
-    public String findDefFromFile(String word, Context context) {
-
-        for (int i = 0; i < 4677; i++) {
-            String entireLine = "";
-
-            try {
-                entireLine = readLine(i, context);
-            } catch (IOException e) {
-                entireLine = "";
-            }
-
-            char[] letters = entireLine.toCharArray();
-
-            int firstSlash = 0;
-            int counter = 0;
-
-            StringBuilder createdWord = new StringBuilder();
-
-            StringBuilder definition = new StringBuilder();
-
-            for (char letter : letters) {
-                if (letter == '/') {
-                    counter++;
-                    firstSlash++;
-                }
-                // Starts building the definition
-                else if (firstSlash == 2) {
-                    definition.append(entireLine.substring(counter + 1));
-                    break;
-                }
-                // Builds the word
-                else {
-                    counter++;
-                    createdWord.append(letter);
-
-                }
-            }
-
-            if (word.equals(createdWord.toString())) {
-                return definition.toString();
-            }
-        }
-        return "Couldn't find it";
-    }
-
 
     public String getWord() {
         return mWord;

@@ -48,7 +48,12 @@ public class ChaptersDialog extends DialogFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-                mSelectedChapter = chapterPageNumbers.get(position);
+                try {
+                    mSelectedChapter = chapterPageNumbers.get(position);
+
+                } catch (NullPointerException e) {
+
+                }
                 sendResult(CHAPTER_SELECTED);
             }
         });

@@ -43,9 +43,6 @@ public class MyLibraryFragment extends Fragment {
     private ImageView mBookSevenImage;
     private ImageView mBookEightImage;
     private ImageView mBookNineImage;
-    private ImageView mBookTenImage;
-    private ImageView mBookElevenImage;
-    private ImageView mBookTwelveImage;
 
     private TextView mBookCover1Text;
     private TextView mBookCover2Text;
@@ -56,9 +53,6 @@ public class MyLibraryFragment extends Fragment {
     private TextView mBookCover7Text;
     private TextView mBookCover8Text;
     private TextView mBookCover9Text;
-    private TextView mBookCover10Text;
-    private TextView mBookCover11Text;
-    private TextView mBookCover12Text;
 
     private List<LibraryPage> mLibraryPages;
 
@@ -79,6 +73,7 @@ public class MyLibraryFragment extends Fragment {
 
     private boolean showErrorDialog;
 
+    private int MAX_NUMBER_OF_BOOKS_PER_PAGE = 9;
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
@@ -156,9 +151,7 @@ public class MyLibraryFragment extends Fragment {
         mBookSevenImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_7);
         mBookEightImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_8);
         mBookNineImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_9);
-        mBookTenImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_10);
-        mBookElevenImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_11);
-        mBookTwelveImage = (ImageView) mMyLibraryView.findViewById(R.id.book_cover_page_12);
+
     }
 
     private void initializeTextViews() {
@@ -171,9 +164,6 @@ public class MyLibraryFragment extends Fragment {
         mBookCover7Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_7_textview);
         mBookCover8Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_8_textview);
         mBookCover9Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_9_textview);
-        mBookCover10Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_10_textview);
-        mBookCover11Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_11_textview);
-        mBookCover12Text = (TextView) mMyLibraryView.findViewById(R.id.book_cover_page_12_textview);
     }
 
     private void addImageViewsToList() {
@@ -187,9 +177,7 @@ public class MyLibraryFragment extends Fragment {
         mBookImageViews.add(mBookSevenImage);
         mBookImageViews.add(mBookEightImage);
         mBookImageViews.add(mBookNineImage);
-        mBookImageViews.add(mBookTenImage);
-        mBookImageViews.add(mBookElevenImage);
-        mBookImageViews.add(mBookTwelveImage);
+
     }
 
     private void addTextViewsToList() {
@@ -203,9 +191,7 @@ public class MyLibraryFragment extends Fragment {
         mBookCoverTextViews.add(mBookCover7Text);
         mBookCoverTextViews.add(mBookCover8Text);
         mBookCoverTextViews.add(mBookCover9Text);
-        mBookCoverTextViews.add(mBookCover10Text);
-        mBookCoverTextViews.add(mBookCover11Text);
-        mBookCoverTextViews.add(mBookCover12Text);
+
     }
 
     /**
@@ -310,7 +296,7 @@ public class MyLibraryFragment extends Fragment {
         int libraryBookCounter = mLibraryPages.get(mLibraryPage).getStartNumber();
 
         if (mMyLibraryBooks.size() != 0) {
-            for (int i = 0; i < 12; i++) {
+            for (int i = 0; i < MAX_NUMBER_OF_BOOKS_PER_PAGE; i++) {
 
                 Book currentBook = mMyLibraryBooks.get(
                     libraryBookCounter);
@@ -321,7 +307,7 @@ public class MyLibraryFragment extends Fragment {
                     bitmap = GetBookInfo.getBookCover(
                         currentBook.getEPubFile());
 
-                    mBitmaps.add(Bitmap.createScaledBitmap(bitmap, 120, 180, false));
+                    mBitmaps.add(Bitmap.createScaledBitmap(bitmap, 140, 220, false));
 
                 } catch (NullPointerException e) {
                     mBitmaps.add(bitmap);
@@ -348,7 +334,6 @@ public class MyLibraryFragment extends Fragment {
     private void setUpLibraryPage() {
         int startBookNumber = 0;
         int endBookNumber = 0;
-        int MAX_NUMBER_OF_BOOKS_PER_PAGE = 12;
 
         LibraryPage firstPage = new LibraryPage(0);
         mLibraryPages.add(firstPage);

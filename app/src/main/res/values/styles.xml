@@ -29,21 +29,22 @@
     <style name="BookCoverImageLayout">
 
         <item name="android:layout_marginLeft">40dp</item>
-        <item name="android:layout_width">120dp</item>
-        <item name="android:layout_height">180dp</item>
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">220dp</item>
+        <item name="android:contentDescription">Image for book cover</item>
     </style>
 
     <style name="BookCoverTextLayout">
         <item name="android:textSize">25sp</item>
         <item name="android:layout_marginLeft">40dp</item>
-        <item name="android:layout_width">120dp</item>
-        <item name="android:layout_height">180dp</item>
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">220dp</item>
     </style>
 
     <style name="BookTableRows">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">40dp</item>
+        <item name="android:layout_marginLeft">15dp</item>
     </style>
 
 </resources>

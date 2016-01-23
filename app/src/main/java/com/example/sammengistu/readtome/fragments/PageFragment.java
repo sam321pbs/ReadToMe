@@ -174,7 +174,6 @@ public class PageFragment extends Fragment {
                                             handlePageTurn();
                                             mHighlightedTextViews.clear();
 
-                                            Log.i("Page", mPagesOfBook.get(mPageNumber).getPageText());
                                         }
                                     }
 
@@ -327,7 +326,7 @@ public class PageFragment extends Fragment {
             if (!pageOfBook.getChapterOfBook().equals(PageOfBook.PAGE_HAS_NO_CHAPTER)) {
                 mChaptersOfTheBookName.add(pageOfBook.getChapterOfBook());
                 mChaptersOfTheBookPageNum.add(pageOfBook.getPageNumber());
-                Log.i(TAG, "" + pageOfBook.getPageNumber());
+
             }
         }
     }
@@ -533,7 +532,6 @@ public class PageFragment extends Fragment {
      */
     private void handlePageTurn() {
 
-        Log.i(TAG, "Number of book pages " + mPagesOfBook.size());
         handleBookmark();
 
         setUpPageText();
@@ -972,8 +970,10 @@ public class PageFragment extends Fragment {
 
     private void stopAsyncTasks() {
 
-        if (mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING)) {
-            mDictionaryLoader.cancel(true);
+        if (mDictionaryLoader != null) {
+            if (mDictionaryLoader.getStatus().equals(AsyncTask.Status.RUNNING)) {
+                mDictionaryLoader.cancel(true);
+            }
         }
 
         if (mSetUpBookAsync.getStatus().equals(AsyncTask.Status.RUNNING)) {

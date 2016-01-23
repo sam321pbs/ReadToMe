@@ -5,25 +5,25 @@
 
     <item
             android:id="@+id/menu_bookmark_page"
-            android:title="Bookmark Page"
+            android:title="@string/bookmark_page"
             android:orderInCategory="100"
             app:showAsAction="ifRoom|always"/>
 
     <item
             android:id="@+id/menu_select_chapter"
-            android:title="Select Chapter"
+            android:title="@string/select_chapter"
             android:orderInCategory="100"
             app:showAsAction="ifRoom|always"/>
 
     <item
             android:id="@+id/menu_select_page"
-            android:title="Select Page"
+            android:title="@string/select_page"
             android:orderInCategory="100"
             app:showAsAction="ifRoom|always"/>
 
     <item
             android:id="@+id/menu_help"
-            android:title="Help"
+            android:title="@string/help"
             android:orderInCategory="100"
             app:showAsAction="ifRoom|always"/>
 
