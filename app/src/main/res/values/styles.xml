@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
 
     </style>
@@ -9,10 +9,10 @@
     <style name="PageText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:gravity">left</item>
         <item name="android:paddingTop">3dp</item>
-        <item name="android:layout_marginRight">3dp</item>
+        <item name="android:paddingRight">3dp</item>
 
 
     </style>
@@ -24,6 +24,27 @@
         <item name="android:stretchColumns">*</item>
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:layout_marginLeft">20dp</item>
+    </style>
+
+    <style name="BookCoverImageLayout">
+
+        <item name="android:layout_marginLeft">40dp</item>
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">220dp</item>
+        <item name="android:contentDescription">Image for book cover</item>
+    </style>
+
+    <style name="BookCoverTextLayout">
+        <item name="android:textSize">25sp</item>
+        <item name="android:layout_marginLeft">40dp</item>
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">220dp</item>
+    </style>
+
+    <style name="BookTableRows">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">15dp</item>
     </style>
 
 </resources>

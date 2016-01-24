@@ -1,32 +1,162 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@drawable/bookshelf_empty">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bookshelf_empty_three_rows"
+                tools:context=".MainActivity">
 
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
-        android:layout_marginLeft="30dp">
+    <TableRow
+            android:id="@+id/table_row1_book_images"
+            style="@style/BookTableRows"
+            android:layout_marginTop="100dp">
 
-        <TableRow>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/curious_george_book_cover"
-                android:id="@+id/curious_george_book_cover"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/charlottes_web_book_cover"
-                android:id="@+id/charlottes_web_book_cover_book_cover"
-                android:layout_marginLeft="25dp"/>
-        </TableRow>
+        <ImageView
+                android:id="@+id/book_cover_page_1"
+                style="@style/BookCoverImageLayout"
+                />
 
 
-    </TableLayout>
+        <ImageView
+                android:id="@+id/book_cover_page_2"
+                style="@style/BookCoverImageLayout"
+                />
+
+
+        <ImageView
+                android:id="@+id/book_cover_page_3"
+                style="@style/BookCoverImageLayout"
+                />
+
+
+    </TableRow>
+
+    <TableRow
+            android:id="@+id/table_row1_book_textViews"
+            style="@style/BookTableRows"
+            android:layout_marginTop="100dp">
+
+        <TextView
+                android:id="@+id/book_cover_page_1_textview"
+                style="@style/BookCoverTextLayout"/>
+
+        <TextView
+                android:id="@+id/book_cover_page_2_textview"
+                style="@style/BookCoverTextLayout"/>
+
+        <TextView
+                android:id="@+id/book_cover_page_3_textview"
+                style="@style/BookCoverTextLayout"/>
+
+    </TableRow>
+
+    <TableRow
+            android:id="@+id/table_row2_book_images"
+            android:layout_below="@+id/table_row1_book_images"
+            style="@style/BookTableRows"
+            android:layout_marginTop="55dp">
+
+        <ImageView
+                android:id="@+id/book_cover_page_4"
+                style="@style/BookCoverImageLayout"
+                />
+
+
+        <ImageView
+                android:id="@+id/book_cover_page_5"
+                style="@style/BookCoverImageLayout"
+                />
+
+
+        <ImageView
+                android:id="@+id/book_cover_page_6"
+                style="@style/BookCoverImageLayout"
+                />
+
+
+    </TableRow>
+
+    <TableRow
+            android:id="@+id/table_row2_book_textviews"
+            android:layout_below="@+id/table_row1_book_textViews"
+            style="@style/BookTableRows"
+            android:layout_marginTop="55dp">
+
+        <TextView
+                android:id="@+id/book_cover_page_4_textview"
+                style="@style/BookCoverTextLayout"/>
+
+
+        <TextView
+                android:id="@+id/book_cover_page_5_textview"
+                style="@style/BookCoverTextLayout"/>
+
+
+        <TextView
+                android:id="@+id/book_cover_page_6_textview"
+                style="@style/BookCoverTextLayout"/>
+
+    </TableRow>
+
+    <TableRow
+            android:id="@+id/table_row3_book_images"
+            android:layout_below="@+id/table_row2_book_images"
+            style="@style/BookTableRows"
+            android:layout_marginTop="50dp">
+
+        <ImageView
+                android:id="@+id/book_cover_page_7"
+                style="@style/BookCoverImageLayout"
+                />
+
+
+        <ImageView
+                android:id="@+id/book_cover_page_8"
+                style="@style/BookCoverImageLayout"
+                />
+
+
+        <ImageView
+                android:id="@+id/book_cover_page_9"
+                style="@style/BookCoverImageLayout"
+                />
+
+    </TableRow>
+
+    <TableRow
+            android:id="@+id/table_row3_book_textviews"
+            android:layout_below="@+id/table_row2_book_textviews"
+            style="@style/BookTableRows"
+            android:layout_marginTop="50dp">
+
+
+        <TextView
+                android:id="@+id/book_cover_page_7_textview"
+                style="@style/BookCoverTextLayout"/>
+
+
+        <TextView
+                android:id="@+id/book_cover_page_8_textview"
+                style="@style/BookCoverTextLayout"/>
+
+
+        <TextView
+                android:id="@+id/book_cover_page_9_textview"
+                style="@style/BookCoverTextLayout"/>
+
+
+    </TableRow>
+
+    <ImageView
+            android:id="@+id/my_library_next_page"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"/>
+
+    <ImageView
+            android:id="@+id/my_library_prev_page"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
