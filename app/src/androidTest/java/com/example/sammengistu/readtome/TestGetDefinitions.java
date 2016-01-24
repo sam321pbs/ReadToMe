@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome.test;
+package com.example.sammengistu.readtome;
 
 import com.example.sammengistu.readtome.WordLinkedWithDef;
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;

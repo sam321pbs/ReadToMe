@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome.test;
+package com.example.sammengistu.readtome;
 
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;
 import com.robotium.solo.Solo;

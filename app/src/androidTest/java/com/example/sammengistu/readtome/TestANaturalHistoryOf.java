@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome.test.testtableofcontents;
+package com.example.sammengistu.readtome;
 
 import com.example.sammengistu.readtome.activities.MyLibraryActivity;
 import com.example.sammengistu.readtome.bookpages.EPubFileConverterToBook;
