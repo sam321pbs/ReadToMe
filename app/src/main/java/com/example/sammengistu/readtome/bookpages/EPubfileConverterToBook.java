@@ -82,7 +82,6 @@ public class EPubFileConverterToBook implements MakeAPage {
 
             getTableOfContents(mEpubBook.getTableOfContents().getTocReferences(), 0);
 
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,7 +94,11 @@ public class EPubFileConverterToBook implements MakeAPage {
     }
 
     /**
-     *
+     * Creates an array list of pages by going through the epub file line by line and cross
+     * checking
+     * to see if the line is a chapter label or just part of the page.
+     * If the line is a label it will create a page break and put the chapter label on to the next
+     * page
      */
     private void makeBook() {
 
@@ -170,10 +173,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                             sectionChange = false;
                             lineIntoArray = removeChapterLabel(line).split("\\s+");
 
-                            mChapterLabel = new StringBuilder(mChapterNames.get(mChapterTracker));
-                            mChapterTracker++;
-                            mHaveChapterLabel = true;
-                            mPageBreak = true;
+                            updateCurrentChapterInfo();
 
                         } else {
 
@@ -200,16 +200,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                     add the chapter label to the next mPage
                     */
                     if (mPageBreak) {
-                        if (!mPage.toString().isEmpty() && mLeftOverWordsFromPrevPage.isEmpty()) {
-                            addAPage(false);
-
-                        } else {
-                            if (!mLeftOverWordsFromPrevPage.isEmpty()) {
-                                addWordsToPage();
-                                addAPage(false);
-                            }
-                        }
-                        mPageBreak = false;
+                        handlePageBreak();
                         if (continueToNextLine) {
                             continue;
                         }
@@ -227,7 +218,27 @@ public class EPubFileConverterToBook implements MakeAPage {
         }
     }
 
-    private boolean doesLineContainContents(String line){
+    private void handlePageBreak() {
+        if (!mPage.toString().isEmpty() && mLeftOverWordsFromPrevPage.isEmpty()) {
+            addAPage(false);
+
+        } else {
+            if (!mLeftOverWordsFromPrevPage.isEmpty()) {
+                addWordsToPage();
+                addAPage(false);
+            }
+        }
+        mPageBreak = false;
+    }
+
+    private void updateCurrentChapterInfo() {
+        mChapterLabel = new StringBuilder(mChapterNames.get(mChapterTracker));
+        mChapterTracker++;
+        mHaveChapterLabel = true;
+        mPageBreak = true;
+    }
+
+    private boolean doesLineContainContents(String line) {
 
         return line.equalsIgnoreCase(mAppContext.getString(R.string.contents))
             || line.equalsIgnoreCase(
@@ -266,13 +277,6 @@ public class EPubFileConverterToBook implements MakeAPage {
                 }
             }
         }
-    }
-
-    private boolean isTableOfContentsFromBook() {
-        return mPreviousWord.equals(mAppContext.getString(R.string.contents))
-            || mPreviousWord.equalsIgnoreCase(mAppContext.getString(R.string.contents_with_period))
-            || mPreviousWord.equalsIgnoreCase(mAppContext.getString(R.string.table_of_content))
-            || mPreviousWord.equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents));
     }
 
     /**
@@ -354,7 +358,7 @@ public class EPubFileConverterToBook implements MakeAPage {
 
                     if (wordMatch && chapterLabelWithOutSpecialCharacters
                         .equalsIgnoreCase(chapterNameWithOutSpecialCharacters) &&
-                        !isTableOfContentsFromBook()) {
+                        !doesLineContainContents(mPreviousWord)) {
 
                         mChapterTracker++;
                         mHaveChapterLabel = true;
@@ -420,11 +424,12 @@ public class EPubFileConverterToBook implements MakeAPage {
         }
     }
 
-    private void updatePage(String wordFromLastLine){
+    private void updatePage(String wordFromLastLine) {
         String wordFromLastLinePlusSpace = wordFromLastLine + SPACE;
         mPage.append(wordFromLastLinePlusSpace);
         mWordCount++;
     }
+
     /**
      * Creates a page based of whether it has a chapter label
      *
