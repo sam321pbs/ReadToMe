@@ -105,7 +105,7 @@ public class EPubFileConverterToBook implements MakeAPage {
         Spine spine = new Spine(mEpubBook.getTableOfContents());
 
         mChapterTracker = 0;
-        int skipNextThreeLines = 0;
+        int skipNextFourLines = 0;
         boolean skipLines = false;
 
         for (SpineReference bookSection : spine.getSpineReferences()) {
@@ -139,8 +139,8 @@ public class EPubFileConverterToBook implements MakeAPage {
 
                     //Skip the next couple of lines of the books table of content
                     //So it doesn't get confused for it being a chapter label
-                    if (skipLines && skipNextThreeLines <= 4 && !line.equals("")) {
-                        skipNextThreeLines++;
+                    if (skipLines && skipNextFourLines <= 4 && !line.equals("")) {
+                        skipNextFourLines++;
                         continue;
                     }
 

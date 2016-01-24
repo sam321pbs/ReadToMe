@@ -14,9 +14,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by SamMengistu on 1/15/16.
- */
+
 public class TestAliceAdventure extends
     ActivityInstrumentationTestCase2<MyLibraryActivity> {
 
