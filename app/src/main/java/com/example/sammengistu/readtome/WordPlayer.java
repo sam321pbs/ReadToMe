@@ -135,6 +135,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
         if (mPlay) {
             mTts.setSpeechRate(mVoiceSpeed / 20);
+
             if (highlightedWords.size() > HAS_MORE_THAN_ONE) {
 
                 final List<TextView> highLightedTextViews = new ArrayList<>(highlightedWords);

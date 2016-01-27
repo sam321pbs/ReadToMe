@@ -148,15 +148,17 @@
 
     <ImageView
             android:id="@+id/my_library_next_page"
-            android:layout_width="70dp"
+            android:layout_width="65dp"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:src="@drawable/arrow_right"/>
 
     <ImageView
             android:id="@+id/my_library_prev_page"
-            android:layout_width="70dp"
+            android:layout_width="65dp"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/arrow_left"/>
 
 </RelativeLayout>

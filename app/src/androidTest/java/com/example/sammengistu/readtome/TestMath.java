@@ -1,7 +1,14 @@
 package com.example.sammengistu.readtome;
 
-/**
- * Created by SamMengistu on 1/24/16.
- */
-public class TestMath {
+import junit.framework.TestCase;
+
+import android.test.suitebuilder.annotation.SmallTest;
+
+
+public class TestMath extends TestCase {
+
+    @SmallTest
+    public void testFive() {
+        assertEquals(5,5);
+    }
 }

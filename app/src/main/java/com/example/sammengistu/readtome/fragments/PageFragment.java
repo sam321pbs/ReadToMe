@@ -281,7 +281,8 @@ public class PageFragment extends Fragment {
         mPagesOfBook = mCurrentBook.getPagesOfBook();
 
         try {
-            mPageNumber = (Integer) mAllBookMarksAndSettings.get(mCurrentBook.getEPubFile().getName());
+            mPageNumber = (Integer) mAllBookMarksAndSettings
+                .get(mCurrentBook.getEPubFile().getName());
 
         } catch (NullPointerException e ){
             mPageNumber = -1;
@@ -290,12 +291,15 @@ public class PageFragment extends Fragment {
         mBookMarkPageNumber = mPageNumber;
 
         try {
+            Log.i("Pages", "Page of book = " + mPagesOfBook.size());
             if (mPageNumber == -1) {
                 mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
             } else {
                 mPageWordBank = mPagesOfBook.get(mPageNumber).getPageText().split("\\s+");
             }
         } catch (IndexOutOfBoundsException e) {
+
+            e.printStackTrace();
 
             stopAsyncTasks();
 

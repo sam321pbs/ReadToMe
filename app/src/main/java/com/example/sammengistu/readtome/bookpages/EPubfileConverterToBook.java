@@ -6,6 +6,7 @@ import com.example.sammengistu.readtome.models.PageOfBook;
 
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -214,6 +215,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                 completeEndOfBook();
 
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -372,6 +374,7 @@ public class EPubFileConverterToBook implements MakeAPage {
 
             }
         } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
             continueToNextLine = true;
         }
 
@@ -464,7 +467,7 @@ public class EPubFileConverterToBook implements MakeAPage {
     private void getTableOfContents(List<TOCReference> tocReferences, int depth) {
 
         if (tocReferences == null) {
-
+            
             return;
         }
 
@@ -481,6 +484,7 @@ public class EPubFileConverterToBook implements MakeAPage {
                 !tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents))) {
 
                 mChapterNames.add(tocString.toString());
+                Log.i("Epub", tocString.toString());
 
             }
 

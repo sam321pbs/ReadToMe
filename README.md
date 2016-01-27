@@ -8,5 +8,5 @@ Before running the application:
     - robotium-solo-5.4.1.jar
     - slf4j-android-1.6.1-RC1-sources.jar
     - slf4j-android-1.6.1-RC1.jar
-
+3) Make sure you have 21.1.2 build tools installed to your computer
 
