@@ -62,15 +62,16 @@ public class PageFragment extends Fragment {
     private List<PageOfBook> mPagesOfBook;
     private List<TableLayout> mTableLayouts;
     private List<TextView> mHighlightedTextViews;
+    private List<TextView> mAllTextViews;
     private List<WordLinkedWithDef> mDictionaryOne;
     private List<String> mChaptersOfTheBookName;
     private List<Integer> mChaptersOfTheBookPageNum;
 
-    private TextView mPageNumberTextView;
+    public static TextView mPageNumberTextView;
     private ImageView mBookmark;
     private String[] mPageWordBank;
-    private int mPageNumber;
-    private TextView mChapterTextView;
+    public static int mPageNumber;
+    public static TextView mChapterTextView;
     private TextToSpeech mTts;
     private WordPlayer mWordPlayer;
     private boolean mOnClickHighLightSentenceMode;
@@ -103,16 +104,16 @@ public class PageFragment extends Fragment {
         loadUpSettings();
         instantiateLists();
 
-        if (mAllBookMarksAndSettings.containsKey(VOICE_SPEED)){
+        if (mAllBookMarksAndSettings.containsKey(VOICE_SPEED)) {
             mVoiceSpeed = (Integer) mAllBookMarksAndSettings.get(VOICE_SPEED);
         } else {
             mVoiceSpeed = 20;
         }
 
-        if (mAllBookMarksAndSettings.containsKey(SPEECH_MODE)){
-            if (mAllBookMarksAndSettings.get(SPEECH_MODE) instanceof Integer){
+        if (mAllBookMarksAndSettings.containsKey(SPEECH_MODE)) {
+            if (mAllBookMarksAndSettings.get(SPEECH_MODE) instanceof Integer) {
 
-                int speechMode = (Integer)mAllBookMarksAndSettings.get(SPEECH_MODE);
+                int speechMode = (Integer) mAllBookMarksAndSettings.get(SPEECH_MODE);
                 mOnClickHighLightSentenceMode = speechMode == TRUE_SPEECH_MODE;
             }
         } else {
@@ -159,6 +160,9 @@ public class PageFragment extends Fragment {
         View blankPage = inflater.inflate(R.layout.page_without_image_fragment, container, false);
         mChapterTextView = (TextView) blankPage.findViewById(R.id.book_chapter_textView);
 
+        mPageNumberTextView = (TextView) blankPage.findViewById(R.id.action_command_page_number);
+
+
         setTableLayouts(blankPage);
 
         ImageView turnPage = (ImageView) blankPage.findViewById(R.id.turn_page);
@@ -167,6 +171,7 @@ public class PageFragment extends Fragment {
                                     {
                                         @Override
                                         public void onClick(View v) {
+
                                             mPageNumber++;
                                             if (mPageNumber > mPagesOfBook.size() - 1) {
                                                 mPageNumber = mPagesOfBook.size() - 1;
@@ -233,7 +238,59 @@ public class PageFragment extends Fragment {
 
         );
 
-        mPageNumberTextView = (TextView) blankPage.findViewById(R.id.action_command_page_number);
+        mPlayButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                sPlayOrStopCounter++;
+
+                if (sPlayOrStopCounter == 1 && mPageNumber != -1) {
+
+                    highlightThePage();
+
+                    mWordPlayer.setPlay(true);
+
+                    mPlayButton.setImageResource(R.drawable.added_stop_button);
+                    mWordPlayer.setVoiceSpeed(mVoiceSpeed);
+
+                    List<PageOfBook> pageOfBooksTillEndOfChapter = new ArrayList<>();
+
+                    boolean firstLoop = true;
+
+
+                    for (int currentPageOfBook = mPageNumber;
+                         currentPageOfBook < mPagesOfBook.size(); currentPageOfBook++) {
+
+                        if (mPagesOfBook.get(currentPageOfBook).getChapterOfBook()
+                            .equals(PageOfBook.PAGE_HAS_NO_CHAPTER) || firstLoop) {
+
+                            pageOfBooksTillEndOfChapter.add(mPagesOfBook.get(currentPageOfBook));
+                        } else {
+                            break;
+                        }
+
+                        firstLoop = false;
+
+                    }
+
+
+                    findHighlightedWords();
+
+                    mWordPlayer.playChapter(mHighlightedTextViews, mPlayButton,
+                        pageOfBooksTillEndOfChapter, mAllTextViews, mChapterTextView,
+                        mPageNumberTextView);
+
+                } else {
+
+                    stopReadingAndResetPlayButton();
+                }
+
+                mHighlightedTextViews.clear();
+
+                return true;
+            }
+        });
+
 
         ImageView highlightPage = (ImageView) blankPage.findViewById(R.id.page_button);
         highlightPage.setOnClickListener(new View.OnClickListener() {
@@ -269,6 +326,10 @@ public class PageFragment extends Fragment {
         return blankPage;
     }
 
+    public static int updatePageNumber() {
+       return ++mPageNumber;
+    }
+
     /**
      * Loads up the book that was selected
      * If there is an error it will send you back to the library
@@ -284,7 +345,7 @@ public class PageFragment extends Fragment {
             mPageNumber = (Integer) mAllBookMarksAndSettings
                 .get(mCurrentBook.getEPubFile().getName());
 
-        } catch (NullPointerException e ){
+        } catch (NullPointerException e) {
             mPageNumber = -1;
         }
 
@@ -336,6 +397,7 @@ public class PageFragment extends Fragment {
     }
 
     private void instantiateLists() {
+        mAllTextViews = new ArrayList<>();
         mTableLayouts = new ArrayList<>();
         mHighlightedTextViews = new ArrayList<>();
         mChaptersOfTheBookName = new ArrayList<>();
@@ -346,7 +408,7 @@ public class PageFragment extends Fragment {
 
         try {
             mAllBookMarksAndSettings = mReadToMeJSONSerializer.loadBookMarks();
-        } catch (Exception e){
+        } catch (Exception e) {
             mAllBookMarksAndSettings = new HashMap<>();
         }
     }
@@ -518,6 +580,7 @@ public class PageFragment extends Fragment {
                 if (!word.getText().equals("")) {
                     word.setBackgroundColor(Color.YELLOW);
                 }
+                mAllTextViews.add(word);
             }
         }
     }
@@ -553,7 +616,7 @@ public class PageFragment extends Fragment {
 
                 mChapterTextView.setVisibility(View.VISIBLE);
                 String chapterLabel = mPagesOfBook.get(mPageNumber).getChapterOfBook();
-                if (chapterLabel.length() > 60){
+                if (chapterLabel.length() > 60) {
                     chapterLabel = chapterLabel.substring(0, 59) + "...";
                 }
                 mChapterTextView.setText(chapterLabel);
@@ -602,10 +665,10 @@ public class PageFragment extends Fragment {
             @Override
             public boolean onLongClick(View v) {
 
-                if (v instanceof TextView){
+                if (v instanceof TextView) {
                     TextView textView = (TextView) v;
 
-                    if (!textView.getText().equals("")){
+                    if (!textView.getText().equals("")) {
                         showDictionaryDialog((TextView) v);
                     }
                 }
@@ -662,7 +725,7 @@ public class PageFragment extends Fragment {
         }
     }
 
-    private void getTitleAndAuthor(){
+    private void getTitleAndAuthor() {
         mTitle = GetBookInfo.getBookTitle(
             mCurrentBook.getEPubFile());
 
@@ -814,7 +877,7 @@ public class PageFragment extends Fragment {
 
             mAllBookMarksAndSettings.put(VOICE_SPEED, mVoiceSpeed);
 
-            if (mOnClickHighLightSentenceMode){
+            if (mOnClickHighLightSentenceMode) {
                 mAllBookMarksAndSettings.put(SPEECH_MODE, TRUE_SPEECH_MODE);
             } else {
                 int FALSE_SPEECH_MODE = 88888;

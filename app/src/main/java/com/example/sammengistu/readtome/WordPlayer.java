@@ -2,6 +2,7 @@ package com.example.sammengistu.readtome;
 
 import com.example.sammengistu.readtome.fragments.DefinitionDialog;
 import com.example.sammengistu.readtome.fragments.PageFragment;
+import com.example.sammengistu.readtome.models.PageOfBook;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -222,6 +224,172 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 });
             }
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public void playChapter(List<TextView> highlightedWordsTextView,
+                            final ImageView playStopButton,
+                            List<PageOfBook> pageOfBookList,
+                            final List<TextView> entirePageTextViews,
+                            final TextView chapterLabelTextView,
+                            final TextView pageNumberTextView) {
+
+        if (mPlay) {
+
+            mTts.setSpeechRate(mVoiceSpeed / 20);
+
+            final List<PageOfBook> pageOfBooks = new ArrayList<>(pageOfBookList);
+
+            if (highlightedWordsTextView.size() > HAS_MORE_THAN_ONE) {
+
+                final List<TextView> highLightedTextViews = new ArrayList<>(highlightedWordsTextView);
+
+                //TextViews to highlight as a sentence
+                final List<TextView> textViewsOfSentence = new ArrayList<>();
+                //Sentence to play
+                StringBuilder sentenceToPlay = new StringBuilder();
+
+                for (int i = 0; i < highLightedTextViews.size(); i++) {
+
+                    String currentWord = highLightedTextViews.get(i).getText().toString();
+
+                    if (!PageFragment.endOfSentence(currentWord)
+                        || PageFragment.isItAFamilyName(currentWord)) {
+
+                        textViewsOfSentence.add(highLightedTextViews.get(0));
+                        //Remove single quotes from word
+                        String cleanedWord = highLightedTextViews.get(i)
+                            .getText().toString().replaceAll("'", "");
+                        sentenceToPlay.append(cleanedWord);
+                        sentenceToPlay.append(" ");
+
+                        highLightedTextViews.remove(FIRST_ITEM);
+                        i--;
+
+                    } else {
+
+                        textViewsOfSentence.add(highLightedTextViews.get(0));
+                        sentenceToPlay.append(highLightedTextViews.get(i)
+                            .getText().toString().replaceAll("'", ""));
+                        sentenceToPlay.append(" ");
+
+                        highLightedTextViews.remove(FIRST_ITEM);
+                        break;
+                    }
+                }
+
+                mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (TextView textView : textViewsOfSentence) {
+                                    textView.setBackgroundColor(Color.GREEN);
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        mAppActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (TextView textView : textViewsOfSentence) {
+                                    textView.setBackgroundColor(Color.YELLOW);
+                                }
+                            }
+                        });
+
+                        playChapter(highLightedTextViews, playStopButton, pageOfBooks,
+                            entirePageTextViews, chapterLabelTextView, pageNumberTextView);
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
+                    }
+                });
+
+                HashMap<String, String> map = new HashMap<>();
+                map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messageID");
+
+                mTts.speak(sentenceToPlay.toString(), TextToSpeech.QUEUE_FLUSH, map);
+
+            } else {
+
+                pageOfBooks.remove(FIRST_ITEM);
+
+                Log.i("Word", "Size " + pageOfBooks.size() + "");
+
+                if (pageOfBooks.size() > 0) {
+                    mAppActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            List<TextView> allTextViews = new ArrayList<>(entirePageTextViews);
+
+                            updatePage(allTextViews, pageOfBooks.get(FIRST_ITEM),
+                                chapterLabelTextView);
+
+                            pageNumberTextView.setText(PageFragment.updatePageNumber() + "");
+
+                            List<TextView> textViews = new ArrayList<>();
+
+                            for (int i = 0; i < 184; i++){
+                                if (!entirePageTextViews.get(i).getText().equals("")) {
+                                    textViews.add(entirePageTextViews.get(i));
+                                }
+                            }
+
+                            playChapter(textViews, playStopButton,
+                                pageOfBooks, allTextViews, chapterLabelTextView,
+                                pageNumberTextView);
+                        }
+                    });
+                } else {
+
+                    mAppActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            playStopButton.setImageResource(R.drawable.play_button_updated);
+                            PageFragment.setPlayOrStopCounter(0);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    public void updatePage(List<TextView> allTextViews,
+                           PageOfBook pageOfBook, TextView chapterLabelTextView) {
+
+        String[] pageWords = pageOfBook.getPageText().split(" ");
+
+        Log.i("WordPlayer", "Page words length = "
+            + pageWords.length + " highlighted textviews = " + allTextViews.size());
+
+        for (int j = 0; j < pageWords.length; j++) {
+
+            allTextViews.get(j).setBackgroundColor(Color.YELLOW);
+            allTextViews.get(j).setText(pageWords[j]);
+        }
+
+        if (pageWords.length < 184) {
+
+            for (int l = pageWords.length; l < 184; l++) {
+                allTextViews.get(l).setText("");
+                allTextViews.get(l).setBackgroundColor(Color.WHITE);
+            }
+        }
+
+        for (int i = 0; i < 184; i++) {
+            if (allTextViews.get(i).getText().equals("")) {
+                allTextViews.get(i).setBackgroundColor(Color.WHITE);
+            }
+        }
+
+        chapterLabelTextView.setVisibility(View.INVISIBLE);
     }
 
     /**

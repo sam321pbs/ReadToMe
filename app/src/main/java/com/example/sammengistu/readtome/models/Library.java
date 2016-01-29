@@ -56,7 +56,6 @@ public class Library {
         File epubDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
             mAppContext.getString(R.string.directory_name));
 
-        //TODO : Private directory
         //This directory should be used so the user cant access the actual file itself
         File epubDirectoryPrivate = mAppContext.getDir(mAppContext.getString(R.string.directory_name)
             , Context.MODE_PRIVATE); //Creating an internal dir
@@ -65,15 +64,32 @@ public class Library {
             epubDirectory.mkdir();
         } else {
 
-            File[] files = epubDirectory.listFiles();
+            File[] filesFromExternal = epubDirectory.listFiles();
 
-            for (File file : files) {
+            for (File file : filesFromExternal) {
                 try {
                     if (!file.getName().substring(0, 1).equals(".")) {
                         epubBookFiles.add(file);
                     }
                 } catch (Exception e){
 
+                }
+            }
+
+            if (!epubDirectoryPrivate.exists()) {
+                epubDirectory.mkdir();
+            } else {
+
+                File[] filesFromPrivate = epubDirectoryPrivate.listFiles();
+
+                for (File file : filesFromPrivate) {
+                    try {
+                        if (!file.getName().substring(0, 1).equals(".")) {
+                            epubBookFiles.add(file);
+                        }
+                    } catch (Exception e) {
+
+                    }
                 }
             }
         }
