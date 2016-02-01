@@ -97,7 +97,6 @@ public class ChaptersDialog extends DialogFragment {
 
             chapterLabelTextView.setText(labelForChapter);
 
-
             return convertView;
         }
     }

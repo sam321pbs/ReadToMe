@@ -232,7 +232,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     public void playChapter(List<TextView> highlightedWordsTextView,
                             final ImageView playStopButton,
                             List<PageOfBook> pageOfBookList,
-//                            final List<TextView> entirePageTextViews,
                             final TextView chapterLabelTextView,
                             final TextView pageNumberTextView) {
 
@@ -330,18 +329,15 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     mAppActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-//                            List<TextView> allTextViews = new ArrayList<>(entirePageTextViews);
 
-                            updatePage(
-//                                allTextViews,
-                                pageOfBooks.get(FIRST_ITEM),
+                            updatePage(pageOfBooks.get(FIRST_ITEM),
                                 chapterLabelTextView);
 
                             pageNumberTextView.setText(PageFragment.updatePageNumber() + "");
 
                             List<TextView> textViews = new ArrayList<>();
 
-                            for (int i = 0; i < 184; i++){
+                            for (int i = 0; i < 184; i++) {
                                 if (
                                     !mAllTextViews.get(i).getText().equals("")) {
                                     textViews.add(mAllTextViews.get(i));
@@ -350,7 +346,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
                             playChapter(textViews, playStopButton,
                                 pageOfBooks,
-//                                allTextViews,
                                 chapterLabelTextView,
                                 pageNumberTextView);
                         }
@@ -370,8 +365,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     }
 
     public void updatePage(
-//        List<TextView> allTextViews,
-                           PageOfBook pageOfBook, TextView chapterLabelTextView) {
+        PageOfBook pageOfBook, TextView chapterLabelTextView) {
 
         String[] pageWords = pageOfBook.getPageText().split(" ");
 
@@ -393,13 +387,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                 mAllTextViews.get(l).setBackgroundColor(Color.WHITE);
             }
         }
-
-//        for (int i = 0; i < 184; i++) {
-//            if (mAllTextViews.get(i).getText().equals("")) {
-//                mAllTextViews.get(i).setBackgroundColor(Color.WHITE);
-//            }
-//        }
-
         chapterLabelTextView.setVisibility(View.INVISIBLE);
     }
 

@@ -1001,7 +1001,8 @@ public class PageFragment extends Fragment {
                 return true;
 
             case R.id.menu_select_chapter:
-                ChaptersDialog chaptersDialog = ChaptersDialog.newInstance(mChaptersOfTheBookName, mChaptersOfTheBookPageNum);
+                ChaptersDialog chaptersDialog = ChaptersDialog.newInstance(mChaptersOfTheBookName,
+                    mChaptersOfTheBookPageNum);
                 chaptersDialog.setTargetFragment(PageFragment.this, GET_CHAPTER_NUMBER);
 
                 chaptersDialog.show(fm, ChaptersDialog.SELECT_CHAPTER);

@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class MyLibraryFragment extends Fragment {
 
     public static final String BOOK_ID = "Book Id";
     public static final String LIBRARY_PAGE_NUMBER = "Library page number";
+    private final int GET_DELETE_OPTION = 2;
 
     private ImageView mBookOneImage;
     private ImageView mBookTwoImage;
@@ -75,11 +77,16 @@ public class MyLibraryFragment extends Fragment {
 
     private int MAX_NUMBER_OF_BOOKS_PER_PAGE = 9;
 
+    private int bookToDelete = Integer.MAX_VALUE;
+
+    private boolean mDeletingBook;
+
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
 
         showErrorDialog = false;
+        mDeletingBook = false;
 
         mShowErrorToast = getActivity().getIntent().getBooleanExtra(PageFragment.ERROR_MESSAGE, false);
 
@@ -132,6 +139,7 @@ public class MyLibraryFragment extends Fragment {
         initializeTextViews();
         addImageViewsToList();
         addTextViewsToList();
+
         new LoadBookCoversFromEpubFiles().execute();
 
         if (mShowErrorToast) {
@@ -243,7 +251,7 @@ public class MyLibraryFragment extends Fragment {
                     currentImageView.setImageBitmap(mBitmaps.get(bookCoverCounter));
                 }
 
-                currentImageView.setOnClickListener(new View.OnClickListener() {
+                View.OnClickListener onClickListenerLoadBook = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), PagesActivity.class);
@@ -252,17 +260,35 @@ public class MyLibraryFragment extends Fragment {
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }
-                });
-                currentTextView.setOnClickListener(new View.OnClickListener() {
+                };
+
+                final int finalLibraryBookCounter = libraryBookCounter;
+
+                View.OnLongClickListener onLongClickListenerDeleteBook = new View.OnLongClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), PagesActivity.class);
-                        intent.putExtra(BOOK_ID, currentBook.getBookId());
-                        intent.putExtra(LIBRARY_PAGE_NUMBER, mLibraryPage);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                    public boolean onLongClick(View v) {
+
+                        String bookTitle = GetBookInfo.getBookTitle(currentBook.getEPubFile());
+
+                        bookToDelete = finalLibraryBookCounter;
+
+                        DeleteBookDialog deleteBookDialog = DeleteBookDialog.newInstance(bookTitle);
+                        deleteBookDialog.setTargetFragment(MyLibraryFragment.this,
+                            GET_DELETE_OPTION);
+
+                        android.support.v4.app.FragmentManager fm =
+                            getActivity().getSupportFragmentManager();
+
+                        deleteBookDialog.show(fm, DeleteBookDialog.DELETE_BOOK);
+                        return false;
                     }
-                });
+                };
+
+                currentImageView.setOnClickListener(onClickListenerLoadBook);
+                currentTextView.setOnClickListener(onClickListenerLoadBook);
+
+                currentImageView.setOnLongClickListener(onLongClickListenerDeleteBook);
+                currentTextView.setOnLongClickListener(onLongClickListenerDeleteBook);
 
                 libraryBookCounter++;
                 bookCoverCounter++;
@@ -393,6 +419,7 @@ public class MyLibraryFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
+
             setImages();
             if (mProgressDialogLoadingBookCovers != null) {
                 try {
@@ -400,7 +427,6 @@ public class MyLibraryFragment extends Fragment {
                 } catch (IllegalArgumentException e) {
 
                 }
-
             }
 
             if (showErrorDialog) {
@@ -422,6 +448,7 @@ public class MyLibraryFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... params) {
+
             setUpBookImageViews();
             return "";
         }
@@ -432,6 +459,29 @@ public class MyLibraryFragment extends Fragment {
             mProgressDialogLoadingBookCovers = ProgressDialog.show(
                 getActivity(), getActivity().getString(R.string.loading_title),
                 getActivity().getString(R.string.loading_message), true, false);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == GET_DELETE_OPTION){
+            int deleteYes = data.getIntExtra(DeleteBookDialog.DELETE, 0);
+
+            if (deleteYes == DeleteBookDialog.DELETE_IT){
+                deleteSelectedBook();
+            }
+        }
+    }
+
+    private void deleteSelectedBook() {
+        File fileToDelete = new File(mMyLibraryBooks
+            .get(bookToDelete).getEPubFile().getAbsolutePath());
+
+        if (fileToDelete.delete()){
+
+            mMyLibraryBooks.remove(bookToDelete);
+            new LoadBookCoversFromEpubFiles().execute();
         }
     }
 }
