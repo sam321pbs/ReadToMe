@@ -31,6 +31,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     private Activity mAppActivity;
     private float mVoiceSpeed;
     private boolean mPlay;
+    private List<TextView> mAllTextViews;
 
 
     /**
@@ -41,12 +42,13 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
      * @param appActivity - used to run on the mainthread of the activity
      */
     public WordPlayer(Context c, Activity appActivity,
-                      int voiceSpeed) {
+                      int voiceSpeed, List<TextView> allTextViews) {
         mTts = new TextToSpeech(c, this);
         mVoiceSpeed = ((float) voiceSpeed / 20);
         mTts.setSpeechRate(mVoiceSpeed);
         mAppActivity = appActivity;
         mPlay = false;
+        mAllTextViews = allTextViews;
 
     }
 
@@ -230,7 +232,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
     public void playChapter(List<TextView> highlightedWordsTextView,
                             final ImageView playStopButton,
                             List<PageOfBook> pageOfBookList,
-                            final List<TextView> entirePageTextViews,
+//                            final List<TextView> entirePageTextViews,
                             final TextView chapterLabelTextView,
                             final TextView pageNumberTextView) {
 
@@ -303,7 +305,8 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         });
 
                         playChapter(highLightedTextViews, playStopButton, pageOfBooks,
-                            entirePageTextViews, chapterLabelTextView, pageNumberTextView);
+//                            entirePageTextViews,
+                            chapterLabelTextView, pageNumberTextView);
                     }
 
                     @Override
@@ -327,9 +330,11 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     mAppActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            List<TextView> allTextViews = new ArrayList<>(entirePageTextViews);
+//                            List<TextView> allTextViews = new ArrayList<>(entirePageTextViews);
 
-                            updatePage(allTextViews, pageOfBooks.get(FIRST_ITEM),
+                            updatePage(
+//                                allTextViews,
+                                pageOfBooks.get(FIRST_ITEM),
                                 chapterLabelTextView);
 
                             pageNumberTextView.setText(PageFragment.updatePageNumber() + "");
@@ -337,13 +342,16 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                             List<TextView> textViews = new ArrayList<>();
 
                             for (int i = 0; i < 184; i++){
-                                if (!entirePageTextViews.get(i).getText().equals("")) {
-                                    textViews.add(entirePageTextViews.get(i));
+                                if (
+                                    !mAllTextViews.get(i).getText().equals("")) {
+                                    textViews.add(mAllTextViews.get(i));
                                 }
                             }
 
                             playChapter(textViews, playStopButton,
-                                pageOfBooks, allTextViews, chapterLabelTextView,
+                                pageOfBooks,
+//                                allTextViews,
+                                chapterLabelTextView,
                                 pageNumberTextView);
                         }
                     });
@@ -361,33 +369,36 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         }
     }
 
-    public void updatePage(List<TextView> allTextViews,
+    public void updatePage(
+//        List<TextView> allTextViews,
                            PageOfBook pageOfBook, TextView chapterLabelTextView) {
 
         String[] pageWords = pageOfBook.getPageText().split(" ");
 
         Log.i("WordPlayer", "Page words length = "
-            + pageWords.length + " highlighted textviews = " + allTextViews.size());
+            + pageWords.length + " highlighted textviews = " + mAllTextViews.size());
 
+        //Highlight and update text box
         for (int j = 0; j < pageWords.length; j++) {
 
-            allTextViews.get(j).setBackgroundColor(Color.YELLOW);
-            allTextViews.get(j).setText(pageWords[j]);
+            mAllTextViews.get(j).setBackgroundColor(Color.YELLOW);
+            mAllTextViews.get(j).setText(pageWords[j]);
         }
 
+        //Turn all textviews with no words in them to white background
         if (pageWords.length < 184) {
 
             for (int l = pageWords.length; l < 184; l++) {
-                allTextViews.get(l).setText("");
-                allTextViews.get(l).setBackgroundColor(Color.WHITE);
+                mAllTextViews.get(l).setText("");
+                mAllTextViews.get(l).setBackgroundColor(Color.WHITE);
             }
         }
 
-        for (int i = 0; i < 184; i++) {
-            if (allTextViews.get(i).getText().equals("")) {
-                allTextViews.get(i).setBackgroundColor(Color.WHITE);
-            }
-        }
+//        for (int i = 0; i < 184; i++) {
+//            if (mAllTextViews.get(i).getText().equals("")) {
+//                mAllTextViews.get(i).setBackgroundColor(Color.WHITE);
+//            }
+//        }
 
         chapterLabelTextView.setVisibility(View.INVISIBLE);
     }

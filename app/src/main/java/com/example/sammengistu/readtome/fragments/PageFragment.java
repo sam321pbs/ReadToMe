@@ -127,7 +127,7 @@ public class PageFragment extends Fragment {
         mSetUpBookAsync.execute();
 
         mWordPlayer = new WordPlayer(getActivity(), getActivity(),
-            mVoiceSpeed);
+            mVoiceSpeed, mAllTextViews);
 
         mTts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
             @Override
@@ -277,7 +277,9 @@ public class PageFragment extends Fragment {
                     findHighlightedWords();
 
                     mWordPlayer.playChapter(mHighlightedTextViews, mPlayButton,
-                        pageOfBooksTillEndOfChapter, mAllTextViews, mChapterTextView,
+                        pageOfBooksTillEndOfChapter,
+//                        mAllTextViews,
+                        mChapterTextView,
                         mPageNumberTextView);
 
                 } else {
@@ -322,6 +324,8 @@ public class PageFragment extends Fragment {
 
                                            }
         );
+
+        addAllTextViewsToList();
 
         return blankPage;
     }
@@ -580,6 +584,15 @@ public class PageFragment extends Fragment {
                 if (!word.getText().equals("")) {
                     word.setBackgroundColor(Color.YELLOW);
                 }
+            }
+        }
+    }
+
+    private void addAllTextViewsToList (){
+        for (TableLayout tableLayout : mTableLayouts) {
+            TableRow row = (TableRow) tableLayout.getChildAt(0);
+            for (int j = 0; j < row.getChildCount(); j++) {
+                TextView word = (TextView) row.getChildAt(j);
                 mAllTextViews.add(word);
             }
         }
