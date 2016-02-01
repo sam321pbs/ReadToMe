@@ -17,6 +17,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -79,14 +82,13 @@ public class MyLibraryFragment extends Fragment {
 
     private int bookToDelete = Integer.MAX_VALUE;
 
-    private boolean mDeletingBook;
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
+        setHasOptionsMenu(true);
 
         showErrorDialog = false;
-        mDeletingBook = false;
 
         mShowErrorToast = getActivity().getIntent().getBooleanExtra(PageFragment.ERROR_MESSAGE, false);
 
@@ -462,6 +464,26 @@ public class MyLibraryFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_library, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_help_library:
+
+                LibraryHelpDialog libraryHelpDialog = new LibraryHelpDialog();
+                libraryHelpDialog.show(getActivity().getSupportFragmentManager(),
+                    "LibraryDialog");
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 

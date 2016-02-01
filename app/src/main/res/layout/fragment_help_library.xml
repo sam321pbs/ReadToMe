@@ -1,8 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="wrap_content"
+              android:paddingLeft="20dp"
+              android:paddingRight="20dp">
 
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
 
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/definition_word_box"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/image_how_to_use"/>
 
-</RelativeLayout>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/help_fragment_title"
+                android:layout_centerHorizontal="true"
+                android:textSize="40sp"
+                android:layout_marginTop="20dp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginBottom="30dp">
+
+        <TextView android:id="@+id/menu_start_reading_text_view"
+                  android:layout_width="490dp"
+                  android:layout_height="wrap_content"
+                  android:text="* Tap on a book to start reading "
+                  android:textSize="25sp"
+                  android:layout_marginTop="30dp"
+                />
+
+        <TextView android:id="@+id/menu_how_to_delete"
+                  android:layout_width="490dp"
+                  android:layout_height="wrap_content"
+                  android:layout_below="@+id/menu_start_reading_text_view"
+                  android:layout_marginTop="30dp"
+                  android:textSize="25sp"
+                  android:text="* If you want to delete a book, hold down on the book you want to delete and wait until a delete dialog appears"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_below="@+id/menu_how_to_delete"
+                  android:layout_marginTop="30dp"
+                  android:textSize="25sp"
+                  android:text="* Load more books by pressing the left and right icons"/>
+    </RelativeLayout>
+</LinearLayout>
