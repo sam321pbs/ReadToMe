@@ -65,7 +65,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
     /**
      * Plays the word
-     * 1st checks if the word is in a media player  file if not
      * uses the TextToSpeech class to play the word
      * <p/>
      * It also highlights the text box of the word it is playing
@@ -160,6 +159,9 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         //Remove single quotes from word
                         String cleanedWord = highLightedTextViews.get(i)
                             .getText().toString().replaceAll("'", "");
+                        if (cleanedWord.equals("Dr.")){
+                            cleanedWord = "Doctor";
+                        }
                         sentenceToPlay.append(cleanedWord);
                         sentenceToPlay.append(" ");
 
@@ -261,6 +263,9 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         //Remove single quotes from word
                         String cleanedWord = highLightedTextViews.get(i)
                             .getText().toString().replaceAll("'", "");
+                        if (cleanedWord.equals("Dr.")){
+                            cleanedWord = "Doctor";
+                        }
                         sentenceToPlay.append(cleanedWord);
                         sentenceToPlay.append(" ");
 
@@ -323,8 +328,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
                 pageOfBooks.remove(FIRST_ITEM);
 
-                Log.i("Word", "Size " + pageOfBooks.size() + "");
-
                 if (pageOfBooks.size() > 0) {
                     mAppActivity.runOnUiThread(new Runnable() {
                         @Override
@@ -333,7 +336,9 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                             updatePage(pageOfBooks.get(FIRST_ITEM),
                                 chapterLabelTextView);
 
-                            pageNumberTextView.setText(PageFragment.updatePageNumber() + "");
+                            String pageNumberForView = PageFragment.updatePageNumber() + "";
+
+                            pageNumberTextView.setText(pageNumberForView);
 
                             List<TextView> textViews = new ArrayList<>();
 
@@ -368,9 +373,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         PageOfBook pageOfBook, TextView chapterLabelTextView) {
 
         String[] pageWords = pageOfBook.getPageText().split(" ");
-
-        Log.i("WordPlayer", "Page words length = "
-            + pageWords.length + " highlighted textviews = " + mAllTextViews.size());
 
         //Highlight and update text box
         for (int j = 0; j < pageWords.length; j++) {

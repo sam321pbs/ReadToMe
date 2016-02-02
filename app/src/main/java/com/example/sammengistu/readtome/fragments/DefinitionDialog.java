@@ -16,7 +16,6 @@ public class DefinitionDialog extends DialogFragment {
 
     public static final String FIND_WORD_DEFINITION = "find word definition";
     public static final String DEFINITION = "definition";
-    private static final String TAG = "DefinitionDialog";
 
     @NonNull
     @Override

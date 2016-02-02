@@ -24,7 +24,7 @@ public class DeleteBookDialog extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
             .setTitle("Are you sure you want to delete this book?")
-            .setMessage("* " + bookTitle + "\n \n Warning: This is irreversible")
+            .setMessage("* " + bookTitle + "\n \n Warning: This action is irreversible")
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

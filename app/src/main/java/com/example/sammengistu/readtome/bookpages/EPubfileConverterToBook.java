@@ -6,7 +6,6 @@ import com.example.sammengistu.readtome.models.PageOfBook;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,14 +27,13 @@ import nl.siegmann.epublib.epub.EpubReader;
  * Takes an Epub file and extracts its text and converts it in to an arraylist of PageOfBook
  */
 public class EPubFileConverterToBook implements MakeAPage {
-    private static final String TAG = EPubFileConverterToBook.class.getName();
     private final int MAX_NUMBER_OF_WORDS_PER_PAGE = 184;
     public static List<PageOfBook> mPagesOfTheBook = new ArrayList<>();
     private final String SPACE = " ";
     private int mPageNumber = 0; // Keeps track of the page you are on
     private Book mEpubBook;
     private ArrayList<String> mLeftOverWordsFromPrevPage = new ArrayList<>();
-    private int mWordCount = 0; //Which textview on the page its in
+    private int mWordCount = 0; //Which text view on the page its in
     private boolean mWordMatchEntireLine;
 
     private int mChapterTracker;
@@ -484,7 +482,6 @@ public class EPubFileConverterToBook implements MakeAPage {
                 !tocString.toString().equalsIgnoreCase(mAppContext.getString(R.string.table_of_contents))) {
 
                 mChapterNames.add(tocString.toString());
-                Log.i("Epub", tocString.toString());
 
             }
 
@@ -527,7 +524,8 @@ public class EPubFileConverterToBook implements MakeAPage {
 
         StringBuilder newLine = new StringBuilder();
         for (String word : wordsWithoutChapterLabel) {
-            newLine.append(word + " ");
+            String wordWithSpace = word + SPACE;
+            newLine.append(wordWithSpace);
         }
 
         return newLine.toString();

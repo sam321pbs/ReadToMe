@@ -356,7 +356,6 @@ public class PageFragment extends Fragment {
         mBookMarkPageNumber = mPageNumber;
 
         try {
-            Log.i("Pages", "Page of book = " + mPagesOfBook.size());
             if (mPageNumber == -1) {
                 mPageWordBank = mPagesOfBook.get(0).getPageText().split("\\s+");
             } else {
@@ -565,7 +564,8 @@ public class PageFragment extends Fragment {
 
     public static boolean endOfSentence(String textWord) {
         return textWord.contains(".") || textWord.contains("!")
-            || textWord.contains("?") || textWord.contains(":");
+            || textWord.contains("?") || textWord.contains(":")
+            || textWord.contains(";");
 
     }
 
@@ -573,7 +573,7 @@ public class PageFragment extends Fragment {
 
         return word.equals("Mrs.") ||
             word.equals("Mr.") ||
-            word.equals("Ms.");
+            word.equals("Ms.") || word.equals("Dr.");
     }
 
     private void highlightThePage() {
