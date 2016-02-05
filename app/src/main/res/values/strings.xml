@@ -68,4 +68,6 @@
     <string name="select_chapter">Select Chapter</string>
     <string name="bookmark_page">Bookmark Page</string>
     <string name="help_library">Help</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Type name of boook</string>
 </resources>

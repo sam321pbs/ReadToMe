@@ -10,5 +10,15 @@
             android:orderInCategory="100"
             app:showAsAction="ifRoom|always"/>
 
+    <item android:id="@+id/search"
+          android:title="@string/search_title"
+          android:icon="@android:drawable/ic_menu_search"
+          android:showAsAction="collapseActionView|ifRoom"
+          android:actionViewClass="android.widget.SearchView" />
+
+    <item android:id="@+id/menu_search_book"
+          android:title="Search book"
+          app:showAsAction="ifRoom|always"
+          android:orderInCategory="100"/>
 
 </menu>

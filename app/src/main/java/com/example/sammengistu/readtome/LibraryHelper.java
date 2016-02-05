@@ -18,7 +18,7 @@ public class LibraryHelper extends SQLiteOpenHelper {
     * Database information
     */
     private static final String DB_NAME = "books.db";
-    private static final int DB_VERSION = 2; // Must increment to trigger an upgrade
+    private static final int DB_VERSION = 1; // Must increment to trigger an upgrade
     private static final String DB_CREATE =
         "CREATE TABLE " + TABLE_BOOKS + " (" +
             COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +

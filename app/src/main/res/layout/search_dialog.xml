@@ -1,6 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+    <ImageView
+            android:id="@+id/dialog_search_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/definition_word_box"
+            android:contentDescription="Image used to surround word being looked up"/>
+
+    <TextView
+            android:id="@+id/dialog_search_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="35sp"
+            android:layout_marginTop="25dp"
+            android:text="Search Book"/>
+
+    <EditText android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/dialog_search_background"
+              android:hint="Type title"
+              android:layout_marginLeft="15dp"
+              android:layout_marginRight="15dp"
+              android:layout_marginTop="25dp"
+              android:textSize="23sp"
+              android:id="@+id/dialog_search_edit_text"/>
+
+    <ListView
+            android:id="@android:id/list"
+            android:layout_width="wrap_content"
+            android:layout_height="330dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_below="@+id/dialog_search_edit_text">
+
+    </ListView>
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/dialog_selected_book_title"
+              android:layout_below="@android:id/list"
+              android:text="Selected Book"
+              android:textSize="25sp"
+              android:layout_marginTop="25dp"
+              android:layout_centerHorizontal="true"/>
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/dialog_selected_book_box"
+              android:layout_below="@+id/dialog_selected_book_title"
+              android:text="The Planet mappers"
+              android:textSize="25sp"
+              android:layout_marginTop="25dp"
+              android:layout_centerHorizontal="true"/>
+
 
 </RelativeLayout>

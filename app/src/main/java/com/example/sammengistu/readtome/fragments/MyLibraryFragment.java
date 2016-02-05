@@ -9,6 +9,8 @@ import com.example.sammengistu.readtome.models.Library;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,7 +68,7 @@ public class MyLibraryFragment extends Fragment {
 
     private List<ImageView> mBookImageViews;
     private List<TextView> mBookCoverTextViews;
-
+    private List<String> mAllBookNames;
     private List<Book> mMyLibraryBooks;
 
     private int mLibraryPage;
@@ -97,6 +100,7 @@ public class MyLibraryFragment extends Fragment {
         mMyLibraryBooks = Library.get(getActivity()).getMyLibrary();
         mBookImageViews = new ArrayList<>();
         mBookCoverTextViews = new ArrayList<>();
+        mAllBookNames = new ArrayList<>();
 
         mLibraryPages = new ArrayList<>();
 
@@ -468,6 +472,14 @@ public class MyLibraryFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_library, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+            (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+            (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+            searchManager.getSearchableInfo(getActivity().getComponentName()));
     }
 
     @Override
@@ -478,6 +490,11 @@ public class MyLibraryFragment extends Fragment {
                 LibraryHelpDialog libraryHelpDialog = new LibraryHelpDialog();
                 libraryHelpDialog.show(getActivity().getSupportFragmentManager(),
                     "LibraryDialog");
+                return true;
+            case R.id.menu_search_book:
+
+                SearchDialog searchDialog = SearchDialog.newInstance(getAllBookFileNames());
+                searchDialog.show(getActivity().getSupportFragmentManager(), "SearchDialog");
                 return true;
 
             default:
@@ -505,5 +522,14 @@ public class MyLibraryFragment extends Fragment {
             mMyLibraryBooks.remove(bookToDelete);
             new LoadBookCoversFromEpubFiles().execute();
         }
+    }
+
+    private List<String> getAllBookFileNames(){
+        List<String> allBookNames = new ArrayList<>();
+        for (Book book : mMyLibraryBooks){
+            allBookNames.add(book.getEPubFile().getName());
+        }
+
+       return allBookNames;
     }
 }
