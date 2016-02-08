@@ -9,8 +9,6 @@ import com.example.sammengistu.readtome.models.Library;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,6 +16,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +38,8 @@ public class MyLibraryFragment extends Fragment {
 
     public static final String BOOK_ID = "Book Id";
     public static final String LIBRARY_PAGE_NUMBER = "Library page number";
+
+    private static final int GET_TITLE = 1;
     private final int GET_DELETE_OPTION = 2;
 
     private ImageView mBookOneImage;
@@ -473,13 +473,6 @@ public class MyLibraryFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_library, menu);
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-            (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-            (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(
-            searchManager.getSearchableInfo(getActivity().getComponentName()));
     }
 
     @Override
@@ -494,6 +487,8 @@ public class MyLibraryFragment extends Fragment {
             case R.id.menu_search_book:
 
                 SearchDialog searchDialog = SearchDialog.newInstance(getAllBookFileNames());
+                searchDialog.setTargetFragment(MyLibraryFragment.this,
+                    GET_TITLE);
                 searchDialog.show(getActivity().getSupportFragmentManager(), "SearchDialog");
                 return true;
 
@@ -511,6 +506,22 @@ public class MyLibraryFragment extends Fragment {
                 deleteSelectedBook();
             }
         }
+
+        if (requestCode == GET_TITLE){
+
+            Log.i("Library", "in");
+            String selectedTitle = data.getStringExtra(SearchDialog.SELECTED_BOOK);
+
+            for (Book book : mMyLibraryBooks){
+                if (book.getEPubFile().getName().equals(selectedTitle)){
+                    Intent intent = new Intent(getActivity(), PagesActivity.class);
+                    intent.putExtra(BOOK_ID, book.getBookId());
+                    intent.putExtra(LIBRARY_PAGE_NUMBER, mLibraryPage);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            }
+        }
     }
 
     private void deleteSelectedBook() {
@@ -518,7 +529,6 @@ public class MyLibraryFragment extends Fragment {
             .get(bookToDelete).getEPubFile().getAbsolutePath());
 
         if (fileToDelete.delete()){
-
             mMyLibraryBooks.remove(bookToDelete);
             new LoadBookCoversFromEpubFiles().execute();
         }

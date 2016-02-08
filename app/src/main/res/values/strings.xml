@@ -70,4 +70,10 @@
     <string name="help_library">Help</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Type name of boook</string>
+    <string name="search_book_title">Search Book</string>
+    <string name="hint_type">Type title</string>
+    <string name="filtered_results">Filtered results:</string>
+    <string name="selected_book_title">Selected Book:</string>
+    <string name="hint_select_book">Please select a book</string>
+    <string name="menu_search_book_title">Search book</string>
 </resources>
