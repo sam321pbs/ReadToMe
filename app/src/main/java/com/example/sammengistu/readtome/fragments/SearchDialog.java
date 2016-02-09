@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -31,6 +32,7 @@ public class SearchDialog  extends DialogFragment {
     private List<String> mAllBookFileNames;
     private List<String> mFilteredFileNames;
     private int mBookPosition;
+    private ListView mListView;
 
     @NonNull
     @Override
@@ -43,7 +45,7 @@ public class SearchDialog  extends DialogFragment {
         View searchView = getActivity().getLayoutInflater()
             .inflate(R.layout.search_dialog, null);
 
-        final ListView listView = (ListView) searchView.findViewById(android.R.id.list);
+        mListView = (ListView) searchView.findViewById(android.R.id.list);
 
         EditText typedTitleEditText = (EditText)searchView.findViewById(R.id.dialog_search_edit_text);
 
@@ -61,24 +63,15 @@ public class SearchDialog  extends DialogFragment {
             @Override
             public void afterTextChanged(Editable s) {
 
-                //TODO: set Up algorithm and update list
+                new SearchForTitles().execute(s.toString());
 
-                mFilteredFileNames.clear();
-
-                for (String title : mAllBookFileNames){
-                    if (doesItContainWord(title, s.toString())){
-                        mFilteredFileNames.add(title);
-                    }
-                }
-
-                listView.setAdapter(new SearchListAdapter(mFilteredFileNames));
             }
         });
 
         final TextView selectedTitle = (TextView)searchView
             .findViewById(R.id.dialog_selected_book_box);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedTitle.setText(mFilteredFileNames
@@ -151,5 +144,25 @@ public class SearchDialog  extends DialogFragment {
         searchDialog.setArguments(args);
 
         return searchDialog;
+    }
+
+    private class SearchForTitles extends AsyncTask<String,Void,Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            mFilteredFileNames.clear();
+
+            for (String title : mAllBookFileNames){
+                if (doesItContainWord(title, params[0])){
+                    mFilteredFileNames.add(title);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            mListView.setAdapter(new SearchListAdapter(mFilteredFileNames));
+        }
     }
 }
