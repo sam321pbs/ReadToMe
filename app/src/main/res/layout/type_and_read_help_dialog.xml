@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@drawable/blank_page">
+
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/definition_word_box"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/image_how_to_use"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/help_fragment_title"
+                android:layout_centerHorizontal="true"
+                android:textSize="40sp"
+                android:layout_marginTop="20dp"/>
+
+    </RelativeLayout>
+
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="20dp"
+              android:layout_marginLeft="25dp"
+              android:layout_marginRight="15dp"
+              android:text="@string/type_and_read_type_rule"
+              android:textSize="20sp"/>
+
+    <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/help_fragment_images"
+                android:layout_marginLeft="15dp"
+                >
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/play_button_updated"
+                    android:contentDescription="@string/image_play_button_description"/>
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/page_button_image"
+                    android:layout_marginTop="42dp"
+                    android:contentDescription="@string/image_page_button_description"/>
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clear_button"
+                    android:layout_marginTop="36dp"
+                    android:contentDescription="@string/image_clear_button_description"/>
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/left_arrow_smaller"
+                    android:layout_marginTop="62dp"
+                    android:contentDescription="@string/image_turn_back_page_button_description"/>
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_smaller"
+                    android:layout_marginTop="22dp"
+                    android:contentDescription="@string/image_turn_page_button_description"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/help_fragment_images"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/type_and_read_play_button"
+                    android:layout_marginLeft="30dp"
+                    android:textSize="20sp"/>
+
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/help_fragment_how_to_use_page_button"
+                    android:layout_marginLeft="30dp"
+                    android:textSize="20sp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="22dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/type_and_read_clear_button"
+                    android:layout_marginLeft="30dp"
+                    android:textSize="20sp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="45dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/help_fragment_how_to_use_previous_page_button"
+                    android:layout_marginLeft="30dp"
+                    android:textSize="20sp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="35dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/help_fragment_how_to_use_next_page_button"
+                    android:layout_marginLeft="30dp"
+                    android:textSize="20sp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="35dp"/>
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

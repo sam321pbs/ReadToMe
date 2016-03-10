@@ -205,9 +205,7 @@ public class PageFragment extends Fragment {
         );
 
         mPlayButton = (ImageView) blankPage.findViewById(R.id.play_button);
-        mPlayButton.setOnClickListener(new View.OnClickListener()
-
-                                       {
+        mPlayButton.setOnClickListener(new View.OnClickListener() {
                                            @Override
                                            public void onClick(View v) {
 
@@ -219,7 +217,7 @@ public class PageFragment extends Fragment {
                                                    mPlayButton.setImageResource(R.drawable.added_stop_button);
                                                    mWordPlayer.setVoiceSpeed(mVoiceSpeed);
 
-                                                   findHighlightedWords();
+                                                   findHighlightedWords(mTableLayouts, mHighlightedTextViews);
                                                    if (mOnClickHighLightSentenceMode) {
                                                        mWordPlayer.playSentenceBySentence(
                                                            mHighlightedTextViews, mPlayButton);
@@ -246,7 +244,7 @@ public class PageFragment extends Fragment {
 
                 if (sPlayOrStopCounter == 1 && mPageNumber != -1) {
 
-                    highlightThePage();
+                    highlightThePage(mTableLayouts);
 
                     mWordPlayer.setPlay(true);
 
@@ -256,7 +254,6 @@ public class PageFragment extends Fragment {
                     List<PageOfBook> pageOfBooksTillEndOfChapter = new ArrayList<>();
 
                     boolean firstLoop = true;
-
 
                     for (int currentPageOfBook = mPageNumber;
                          currentPageOfBook < mPagesOfBook.size(); currentPageOfBook++) {
@@ -274,11 +271,10 @@ public class PageFragment extends Fragment {
                     }
 
 
-                    findHighlightedWords();
+                    findHighlightedWords(mTableLayouts, mHighlightedTextViews);
 
                     mWordPlayer.playChapter(mHighlightedTextViews, mPlayButton,
                         pageOfBooksTillEndOfChapter,
-//                        mAllTextViews,
                         mChapterTextView,
                         mPageNumberTextView);
 
@@ -299,7 +295,7 @@ public class PageFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                highlightThePage();
+                highlightThePage(mTableLayouts);
 
             }
         });
@@ -331,7 +327,7 @@ public class PageFragment extends Fragment {
     }
 
     public static int updatePageNumber() {
-       return ++mPageNumber;
+        return ++mPageNumber;
     }
 
     /**
@@ -433,14 +429,15 @@ public class PageFragment extends Fragment {
      *
      * @param viewThatWillBeHighlighted - specific textView that was clicked
      */
-    private void highlightSentenceMode(TextView viewThatWillBeHighlighted, int color) {
+    public static void highlightSentenceMode(List<TableLayout> tableLayouts,
+                                             TextView viewThatWillBeHighlighted, int color) {
 
         int tableLayoutHolder = 0;
         int tableRowHolderForHighlightingToEndOfSent = 0; //Row to end the highlighting
         int tableRowHolderForHighlightingToBeginningOfSent = 0; //Row to begin highlighting
 
-        for (int i = 0; i < mTableLayouts.size(); i++) {
-            TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
+        for (int i = 0; i < tableLayouts.size(); i++) {
+            TableRow row = (TableRow) tableLayouts.get(i).getChildAt(0);
             for (int j = 0; j < row.getChildCount(); j++) {
                 TextView wordView = (TextView) row.getChildAt(j);
                 if (viewThatWillBeHighlighted.equals(wordView)) {
@@ -453,7 +450,7 @@ public class PageFragment extends Fragment {
         }
 
         //Loop through the sentence and start highlighting
-        highlightSentenceLoops(tableLayoutHolder,
+        highlightSentenceLoops(tableLayouts, tableLayoutHolder,
             tableRowHolderForHighlightingToEndOfSent,
             tableRowHolderForHighlightingToBeginningOfSent,
             color);
@@ -476,7 +473,7 @@ public class PageFragment extends Fragment {
                 int backgroundColor = textBackGroundColor.getColor();
 
                 if (backgroundColor == Color.YELLOW) {
-                    highlightSentenceMode(word, Color.YELLOW);
+                    highlightSentenceMode(mTableLayouts,word, Color.YELLOW);
                 }
             }
         }
@@ -493,14 +490,14 @@ public class PageFragment extends Fragment {
      *                                                       sentence
      * @param color                                          - color to highlight
      */
-    private void highlightSentenceLoops(int tableLayoutHolder,
+    public static void highlightSentenceLoops(List<TableLayout> tableLayouts, int tableLayoutHolder,
                                         int tableRowHolderForHighlightingToEndOfSent,
                                         int tableRowHolderForHighlightingToBeginningOfSent,
                                         int color) {
         boolean end = false;
 
-        for (int i = tableLayoutHolder; i < mTableLayouts.size(); i++) {
-            TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
+        for (int i = tableLayoutHolder; i < tableLayouts.size(); i++) {
+            TableRow row = (TableRow) tableLayouts.get(i).getChildAt(0);
             for (int j = tableRowHolderForHighlightingToEndOfSent; j < row.getChildCount(); j++) {
 
                 // when the row changes it starts highlighting at beginning of the row
@@ -528,7 +525,7 @@ public class PageFragment extends Fragment {
         int skipCurrentWord = 1;
 
         for (int i = tableLayoutHolder; i >= 0; i--) {
-            TableRow row = (TableRow) mTableLayouts.get(i).getChildAt(0);
+            TableRow row = (TableRow) tableLayouts.get(i).getChildAt(0);
             for (int j = tableRowHolderForHighlightingToBeginningOfSent - skipCurrentWord;
                  j >= 0; j--) {
 
@@ -576,8 +573,8 @@ public class PageFragment extends Fragment {
             word.equals("Ms.") || word.equals("Dr.");
     }
 
-    private void highlightThePage() {
-        for (TableLayout tableLayout : mTableLayouts) {
+    public static void highlightThePage(List<TableLayout> tableLayouts) {
+        for (TableLayout tableLayout : tableLayouts) {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
             for (int j = 0; j < row.getChildCount(); j++) {
                 TextView word = (TextView) row.getChildAt(j);
@@ -588,7 +585,7 @@ public class PageFragment extends Fragment {
         }
     }
 
-    private void addAllTextViewsToList (){
+    public void addAllTextViewsToList() {
         for (TableLayout tableLayout : mTableLayouts) {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
             for (int j = 0; j < row.getChildCount(); j++) {
@@ -827,9 +824,9 @@ public class PageFragment extends Fragment {
 
                 if (mOnClickHighLightSentenceMode) {
                     if (backgroundColor == Color.WHITE) {
-                        highlightSentenceMode((TextView) v, Color.YELLOW);
+                        highlightSentenceMode(mTableLayouts, (TextView) v, Color.YELLOW);
                     } else {
-                        highlightSentenceMode((TextView) v, Color.WHITE);
+                        highlightSentenceMode(mTableLayouts, (TextView) v, Color.WHITE);
                     }
                 } else {
                     if (!((TextView) v).getText().equals("")) {
@@ -864,15 +861,15 @@ public class PageFragment extends Fragment {
     /**
      * Finds all the highlighted text on the screen and stores it into an arrayList
      */
-    private void findHighlightedWords() {
-        for (TableLayout tableLayout : mTableLayouts) {
+    public static void findHighlightedWords(List<TableLayout> tableLayouts, List<TextView> textViewList) {
+        for (TableLayout tableLayout : tableLayouts) {
             TableRow row = (TableRow) tableLayout.getChildAt(0);
             for (int j = 0; j < row.getChildCount(); j++) {
                 TextView word = (TextView) row.getChildAt(j);
                 ColorDrawable textBackGroundColor = (ColorDrawable) word.getBackground();
                 int backgroundColor = textBackGroundColor.getColor();
                 if (backgroundColor == Color.YELLOW) {
-                    mHighlightedTextViews.add(word);
+                    textViewList.add(word);
                 }
             }
         }

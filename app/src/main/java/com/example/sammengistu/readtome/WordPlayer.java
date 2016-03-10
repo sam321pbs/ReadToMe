@@ -26,6 +26,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
 
     private static final int HAS_MORE_THAN_ONE = 0;
     private static final int FIRST_ITEM = 0;
+    private final int PAGE_FRAGMENT_MAX_NUMBER_OF_TEXT_VIEWS = 184;
 
     private TextToSpeech mTts;
     private Activity mAppActivity;
@@ -159,7 +160,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         //Remove single quotes from word
                         String cleanedWord = highLightedTextViews.get(i)
                             .getText().toString().replaceAll("'", "");
-                        if (cleanedWord.equals("Dr.")){
+                        if (cleanedWord.equals("Dr.")) {
                             cleanedWord = "Doctor";
                         }
                         sentenceToPlay.append(cleanedWord);
@@ -224,6 +225,11 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                     public void run() {
                         playStopButton.setImageResource(R.drawable.play_button_updated);
                         PageFragment.setPlayOrStopCounter(0);
+                        try {
+                            TypeAndReadFragment.setPlayOrStopCounterTypeAndRead(0);
+                        } catch (Exception e) {
+
+                        }
                     }
                 });
             }
@@ -237,6 +243,8 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                             final TextView chapterLabelTextView,
                             final TextView pageNumberTextView) {
 
+        Log.i("WordPlayer", "highlighted textviews = " + highlightedWordsTextView.size());
+        Log.i("WordPlayer", "Page of books = " + pageOfBookList.size());
         if (mPlay) {
 
             mTts.setSpeechRate(mVoiceSpeed / 20);
@@ -263,7 +271,7 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         //Remove single quotes from word
                         String cleanedWord = highLightedTextViews.get(i)
                             .getText().toString().replaceAll("'", "");
-                        if (cleanedWord.equals("Dr.")){
+                        if (cleanedWord.equals("Dr.")) {
                             cleanedWord = "Doctor";
                         }
                         sentenceToPlay.append(cleanedWord);
@@ -309,7 +317,6 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         });
 
                         playChapter(highLightedTextViews, playStopButton, pageOfBooks,
-//                            entirePageTextViews,
                             chapterLabelTextView, pageNumberTextView);
                     }
 
@@ -333,18 +340,22 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         @Override
                         public void run() {
 
-                            updatePage(pageOfBooks.get(FIRST_ITEM),
+
+                            updatePage(mAllTextViews.size(), pageOfBooks.get(FIRST_ITEM),
                                 chapterLabelTextView);
 
-                            String pageNumberForView = PageFragment.updatePageNumber() + "";
+                            try {
+                                String pageNumberForView = PageFragment.updatePageNumber() + "";
 
-                            pageNumberTextView.setText(pageNumberForView);
+                                pageNumberTextView.setText(pageNumberForView);
+                            } catch (Exception e){
+
+                            }
 
                             List<TextView> textViews = new ArrayList<>();
 
-                            for (int i = 0; i < 184; i++) {
-                                if (
-                                    !mAllTextViews.get(i).getText().equals("")) {
+                            for (int i = 0; i < mAllTextViews.size(); i++) {
+                                if (!mAllTextViews.get(i).getText().equals("")) {
                                     textViews.add(mAllTextViews.get(i));
                                 }
                             }
@@ -362,6 +373,11 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
                         public void run() {
                             playStopButton.setImageResource(R.drawable.play_button_updated);
                             PageFragment.setPlayOrStopCounter(0);
+                            try {
+                                TypeAndReadFragment.setPlayOrStopCounterTypeAndRead(0);
+                            } catch (Exception e){
+
+                            }
                         }
                     });
                 }
@@ -369,8 +385,8 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         }
     }
 
-    public void updatePage(
-        PageOfBook pageOfBook, TextView chapterLabelTextView) {
+    public void updatePage( int maxNumberOfTextViews,
+        PageOfBook pageOfBook, TextView chapterLabelTextView){
 
         String[] pageWords = pageOfBook.getPageText().split(" ");
 
@@ -382,14 +398,19 @@ public class WordPlayer implements TextToSpeech.OnInitListener {
         }
 
         //Turn all textviews with no words in them to white background
-        if (pageWords.length < 184) {
+        if (pageWords.length < maxNumberOfTextViews) {
 
-            for (int l = pageWords.length; l < 184; l++) {
+            for (int l = pageWords.length; l < maxNumberOfTextViews; l++) {
                 mAllTextViews.get(l).setText("");
                 mAllTextViews.get(l).setBackgroundColor(Color.WHITE);
             }
         }
-        chapterLabelTextView.setVisibility(View.INVISIBLE);
+        try {
+            chapterLabelTextView.setVisibility(View.INVISIBLE);
+        } catch (Exception e){
+
+        }
+
     }
 
     /**

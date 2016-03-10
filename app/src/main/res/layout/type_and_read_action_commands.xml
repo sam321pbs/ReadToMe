@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_gravity="bottom"
+          android:layout_marginBottom="20dp">
+
+    <ImageView
+            android:id="@+id/go_back_type_and_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".16"
+            android:src="@drawable/left_arrow_smaller"
+            android:contentDescription="Image used to turn back a page"/>
+
+    <ImageView
+            android:id="@+id/play_button_type_and_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".16"
+            android:src="@drawable/play_button_updated"
+            android:contentDescription="Image used as a play button"/>
+
+
+    <TextView
+            android:id="@+id/action_command_page_number_type_and_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="27sp"/>
+
+    <ImageView
+            android:id="@+id/page_button_type_and_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".16"
+            android:src="@drawable/page_button_image"
+            android:contentDescription="Image used to highlight the page"/>
+
+    <ImageView
+            android:id="@+id/clear_highlights_button_type_and_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".16"
+            android:src="@drawable/clear_button"
+            android:contentDescription="Image used to clear highlights on the page"/>
+
+    <ImageView
+            android:id="@+id/turn_page_type_and_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:paddingTop="2dp"
+            android:src="@drawable/right_arrow_smaller"
+            android:contentDescription="Image used to turn the page"/>
+
+</TableRow>

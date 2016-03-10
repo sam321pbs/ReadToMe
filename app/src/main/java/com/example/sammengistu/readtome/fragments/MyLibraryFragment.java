@@ -2,6 +2,7 @@ package com.example.sammengistu.readtome.fragments;
 
 
 import com.example.sammengistu.readtome.R;
+import com.example.sammengistu.readtome.TypeAndReadActivity;
 import com.example.sammengistu.readtome.activities.PagesActivity;
 import com.example.sammengistu.readtome.models.Book;
 import com.example.sammengistu.readtome.models.GetBookInfo;
@@ -16,7 +17,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -492,6 +492,12 @@ public class MyLibraryFragment extends Fragment {
                 searchDialog.show(getActivity().getSupportFragmentManager(), "SearchDialog");
                 return true;
 
+            case R.id.type_and_read_action:
+
+                Intent typeAndReadIntent = new Intent(getActivity(), TypeAndReadActivity.class);
+                startActivity(typeAndReadIntent);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -509,7 +515,6 @@ public class MyLibraryFragment extends Fragment {
 
         if (requestCode == GET_TITLE){
 
-            Log.i("Library", "in");
             String selectedTitle = data.getStringExtra(SearchDialog.SELECTED_BOOK);
 
             for (Book book : mMyLibraryBooks){

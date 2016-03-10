@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/blank_page">
+
+    <EditText android:layout_width="match_parent"
+              android:layout_height="300dp"
+              android:layout_margin="10dp"
+              android:id="@+id/type_here_box"
+              android:hint="@string/type_here_hint"
+              android:background="#e7e4e4"
+              android:textSize="20sp"
+              android:gravity="top"/>
+
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout1"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout2"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout3"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout4"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout5"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout6"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout7"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout8"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout9"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout10"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout11"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout12"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout13"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+
+    <TableLayout
+            android:id="@+id/fragment_page_tableLayout14"
+            style="@style/TableLayoutView"
+            android:layout_marginTop="5dp">
+
+        <include
+                layout="@layout/words_row"/>
+    </TableLayout>
+
+    <include
+            layout="@layout/type_and_read_action_commands"/>
+
+</LinearLayout>
