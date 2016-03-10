@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome.fragments;
+package com.example.sammengistu.readtome.dialogs;
 
 import com.example.sammengistu.readtome.R;
 
@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;

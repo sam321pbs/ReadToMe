@@ -2,8 +2,11 @@ package com.example.sammengistu.readtome.fragments;
 
 
 import com.example.sammengistu.readtome.R;
-import com.example.sammengistu.readtome.TypeAndReadActivity;
+import com.example.sammengistu.readtome.activities.TypeAndReadActivity;
 import com.example.sammengistu.readtome.activities.PagesActivity;
+import com.example.sammengistu.readtome.dialogs.DeleteBookDialog;
+import com.example.sammengistu.readtome.dialogs.LibraryHelpDialog;
+import com.example.sammengistu.readtome.dialogs.SearchDialog;
 import com.example.sammengistu.readtome.models.Book;
 import com.example.sammengistu.readtome.models.GetBookInfo;
 import com.example.sammengistu.readtome.models.Library;

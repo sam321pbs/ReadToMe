@@ -1,9 +1,11 @@
-package com.example.sammengistu.readtome;
+package com.example.sammengistu.readtome.fragments;
 
+import com.example.sammengistu.readtome.R;
+import com.example.sammengistu.readtome.WordPlayer;
 import com.example.sammengistu.readtome.fragments.PageFragment;
-import com.example.sammengistu.readtome.fragments.SettingsDialog;
-import com.example.sammengistu.readtome.fragments.SettingsDialogTypeAndRead;
-import com.example.sammengistu.readtome.fragments.TypeAndReadHelpDialog;
+import com.example.sammengistu.readtome.dialogs.SettingsDialog;
+import com.example.sammengistu.readtome.dialogs.SettingsDialogTypeAndRead;
+import com.example.sammengistu.readtome.dialogs.TypeAndReadHelpDialog;
 import com.example.sammengistu.readtome.models.PageOfBook;
 
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome.fragments;
+package com.example.sammengistu.readtome.dialogs;
 
 import com.example.sammengistu.readtome.R;
 

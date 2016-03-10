@@ -26,7 +26,7 @@
                 android:screenOrientation="portrait">
         </activity>
         <activity
-                android:name=".TypeAndReadActivity"
+                android:name=".activities.TypeAndReadActivity"
                 android:label="@string/title_activity_type_and_read"
                 android:screenOrientation="portrait">
 

@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome.fragments;
+package com.example.sammengistu.readtome.dialogs;
 
 import com.example.sammengistu.readtome.R;
 
@@ -9,13 +9,16 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 
-public class LibraryHelpDialog extends DialogFragment {
+/**
+ * Created by SamMengistu on 3/10/16.
+ */
+public class TypeAndReadHelpDialog  extends DialogFragment {
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v = getActivity().getLayoutInflater()
-            .inflate(R.layout.fragment_help_library, null);
+            .inflate(R.layout.type_and_read_help_dialog, null);
         return new AlertDialog.Builder(getActivity())
             .setView(v)
             .setPositiveButton("Okay", null)

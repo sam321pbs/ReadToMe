@@ -1,4 +1,4 @@
-package com.example.sammengistu.readtome.fragments;
+package com.example.sammengistu.readtome.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

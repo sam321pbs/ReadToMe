@@ -1,7 +1,8 @@
 package com.example.sammengistu.readtome;
 
-import com.example.sammengistu.readtome.fragments.DefinitionDialog;
+import com.example.sammengistu.readtome.dialogs.DefinitionDialog;
 import com.example.sammengistu.readtome.fragments.PageFragment;
+import com.example.sammengistu.readtome.fragments.TypeAndReadFragment;
 import com.example.sammengistu.readtome.models.PageOfBook;
 
 import android.app.Activity;
